@@ -1,66 +1,80 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# KampusLMS - Kelompok 02
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Anggota Kelompok
+1. Armansyah (10241013)
+2. Chiko Dhiva Pramana (10241017)
+3. Dawwas Eryansyah Pratama (10241019)
+4. Bella Alviana (10241015)
 
-## About Laravel
+## Cara Menjalankan Proyek
+Ikuti langkah-langkah berikut untuk menjalankan proyek ini di komputer lokal:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. Clone repositori ini: 
+   ```bash
+   git clone <url-repo-github>
+   ```
+2. Masuk ke folder proyek:
+   ```bash
+   cd kampuslms-kelompok-02
+   ```
+3. Install semua dependensi PHP menggunakan Composer:
+   ```bash
+   composer install
+   ```
+4. Salin file konfigurasi *environment*:
+   ```bash
+   cp .env.example .env
+   ```
+5. Buka file `.env` dan atur konfigurasi database (sesuaikan nama database, username, dan password).
+6. Hasilkan *Application Key* yang baru:
+   ```bash
+   php artisan key:generate
+   ```
+7. Jalankan migrasi untuk membuat tabel database:
+   ```bash
+   php artisan migrate
+   ```
+8. Nyalakan server lokal:
+   ```bash
+   php artisan serve
+   ```
+9. Buka browser dan akses web di `http://127.0.0.1:8000`
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Pembagian Peran
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Nama Lengkap | NIM | Peran / Tugas |
+| :--- | :--- | :--- |
+| **Chiko Dhiva Pramana** | 10241017 |  |
+| **Armansyah** | 10241013 |  |
+| **Dawwas Eryansyah Pratama** | 10241019 |  |
+| **Bella Alviana** | 10241015 |  |
 
-## Learning Laravel
+## Cara Kolaborasi (Git Workflow Kelompok)
+Karena branch `main` dilindungi (*Branch Protection*), berikut adalah alur kerja yang **WAJIB** diikuti oleh semua anggota kelompok:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Sinkronisasi Kode Terbaru (Lakukan Sebelum Mulai Mengerjakan Apapun)**
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+2. **Buat Branch Baru (Bercabang)**
+   ```bash
+   git checkout -b nama-branch-tugasmu
+   ```
+3. **Simpan dan Kirim Pekerjaan (Commit & Push)**
+   ```bash
+   git add .
+   git commit -m "Deskripsikan apa yang baru dikerjakan"
+   git push -u origin nama-branch-tugasmu
+   ```
+4. **Compare & Pull Request di GitHub**
+   - Buka halaman repositori di web GitHub.
+   - Klik tombol hijau **Compare & pull request** yang muncul.
+   - Pastikan cabang tujuan adalah `main`, lalu klik **Create pull request**.
+5. **Approve dan Merge (Harus Dilakukan Anggota Lain)**
+   - Karena Anda tidak bisa me-*merge* PR Anda sendiri, mintalah teman kelompok Anda untuk membuka PR tersebut.
+   - Teman Anda harus mengklik tab **Files changed**, lalu klik **Review changes**, pilih **Approve**, dan klik **Submit review**.
+   - Setelah muncul tanda centang hijau, klik tombol **Merge pull request**.
+6. **Tarik Kembali Kode yang Sudah Digabungkan**
+   - Setelah di-merge di GitHub, setiap anggota kembali ke terminal komputer masing-masing.
+   - Lakukan langkah 1 lagi (`git checkout main` dan `git pull origin main`) untuk mendapatkan kodingan yang baru saja digabungkan tersebut!
