@@ -1,16 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ControllerTentang;
+use App\Http\Controllers\CourseController;
 
 Route::get('/', function () {
     return view('dashboard');
 })->name('home');
 
-Route::get('/tentang', function () {
-    return view('tentang');
-})->name('tentang');
-
-use App\Http\Controllers\CourseController;
+Route::get('/tentang', [ControllerTentang::class, 'index'])->name('tentang');
 
 // APA: Route untuk halaman daftar mata kuliah menggunakan method GET.
 // KENAPA: Karena kita hanya ingin MENGAMBIL (Read) data, bukan mengubahnya.
