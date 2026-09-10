@@ -1,56 +1,32 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tentang Kami - Kelompok 02</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8fafc;
-            color: #334155;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #0f172a;
-            margin-bottom: 30px;
-        }
-        .member-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .member-list li {
-            font-size: 1.25rem;
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #f1f5f9;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Anggota Kelompok 02</h1>
-        <ul class="member-list">
-            <li>Armansyah (10241013)</li>
-            <li>Chiko Dhiva Pramana (10241017)</li>
-            <li>Dawwas Eryansyah Pratama (10241019)</li>
-            <li>Bella Alviana (10241015)</li>
-        </ul>
+{{-- Halaman Tentang / Anggota Kelompok --}}
+<x-layout title="Tentang Kami">
+
+    <div class="page-header">
+        <h1>Tentang Kami</h1>
+        <p>Kelompok 02 - Pemrograman Web</p>
     </div>
-</body>
-</html>
+
+    <div class="card">
+        <p style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Anggota Kelompok</p>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background-color: #f8fafc; border-radius: 6px;">
+                <span style="font-weight: 500; color: #0f172a;">Armansyah</span>
+                <span class="badge">10241013</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background-color: #f8fafc; border-radius: 6px;">
+                <span style="font-weight: 500; color: #0f172a;">Bella Alviana</span>
+                <span class="badge">10241015</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background-color: #f8fafc; border-radius: 6px;">
+                <span style="font-weight: 500; color: #0f172a;">Chiko Dhiva Pramana</span>
+                <span class="badge">10241017</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background-color: #f8fafc; border-radius: 6px;">
+                <span style="font-weight: 500; color: #0f172a;">Dawwas Eryansyah Pratama</span>
+                <span class="badge">10241019</span>
+            </div>
+        </div>
+    </div>
+
+</x-layout>
