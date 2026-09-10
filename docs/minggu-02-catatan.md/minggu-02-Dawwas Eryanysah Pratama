@@ -1,0 +1,277 @@
+# Minggu 02
+
+**Nama:** Dawwas Eryansyah Pratama
+
+**NIM:** 10241019
+
+---
+
+## 1. READ
+
+### Analisis Route /tentang
+
+### 1. Baris Route (Baris mana di routes/web.php yang menangkapnya?)
+
+Route `/tentang` ditangkap oleh baris berikut di `routes/web.php`:
+
+```php
+Route::get('/tentang', [ControllerTentang::class, 'index']);
+````
+
+Baris tersebut mengatur bahwa ketika halaman `/tentang` dibuka, Laravel akan menjalankan `ControllerTentang` pada method `index()`.
+
+### 2. Controller (Kalau ditangani controller, berkas dan method mana?)
+
+* **File:** `app/Http/Controllers/ControllerTentang.php`
+* **Method:** `index()`
+
+Controller bertugas mengatur proses yang dilakukan ketika halaman `/tentang` dibuka. Pada kasus ini, proses tersebut dilakukan oleh method `index()`.
+
+### 3. View (View mana yang dikembalikan? Di path apa persisnya?)
+
+Controller mengembalikan view melalui:
+
+```php
+return view('tentang');
+```
+
+Path view:
+
+`resources/views/tentang.blade.php`
+
+Laravel mencari file `tentang.blade.php` di dalam folder `resources/views`.
+
+### 4. Layout (Layout apa yang membungkusnya?)
+
+View menggunakan component:
+
+```blade
+<x-layout>
+```
+
+Layout tersebut berada di:
+
+`resources/views/components/layout.blade.php`
+
+`x-layout` digunakan sebagai kerangka tampilan halaman sehingga bagian HTML yang umum tidak perlu ditulis berulang.
+
+### 5. Hasil route:list
+
+Perintah yang dijalankan:
+
+```bash
+php artisan route:list --path=tentang
+```
+
+Hasil:
+
+```text
+GET|HEAD tentang ... ControllerTentang@index
+```
+
+Hasil tersebut sesuai dengan analisis. Laravel menunjukkan bahwa route `/tentang` menggunakan `ControllerTentang` dan method `index()`.
+
+### Kesimpulan
+
+Alur halaman `/tentang` adalah:
+
+`/tentang` → `routes/web.php` → `ControllerTentang@index` → `tentang.blade.php` → `x-layout` → halaman ditampilkan di browser.
+
+---
+
+## 2. BREAK
+
+Analisis `/mata-kuliah`
+
+### 1. Mengubah Route GET Menjadi POST
+
+**Perubahan:** `Route::get()` diubah menjadi `Route::post()`.
+
+**Hasil:** Saat `/mata-kuliah` dibuka melalui browser, muncul error `405 Method Not Allowed` karena browser mengirim request GET, sedangkan route hanya menerima POST.
+
+**Kesimpulan:** Method HTTP pada route harus sesuai dengan jenis request yang dikirim oleh client.
+
+### 2. Mengubah Nama View Menjadi Tidak Ada
+
+**Perubahan:** `courses.index` diubah menjadi `courses.salah`.
+
+**Hasil:** Muncul error `View [courses.salah] not found`.
+
+**Kesimpulan:** Laravel harus menemukan file Blade yang sesuai dengan nama View yang dipanggil Controller.
+
+### 3. Menghapus Route Name
+
+**Perubahan:** Menghapus `->name('courses.show')` dari route detail.
+
+**Hasil:** Muncul error `Route [courses.show] not defined` karena Blade masih menggunakan `route('courses.show')`.
+
+**Kesimpulan:** Route name digunakan sebagai nama/alias agar route dapat dipanggil dengan fungsi `route()`. Jika nama route dihapus, pemanggilan `route('courses.show')` tidak dapat dilakukan.
+
+### 4. Mengubah Urutan Route
+
+**Perubahan:** Route `/mata-kuliah/{course}` diletakkan sebelum `/mata-kuliah/create`.
+
+**Hasil:** Saat `/mata-kuliah/create` dibuka, Laravel menganggap `create` sebagai parameter `{course}` dan menjalankan `CourseController@show`. Pada project ini kemudian muncul error karena method `show()` membutuhkan parameter bertipe integer, sedangkan yang diterima adalah string `"create"`.
+
+**Kesimpulan:** Urutan route penting. Route khusus seperti `/create` sebaiknya diletakkan sebelum route dinamis seperti `/{course}` agar tidak dianggap sebagai parameter.
+
+### 5. Mencoba XSS dengan `{!! !!}`
+
+**Perubahan:** `{{ }}` diganti menjadi `{!! !!}` dan data diisi dengan script JavaScript.
+
+**Hasil:** Penggunaan `{!! !!}` membuat data HTML/JavaScript ditampilkan tanpa proses escaping. Hal ini menunjukkan bahwa jika data mengandung `<script>`, terdapat risiko XSS.
+
+**Kesimpulan:** `{!! !!}` harus digunakan dengan hati-hati karena dapat menyebabkan XSS jika data berasal dari pengguna. Untuk data biasa, gunakan `{{ }}` agar HTML/JavaScript berbahaya tidak langsung dijalankan.
+
+### 6. Menghapus `@vite`
+
+**Hasil pemeriksaan:** File `layout.blade.php` tidak menggunakan `@vite(...)`, sehingga percobaan menghapus `@vite` tidak dapat dilakukan pada implementasi saat ini.
+
+**Kesimpulan:** BREAK #6 tidak relevan dengan kode project saat ini dan dilewati.
+
+### 7. Menjalankan `npm run dev`
+
+**Perubahan:** Menjalankan:
+
+```bash
+npm run dev
+```
+
+**Hasil:** Muncul error:
+
+```text
+'vite' is not recognized as an internal or external command,
+operable program or batch file.
+```
+
+Artinya Vite tidak ditemukan pada dependency atau environment project.
+
+Selain itu, layout project saat ini belum menggunakan `@vite`, sehingga Vite belum berpengaruh langsung pada tampilan `/mata-kuliah`.
+
+**Kesimpulan:** Vite digunakan untuk mengelola asset frontend seperti CSS dan JavaScript. Pada project saat ini, penggunaan Vite belum diterapkan pada layout.
+
+### 8. Menghilangkan Parameter Route
+
+**Perubahan:** Parameter `$course['id']` dihapus dari `route('courses.show')`.
+
+**Hasil:** Muncul error `Missing required parameter: course`.
+
+**Kesimpulan:** Route yang memiliki parameter seperti `{course}` membutuhkan nilai parameter ketika URL dibuat menggunakan `route()`.
+
+---
+
+## 3. CHECKPOINT MINGGU 02
+
+### 1. Kenapa menghapus data lewat `GET` berbahaya? Beri satu skenario konkret.
+
+Menghapus data lewat GET berbahaya karena method GET seharusnya digunakan untuk mengambil atau menampilkan data, bukan untuk mengubah atau menghapus data.
+
+**Skenario:** Jika terdapat URL `/courses/5/delete` yang menggunakan GET, ketika URL tersebut dibuka, data mata kuliah dengan ID 5 dapat langsung terhapus. URL GET juga dapat dibuka secara otomatis oleh browser, bot, atau crawler sehingga penghapusan dapat terjadi tanpa sengaja.
+
+Karena itu, proses penghapusan sebaiknya menggunakan method `DELETE` atau `POST` melalui form dan dilindungi dengan autentikasi serta CSRF.
+
+### 2. Apa yang terjadi kalau `/courses/{course}` ditulis sebelum `/courses/create`? Kenapa?
+
+Laravel dapat menganggap kata `create` sebagai nilai dari parameter `{course}`.
+
+Contohnya:
+
+`/courses/create`
+
+dapat dibaca sebagai:
+
+`{course} = "create"`
+
+Akibatnya request masuk ke route detail, bukan ke route `/courses/create`.
+
+Jika controller tidak dapat memproses nilai tersebut, dapat muncul error seperti 404 atau error tipe data, tergantung implementasi controller.
+
+Karena itu, route khusus seperti `/courses/create` sebaiknya ditulis sebelum route dinamis `/courses/{course}`.
+
+### 3. Tunjukkan di kode Anda satu tempat yang memakai `route()`. Apa untungnya dibanding URL hardcode?
+
+Contohnya terdapat pada file:
+
+`resources/views/courses/index.blade.php`
+
+```blade
+<a href="{{ route('courses.show', $course['id']) }}">
+    Lihat Detail
+</a>
+```
+
+Keuntungannya adalah URL tidak ditulis secara langsung atau hardcode.
+
+Jika URL di `routes/web.php` nantinya berubah, kita cukup mengubah route Laravel. Pemanggilan `route('courses.show')` tetap dapat digunakan selama nama route tidak berubah.
+
+Jadi, penggunaan `route()` membuat URL lebih mudah dikelola dan mengurangi risiko kesalahan.
+
+### 4. Apa beda `{{ }}` dan `{!! !!}`? Peragakan XSS yang Anda buat di bagian BREAK.
+
+`{{ }}` digunakan untuk menampilkan data dengan escaping. HTML atau JavaScript yang terdapat di dalam data akan diperlakukan sebagai teks sehingga lebih aman.
+
+Sedangkan `{!! !!}` menampilkan data tanpa escaping.
+
+Contohnya:
+
+```blade
+{{ $course['name'] }}
+```
+
+lebih aman untuk data yang berasal dari pengguna.
+
+Sedangkan:
+
+```blade
+{!! $course['name'] !!}
+```
+
+dapat berbahaya jika data mengandung kode HTML atau JavaScript.
+
+Pada BREAK, kami mengubah `{{ }}` menjadi `{!! !!}` dan mencoba memasukkan:
+
+```html
+<script>alert("XSS")</script>
+```
+
+sebagai data nama mata kuliah. Percobaan tersebut menunjukkan bahwa penggunaan `{!! !!}` dapat membuka risiko XSS karena data ditampilkan sebagai HTML/JavaScript tanpa escaping.
+
+### 5. Apa fungsi `@vite`? Apa beda `npm run dev` dan `npm run build`?
+
+`@vite` digunakan Laravel untuk menghubungkan aplikasi dengan Vite, yaitu tools untuk mengelola asset frontend seperti CSS dan JavaScript.
+
+Perbedaannya:
+
+* `npm run dev` digunakan saat development untuk menjalankan Vite dalam mode pengembangan.
+* `npm run build` digunakan untuk membuat hasil build asset yang siap digunakan untuk production.
+
+Pada project kami, layout saat ini belum menggunakan `@vite`, sehingga pengaruh Vite belum terlihat langsung pada halaman `/mata-kuliah`.
+
+### 6. Jelaskan mengapa data dari `Request` tidak boleh dipercaya.
+
+Data dari `Request` tidak boleh langsung dipercaya karena data tersebut berasal dari browser atau client. Pengguna dapat mengubah isi form, parameter URL, atau mengirim request sendiri menggunakan tools seperti Postman.
+
+Contohnya, pengguna seharusnya mengirim:
+
+`nama = Dawwas`
+
+tetapi dapat mengirim data yang salah atau berbahaya seperti:
+
+`nama = <script>alert('XSS')</script>`
+
+Karena itu, backend harus melakukan validasi dan pengecekan sebelum data diproses atau disimpan ke database.
+
+Contohnya:
+
+```php
+$request->validate([
+    'name' => 'required|string|max:100',
+]);
+```
+
+**Kesimpulan:** Data dari client harus dianggap sebagai data yang belum terpercaya. Backend harus selalu melakukan validasi, authorization, dan pengamanan sebelum menggunakan data tersebut.
+
+```
+
+**Catatan penting:** Aku sengaja mempertahankan hasil nomor 7 sesuai yang **benar-benar kamu alami** (`vite is not recognized`), bukan hasil punya Chiko (`manifest not found`). Itu lebih tepat untuk laporan individu kamu.
+```
