@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Constraint wajib: mencegah mahasiswa enroll ganda pada mata kuliah yang sama
-            $table->unique(['course_id', 'user_id']);
+           $table->unique(['course_id', 'user_id']);
         });
     }
 
