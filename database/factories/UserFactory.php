@@ -23,13 +23,61 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $fakerId = fake('id_ID');
+
         return [
-            'name' => fake()->name(),
+            'name' => $fakerId->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'role' => 'mahasiswa',
+            'nim_nip' => '220' . fake()->unique()->numerify('#######'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * State untuk role admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+            'nim_nip' => null,
+        ]);
+    }
+
+    /**
+     * State untuk role dosen.
+     */
+    public function lecturer(): static
+    {
+        return $this->dosen();
+    }
+
+    public function dosen(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Dr. ' . fake('id_ID')->name() . ', M.Kom.',
+            'role' => 'dosen',
+            'nim_nip' => '198' . fake()->unique()->numerify('###############'),
+        ]);
+    }
+
+    /**
+     * State untuk role mahasiswa.
+     */
+    public function student(): static
+    {
+        return $this->mahasiswa();
+    }
+
+    public function mahasiswa(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'mahasiswa',
+            'nim_nip' => '220' . fake()->unique()->numerify('#######'),
+        ]);
     }
 
     /**

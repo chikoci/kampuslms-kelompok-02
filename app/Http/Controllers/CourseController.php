@@ -2,48 +2,97 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    // APA: Method index untuk menampilkan daftar semua mata kuliah.
-    // KENAPA: Sebagai titik masuk awal saat pengguna mengakses halaman /courses.
+    /**
+     * Menampilkan daftar seluruh mata kuliah dari database.
+     */
     public function index()
     {
-        // APA: Data statis (dummy) sementara berupa array.
-        // KENAPA: Karena kita belum menggunakan database di minggu ini.
-        $courses = [
-            ['id' => 1, 'code' => 'SI2514', 'name' => 'Pemrograman Web', 'sks' => 3, 'lecturer' => 'Dr. Budi'],
-            ['id' => 2, 'code' => 'SI2515', 'name' => 'Basis Data', 'sks' => 4, 'lecturer' => 'Dr. Andi'],
-            ['id' => 3, 'code' => 'SI2516', 'name' => 'Jaringan Komputer', 'sks' => 3, 'lecturer' => 'Dr. Cici'],
-        ];
+        $courses = Course::with('lecturer')->latest()->get();
 
-        // APA: Me-return view courses.index dan mengirimkan variabel courses.
-        // KENAPA: Agar view bisa membaca dan menampilkan daftar mata kuliah tersebut.
         return view('courses.index', compact('courses'));
     }
 
-    // APA: Method show untuk menampilkan detail SATU mata kuliah berdasarkan ID.
-    // KENAPA: Agar pengguna bisa melihat informasi lebih lengkap dari mata kuliah yang dipilih.
-    public function show($course)
+    /**
+     * Menampilkan formulir penambahan mata kuliah baru.
+     */
+    public function create()
     {
-        // APA: Menggunakan data statis yang sama untuk mencari mata kuliah berdasarkan ID.
-        // KENAPA: Sebagai simulasi pencarian data dari database berdasarkan Primary Key (ID).
-        $allCourses = [
-            1 => ['id' => 1, 'code' => 'SI2514', 'name' => 'Pemrograman Web', 'sks' => 3, 'lecturer' => 'Dr. Budi', 'description' => 'Mata kuliah ini membahas pengembangan aplikasi web modern menggunakan Laravel 12.'],
-            2 => ['id' => 2, 'code' => 'SI2515', 'name' => 'Basis Data', 'sks' => 4, 'lecturer' => 'Dr. Andi', 'description' => 'Belajar perancangan database relasional dan SQL tingkat lanjut.'],
-            3 => ['id' => 3, 'code' => 'SI2516', 'name' => 'Jaringan Komputer', 'sks' => 3, 'lecturer' => 'Dr. Cici', 'description' => 'Mempelajari arsitektur jaringan TCP/IP dan protokol komunikasi.'],
-        ];
+        $lecturers = User::where('role', 'dosen')->orderBy('name')->get();
 
-        // APA: Mengecek apakah mata kuliah dengan ID tersebut ada.
-        // KENAPA: Untuk menghindari error jika pengguna mengetik URL ID yang salah/tidak terdaftar.
-        if (!isset($allCourses[$course])) {
-            abort(404); // Menampilkan halaman Not Found
-        }
+        return view('courses.create', compact('lecturers'));
+    }
 
-        $courseData = $allCourses[$course];
+    /**
+     * Menyimpan data mata kuliah baru ke database.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'max:20', 'unique:courses,code'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'sks' => ['required', 'integer', 'min:1', 'max:6'],
+            'lecturer_id' => ['required', 'exists:users,id'],
+            'status' => ['required', 'in:draft,active,archived'],
+        ]);
 
-        // APA: Me-return view courses.show dan mengirimkan variabel course.
-        return view('courses.show', ['course' => $courseData]);
+        Course::create($validated);
+
+        return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil ditambahkan.');
+    }
+
+    /**
+     * Menampilkan detail satu mata kuliah beserta dosen, materi, dan tugasnya.
+     */
+    public function show(Course $course)
+    {
+        $course->load(['lecturer', 'materials', 'assignments']);
+
+        return view('courses.show', compact('course'));
+    }
+
+    /**
+     * Menampilkan formulir edit mata kuliah.
+     */
+    public function edit(Course $course)
+    {
+        $lecturers = User::where('role', 'dosen')->orderBy('name')->get();
+
+        return view('courses.edit', compact('course', 'lecturers'));
+    }
+
+    /**
+     * Memperbarui data mata kuliah di database.
+     */
+    public function update(Request $request, Course $course)
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'max:20', 'unique:courses,code,' . $course->id],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'sks' => ['required', 'integer', 'min:1', 'max:6'],
+            'lecturer_id' => ['required', 'exists:users,id'],
+            'status' => ['required', 'in:draft,active,archived'],
+        ]);
+
+        $course->update($validated);
+
+        return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil diperbarui.');
+    }
+
+    /**
+     * Menghapus data mata kuliah dari database.
+     */
+    public function destroy(Course $course)
+    {
+        $course->delete();
+
+        return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil dihapus.');
     }
 }

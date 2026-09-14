@@ -1,0 +1,77 @@
+# Hasil Audit Keamanan Mass Assignment (Minggu 3 : Prompt Pack C)
+
+Dokumen ini memuat hasil audit keamanan khusus mass assignment pada controller CRUD (`CourseController` dan `UserController`) serta model Eloquent yang dibangun pada tahap BUILD Milestone M1.
+
+---
+
+## Kode Controller yang Diaudit
+
+1. **[app/Http/Controllers/CourseController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/CourseController.php)**
+2. **[app/Http/Controllers/UserController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/UserController.php)**
+3. Seluruh 6 Model di folder `app/Models/`.
+
+---
+
+## Temuan dan Analisis Audit
+
+### 1. Apakah ada pemakaian `$request->all()` atau `$request->input()` tanpa penyaringan?
+**Status: AMAN (Tidak Ditemukan Celah)**
+- **Di CourseController:**
+  - Method `store()` dan `update()` menggunakan `$validated = $request->validate([...])` dan hanya memberikan data yang lolos validasi ke `Course::create($validated)` atau `$course->update($validated)`.
+  - Tidak ada pemanggilan `$request->all()` liar sama sekali.
+- **Di UserController:**
+  - Method `store()` dan `update()` tidak menggunakan `$request->all()`.
+  - Pengisian atribut dilakukan per kolom dari hasil validasi:
+    `$user->name = $validated['name'];`
+    `$user->email = $validated['email'];`
+    `$user->password = $validated['password'];`
+    `$user->nim_nip = $validated['nim_nip'] ?? null;`
+    `$user->role = $validated['role'];`
+
+---
+
+### 2. Untuk setiap model yang disentuh, adakah kolom di `$fillable` yang seharusnya tidak boleh diisi pengguna?
+**Status: AMAN (Sesuai Prinsip Least Privilege)**
+- **Model User:**
+  - Kolom `role` **dikeluarkan** dari `$fillable`. Dengan demikian, injeksi mass assignment `role=admin` lewat form apa pun pasti digagalkan oleh Eloquent.
+  - Kolom `email_verified_at` dikeluarkan dari `$fillable`.
+- **Model Course:**
+  - `$fillable` hanya memuat atribut mata kuliah (`code`, `name`, `description`, `sks`, `lecturer_id`, `status`).
+- **Model Lainnya (Material, Assignment, Submission, Grade):**
+  - `uploaded_by`, `created_by`, `user_id`, `is_late`, dan `graded_by` seluruhnya dikeluarkan dari `$fillable`.
+
+---
+
+### 3. Skenario Serangan Nyata: Field yang Bisa Diselipkan dan Contoh Payload
+
+#### Skenario Serangan Mass Assignment (Sebelum Dilindungi):
+Jika pengembang menulis controller secara ceroboh seperti ini:
+```php
+// CONTOH KODE RENTAN (TIDAK DIPAKAI):
+User::create($request->all());
+```
+Dan jika `'role'` dimasukkan ke dalam `$fillable` di `User.php`.
+
+#### Payload Serangan:
+Penyerang mengirim request HTTP POST pendaftaran akun biasa namun menyisipkan field `role`:
+```http
+POST /users HTTP/1.1
+Host: kampuslms.test
+Content-Type: application/x-www-form-urlencoded
+
+name=Hacker+Jahat&email=hacker@test.com&password=rahasia123&role=admin
+```
+
+#### Dampak Serangan:
+- Laravel langsung menyimpan nilai `'admin'` ke kolom `role` di database tanpa verifikasi.
+- Penyerang yang seharusnya mendaftar sebagai mahasiswa biasa seketika mendapatkan seluruh hak istimewa administrator sistem (privilege escalation).
+
+#### Pertahanan di Kode Kita Saat Ini:
+1. Kolom `role` **tidak ada** di `$fillable` model `User`.
+2. Controller tidak menggunakan `$request->all()`, melainkan validasi ketat dan penugasan eksplisit.
+3. Model tidak menggunakan `protected $guarded = [];`.
+
+---
+
+## Kesimpulan Audit
+Arsitektur controller dan model pada milestone ini telah lolos uji audit keamanan mass assignment dan siap dipresentasikan pada sesi interview.

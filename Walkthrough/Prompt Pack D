@@ -1,0 +1,62 @@
+# Hasil Implementasi Factory & Seeder Realistis (Minggu 3 : Prompt Pack D)
+
+## Ringkasan Berkas yang Dibuat & Diperbarui
+
+Seluruh berkas Factory dan Seeder telah selesai diimplementasikan sesuai Bagian 4.4 spesifikasi proyek dan instruksi Prompt Pack D:
+
+1. **[database/factories/UserFactory.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/factories/UserFactory.php)**
+   - Mendukung nama Indonesia via `fake('id_ID')`.
+   - Menambahkan state `admin()`, `lecturer()` / `dosen()`, dan `student()` / `mahasiswa()`.
+   - Format NIP realistis untuk dosen dan NIM untuk mahasiswa.
+
+2. **[database/factories/CourseFactory.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/factories/CourseFactory.php)**
+   - Kode mata kuliah unik (contoh: `SI201`, `SI202`).
+   - Nama mata kuliah kurikulum teknologi informasi bahasa Indonesia.
+   - SKS antara 2 sampai 4 dan status default `active`.
+
+3. **[database/factories/MaterialFactory.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/factories/MaterialFactory.php)**
+   - Menghasilkan judul materi pertemuan perkuliahan, deskripsi, dan metadata berkas PDF.
+
+4. **[database/factories/AssignmentFactory.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/factories/AssignmentFactory.php)**
+   - State `pastDue()` untuk tugas lewat deadline dan `active()` untuk tugas aktif.
+   - Atribut lengkap: `title`, `instructions`, `due_at`, `max_score`, `allow_late`, `status`.
+
+5. **[database/factories/SubmissionFactory.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/factories/SubmissionFactory.php)**
+   - Simulasi berkas unggahan arsip ZIP (`file_path`, `original_name`, `file_size`).
+   - State `late()` untuk menandai pengumpulan terlambat.
+
+6. **[database/factories/GradeFactory.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/factories/GradeFactory.php)**
+   - Nilai desimal realistis (70.00 - 100.00) dan umpan balik akademik berbahasa Indonesia.
+
+7. **[database/seeders/DemoAccountSeeder.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/seeders/DemoAccountSeeder.php)**
+   - Menghasilkan 3 akun demo wajib:
+     - `admin@kampuslms.test` (password: `password`)
+     - `dosen@kampuslms.test` (password: `password`)
+     - `mahasiswa@kampuslms.test` (password: `password`)
+   - Dapat dijalankan mandiri: `php artisan db:seed --class=DemoAccountSeeder --force`.
+
+8. **[database/seeders/DatabaseSeeder.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/seeders/DatabaseSeeder.php)**
+   - Menghasilkan total 1 admin, 3 dosen, dan 30 mahasiswa.
+   - Menghasilkan 5 mata kuliah aktif dengan pendaftaran minimal 18-22 mahasiswa per kelas (`enrolled_at`).
+   - Menghasilkan 15 tugas (3 per MK: lewat deadline, aktif segera, proyek).
+   - Menghasilkan 165 submission pengumpulan tugas (hanya oleh mahasiswa terdaftar, dengan variasi tepat waktu dan terlambat).
+   - Menghasilkan 99 penilaian (tepat 60% dari submission) oleh dosen pengampu.
+
+---
+
+## Bukti Validasi Data & Integritas
+
+Hasil eksekusi `php artisan migrate:fresh --seed`:
+
+| Kriteria | Spesifikasi Minimal | Hasil Seeder Aktual | Status |
+|---|---|---|---|
+| Admin | 1 | 1 (`admin@kampuslms.test`) | VALID |
+| Dosen | 3 | 3 (`dosen@kampuslms.test` + 2 lainnya) | VALID |
+| Mahasiswa | 30 | 30 (`mahasiswa@kampuslms.test` + 29 lainnya) | VALID |
+| Mata Kuliah | 5 | 5 MK Aktif | VALID |
+| Mahasiswa per MK | >= 15 | 19 - 22 mahasiswa per MK | VALID |
+| Tugas (Assignments) | 15 (3 per MK) | 15 (5 lewat deadline, 10 aktif) | VALID |
+| Pengumpulan Tugas | >= 100 | 165 submission (139 tepat waktu, 26 terlambat) | VALID |
+| Integritas Pengumpulan | Mahasiswa terdaftar saja | 100% valid (0 anomali) | VALID |
+| Nilai Tugas (Grades) | ~60% dinilai | 99 nilai (tepat 60.0% dinilai) | VALID |
+| Idempotensi Seeder | Bebas error saat diulang | Berhasil diuji berulang kali | VALID |

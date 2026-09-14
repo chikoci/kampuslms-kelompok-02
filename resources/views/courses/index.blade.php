@@ -1,45 +1,76 @@
 {{-- Halaman Daftar Mata Kuliah --}}
 <x-layout title="Daftar Mata Kuliah">
 
-    <div class="page-header">
-        <h1>Mata Kuliah</h1>
-        <p>Daftar seluruh mata kuliah yang tersedia di sistem</p>
+    <div class="header-actions-row">
+        <div>
+            <h1 class="page-title">Mata Kuliah</h1>
+            <p class="page-subtitle">Kelola seluruh mata kuliah akademik yang terdaftar di database</p>
+        </div>
+        <a href="{{ route('courses.create') }}" class="btn btn-primary">
+            + Tambah Mata Kuliah
+        </a>
     </div>
 
     {{-- Tabel daftar mata kuliah --}}
-    <div class="card" style="padding: 0; overflow: hidden;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+    <div class="table-container">
+        <table class="data-table">
             <thead>
-                <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                    <th style="text-align: left; padding: 0.75rem 1.25rem; font-weight: 600; color: #475569;">Kode</th>
-                    <th style="text-align: left; padding: 0.75rem 1.25rem; font-weight: 600; color: #475569;">Nama Mata Kuliah</th>
-                    <th style="text-align: center; padding: 0.75rem 1.25rem; font-weight: 600; color: #475569;">SKS</th>
-                    <th style="text-align: left; padding: 0.75rem 1.25rem; font-weight: 600; color: #475569;">Dosen</th>
-                    <th style="text-align: right; padding: 0.75rem 1.25rem; font-weight: 600; color: #475569;"></th>
+                <tr>
+                    <th class="col-code">Kode</th>
+                    <th>Nama Mata Kuliah</th>
+                    <th class="col-sks">SKS</th>
+                    <th>Dosen Pengampu</th>
+                    <th class="col-status">Status</th>
+                    <th class="col-actions">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($courses as $course)
-                    <tr style="border-bottom: 1px solid #f1f5f9;">
-                        <td style="padding: 0.75rem 1.25rem;">
-                            <span class="badge">{{ $course['code'] }}</span>
+                @forelse ($courses as $course)
+                    <tr>
+                        <td>
+                            <span class="badge badge-code">{{ $course->code }}</span>
                         </td>
-                        <td style="padding: 0.75rem 1.25rem; font-weight: 500; color: #0f172a;">
-                            {{ $course['name'] }}
-                        </td>
-                        <td style="padding: 0.75rem 1.25rem; text-align: center; color: #64748b;">
-                            {{ $course['sks'] }}
-                        </td>
-                        <td style="padding: 0.75rem 1.25rem; color: #64748b;">
-                            {{ $course['lecturer'] }}
-                        </td>
-                        <td style="padding: 0.75rem 1.25rem; text-align: right;">
-                            <a href="{{ route('courses.show', $course['id']) }}" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
-                                Detail &rarr;
+                        <td>
+                            <a href="{{ route('courses.show', $course) }}" class="table-link">
+                                {{ $course->name }}
                             </a>
                         </td>
+                        <td class="text-center font-semibold text-body">
+                            {{ $course->sks }}
+                        </td>
+                        <td class="text-body font-medium">
+                            {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ $course->status }}">
+                                {{ ucfirst($course->status) }}
+                            </span>
+                        </td>
+                        <td class="action-buttons-cell">
+                            <div class="action-buttons-group">
+                                <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary btn-sm">
+                                    Detail
+                                </a>
+                                <a href="{{ route('courses.edit', $course) }}" class="btn btn-edit btn-sm">
+                                    Edit
+                                </a>
+                                <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" class="inline-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="6" class="empty-cell">
+                            Belum ada data mata kuliah di database.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
