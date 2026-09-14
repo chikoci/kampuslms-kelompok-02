@@ -1,8 +1,8 @@
-# Catatan Praktikum Minggu 1
+# Catatan Praktikum Minggu 2
 **Nama:** Armansyah  
 **NIM:** 10241013
 
-## Bagian READ: Bedah Instalasi 
+## Bagian READ: Telusuri Satu Request Penuh
 Ambil route /tentang yang Anda buat minggu lalu. Tanpa AI, tulis di catatan Anda:  
 
 **1. Baris mana di routes/web.php yang menangkapnya?**  
