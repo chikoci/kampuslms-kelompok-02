@@ -1,0 +1,96 @@
+# Hasil Implementasi Migrasi Database KampusLMS (Minggu 3 - Prompt Pack A)
+
+## Ringkasan Perubahan
+
+Sesuai permintaan Prompt Pack A dan dokumen spesifikasi Bagian 4, seluruh berkas migrasi database untuk sistem KampusLMS telah dibuat dan diuji coba dengan sukses.
+
+### Berkas Migrasi yang Dibuat & Dimodifikasi
+
+1. **[0001_01_01_000000_create_users_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/0001_01_01_000000_create_users_table.php)**
+   - Menambahkan kolom `role` enum (`admin`, `dosen`, `mahasiswa`) dengan index.
+   - Menambahkan kolom `nim_nip` (unique, nullable).
+   - Menambahkan `softDeletes()` untuk `deleted_at`.
+
+2. **[2026_09_14_000001_create_courses_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/2026_09_14_000001_create_courses_table.php)**
+   - `code` bersifat unique.
+   - `lecturer_id` merujuk ke `users.id` dengan aturan `restrictOnDelete()`.
+
+3. **[2026_09_14_000002_create_course_user_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/2026_09_14_000002_create_course_user_table.php)**
+   - Tabel pivot relasi mahasiswa dan mata kuliah.
+   - Kolom `enrolled_at` bertipe timestamp.
+   - **Unique composite wajib:** `['course_id', 'user_id']`.
+   - Foreign key dengan `cascadeOnDelete()`.
+
+4. **[2026_09_14_000003_create_materials_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/2026_09_14_000003_create_materials_table.php)**
+   - `course_id` dengan `cascadeOnDelete()` dan index.
+   - `uploaded_by` merujuk ke `users.id` dengan `restrictOnDelete()`.
+
+5. **[2026_09_14_000004_create_assignments_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/2026_09_14_000004_create_assignments_table.php)**
+   - `course_id` dengan `cascadeOnDelete()`.
+   - `created_by` merujuk ke `users.id` dengan `restrictOnDelete()`.
+   - **Composite index wajib:** `['course_id', 'due_at']`.
+
+6. **[2026_09_14_000005_create_submissions_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/2026_09_14_000005_create_submissions_table.php)**
+   - `assignment_id` dan `user_id` dengan `cascadeOnDelete()`.
+   - **Unique composite wajib:** `['assignment_id', 'user_id']`.
+
+7. **[2026_09_14_000006_create_grades_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/2026_09_14_000006_create_grades_table.php)**
+   - `submission_id` bersifat **unique** untuk menegakkan relasi 1-to-1.
+   - `graded_by` merujuk ke `users.id` dengan `restrictOnDelete()`.
+
+8. **[2026_09_14_000007_create_notifications_table.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/database/migrations/2026_09_14_000007_create_notifications_table.php)**
+   - Primary key bertipe UUID dan morphs `notifiable`.
+
+---
+
+## Hasil Pengujian dan Verifikasi
+
+### 1. Uji Coba `php artisan migrate:fresh`
+Semua tabel berhasil dibuat dari awal tanpa ada konflik foreign key:
+```
+Dropping all tables .................................... DONE
+Creating migration table ............................... DONE
+Running migrations:
+0001_01_01_000000_create_users_table ................... DONE
+0001_01_01_000001_create_cache_table ................... DONE
+0001_01_01_000002_create_jobs_table .................... DONE
+2026_09_14_000001_create_courses_table ................. DONE
+2026_09_14_000002_create_course_user_table ............. DONE
+2026_09_14_000003_create_materials_table ............... DONE
+2026_09_14_000004_create_assignments_table ............. DONE
+2026_09_14_000005_create_submissions_table ............. DONE
+2026_09_14_000006_create_grades_table .................. DONE
+2026_09_14_000007_create_notifications_table ............ DONE
+```
+
+### 2. Uji Coba Reversibilitas `php artisan migrate:refresh`
+Seluruh migrasi berhasil di-rollback dari urutan anak ke induk, lalu dieksekusi ulang secara sukses:
+```
+Rolling back migrations:
+2026_09_14_000007_create_notifications_table ............ DONE
+2026_09_14_000006_create_grades_table .................. DONE
+2026_09_14_000005_create_submissions_table ............. DONE
+2026_09_14_000004_create_assignments_table ............. DONE
+2026_09_14_000003_create_materials_table ............... DONE
+2026_09_14_000002_create_course_user_table ............. DONE
+2026_09_14_000001_create_courses_table ................. DONE
+0001_01_01_000002_create_jobs_table .................... DONE
+0001_01_01_000001_create_cache_table ................... DONE
+0001_01_01_000000_create_users_table ................... DONE
+```
+Semua method `down()` terbukti *reversible* 100%.
+
+---
+
+## Daftar Periksa (Checklist Verifikasi Diri)
+
+| Komponen / Tabel | Poin yang Diperiksa | Cara Verifikasi Mandiri | Status |
+|---|---|---|---|
+| **`users`** | `role` enum berindeks, `nim_nip` unique nullable, softDeletes | Jalankan `php artisan db:table users` | Terpenuhi |
+| **`courses`** | `code` unique, `lecturer_id` FK restrictOnDelete | Jalankan `php artisan db:table courses` | Terpenuhi |
+| **`course_user`** | Unique composite `(course_id, user_id)`, kolom `enrolled_at` | Jalankan `php artisan db:table course_user` | Terpenuhi |
+| **`materials`** | `course_id` cascadeOnDelete & indexed, `uploaded_by` restrictOnDelete | Jalankan `php artisan db:table materials` | Terpenuhi |
+| **`assignments`** | `course_id` cascadeOnDelete, composite index `(course_id, due_at)` | Jalankan `php artisan db:table assignments` | Terpenuhi |
+| **`submissions`** | Unique composite `(assignment_id, user_id)`, cascadeOnDelete | Jalankan `php artisan db:table submissions` | Terpenuhi |
+| **`grades`** | `submission_id` unique (relasi 1-to-1), `graded_by` restrictOnDelete | Jalankan `php artisan db:table grades` | Terpenuhi |
+| **Reversibilitas** | Semua migrasi bisa di-rollback tanpa error | Jalankan `php artisan migrate:refresh` | Terpenuhi |
