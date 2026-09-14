@@ -1,0 +1,52 @@
+# Hasil Implementasi Model Eloquent & Relasi (Minggu 3 — Prompt Pack B)
+
+## Ringkasan Model yang Dibuat & Diperbarui
+
+Seluruh 6 model Eloquent telah dibuat di folder `app/Models/` sesuai spesifikasi Bagian 4.3 dan ketentuan Prompt Pack B:
+
+1. **[app/Models/User.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Models/User.php)**
+   - **Relasi:** `taughtCourses()` (HasMany), `courses()` (BelongsToMany withPivot 'enrolled_at' and timestamps), `submissions()` (HasMany), `gradesGiven()` (HasMany).
+   - **$fillable:** `['name', 'email', 'password', 'nim_nip']`.
+   - **Kolom Dikeluarkan dari $fillable:**
+     - `role`: Wajib dikeluarkan agar tidak bisa dibajak penyerang menjadi admin melalui mass assignment (`role=admin`).
+     - `email_verified_at`: Pengguna tidak boleh memverifikasi email sendiri secara manual.
+   - **Casting:** method `casts(): array` (`email_verified_at` => 'datetime', `password` => 'hashed').
+
+2. **[app/Models/Course.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Models/Course.php)**
+   - **Relasi:** `lecturer()` (BelongsTo), `students()` (BelongsToMany withPivot 'enrolled_at'), `materials()` (HasMany), `assignments()` (HasMany).
+   - **$fillable:** `['code', 'name', 'description', 'sks', 'lecturer_id', 'status']`.
+   - **Casting:** method `casts(): array` (`sks` => 'integer').
+
+3. **[app/Models/Material.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Models/Material.php)**
+   - **Relasi:** `course()` (BelongsTo), `uploader()` (BelongsTo).
+   - **$fillable:** `['course_id', 'title', 'description', 'type', 'file_path', 'original_name', 'file_size', 'mime_type', 'external_url']`.
+   - **Kolom Dikeluarkan dari $fillable:**
+     - `uploaded_by`: Wajib diisi dari `Auth::id()` di controller agar tidak bisa memalsukan identitas pengunggah materi.
+   - **Casting:** method `casts(): array` (`file_size` => 'integer').
+
+4. **[app/Models/Assignment.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Models/Assignment.php)**
+   - **Relasi:** `course()` (BelongsTo), `creator()` (BelongsTo), `submissions()` (HasMany), `grades()` (HasManyThrough).
+   - **$fillable:** `['course_id', 'title', 'instructions', 'due_at', 'max_score', 'allow_late', 'status']`.
+   - **Kolom Dikeluarkan dari $fillable:**
+     - `created_by`: Wajib diisi dari `Auth::id()` di controller demi jejak audit akademik pembuat tugas.
+   - **Casting:** method `casts(): array` (`due_at` => 'datetime', `max_score` => 'integer', `allow_late` => 'boolean').
+
+5. **[app/Models/Submission.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Models/Submission.php)**
+   - **Relasi:** `assignment()` (BelongsTo), `student()` (BelongsTo), `grade()` (HasOne).
+   - **$fillable:** `['assignment_id', 'file_path', 'original_name', 'file_size', 'note', 'submitted_at']`.
+   - **Kolom Dikeluarkan dari $fillable:**
+     - `user_id`: Wajib diisi dari `Auth::id()` di controller agar mahasiswa tidak bisa mengumpulkan tugas atas nama mahasiswa lain.
+     - `is_late`: Dihitung otomatis oleh server di controller dengan membandingkan waktu submit dan batas due_at tugas.
+   - **Casting:** method `casts(): array` (`submitted_at` => 'datetime', `is_late` => 'boolean', `file_size` => 'integer').
+
+6. **[app/Models/Grade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Models/Grade.php)**
+   - **Relasi:** `submission()` (BelongsTo), `grader()` (BelongsTo).
+   - **$fillable:** `['submission_id', 'score', 'feedback', 'graded_at']`.
+   - **Kolom Dikeluarkan dari $fillable:**
+     - `graded_by`: Wajib diisi dari `Auth::id()` dosen yang login di controller demi akuntabilitas nilai mahasiswa.
+   - **Casting:** method `casts(): array` (`score` => 'decimal:2', `graded_at` => 'datetime').
+
+---
+
+## Verifikasi Otomatis
+Seluruh 18 fungsi relasi telah diverifikasi dan berhasil terhubung secara bersih (SUCCESS: ALL RELATIONS RESOLVED CLEANLY).
