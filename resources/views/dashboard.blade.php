@@ -2,33 +2,35 @@
 <x-layout title="Dashboard">
 
     <div class="page-header">
-        <h1>Dashboard</h1>
-        <p>Selamat datang di Sistem Manajemen Pembelajaran Kampus</p>
+        <h1>Dashboard Akademik</h1>
+        <p>Selamat datang di Sistem Informasi Pembelajaran KampusLMS</p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+    <div class="metric-grid">
 
         {{-- Kartu Mata Kuliah --}}
-        <a href="{{ route('courses.index') }}" style="text-decoration: none;">
-            <div class="card" style="border-left: 3px solid #3b82f6;">
-                <p style="font-size: 0.75rem; font-weight: 600; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Mata Kuliah</p>
-                <p style="font-size: 1.5rem; font-weight: 700; color: #0f172a;">3</p>
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">mata kuliah tersedia</p>
+        <a href="{{ route('courses.index') }}" class="dashboard-card-link">
+            <div class="card card-accent-blue">
+                <p class="metric-label label-blue">Mata Kuliah</p>
+                <p class="metric-value">{{ \App\Models\Course::count() }}</p>
+                <p class="metric-sub">Mata kuliah aktif di database</p>
             </div>
         </a>
 
-        {{-- Kartu Tugas (placeholder) --}}
-        <div class="card" style="border-left: 3px solid #10b981; opacity: 0.6;">
-            <p style="font-size: 0.75rem; font-weight: 600; color: #10b981; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Tugas</p>
-            <p style="font-size: 1.5rem; font-weight: 700; color: #0f172a;">-</p>
-            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">segera hadir</p>
-        </div>
+        {{-- Kartu Pengguna --}}
+        <a href="{{ route('users.index') }}" class="dashboard-card-link">
+            <div class="card card-accent-green">
+                <p class="metric-label label-green">Pengguna</p>
+                <p class="metric-value">{{ \App\Models\User::count() }}</p>
+                <p class="metric-sub">Akun administrator, dosen & mahasiswa</p>
+            </div>
+        </a>
 
-        {{-- Kartu Nilai (placeholder) --}}
-        <div class="card" style="border-left: 3px solid #f59e0b; opacity: 0.6;">
-            <p style="font-size: 0.75rem; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Nilai</p>
-            <p style="font-size: 1.5rem; font-weight: 700; color: #0f172a;">-</p>
-            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">segera hadir</p>
+        {{-- Kartu Tugas --}}
+        <div class="card card-accent-amber">
+            <p class="metric-label label-amber">Tugas Akademik</p>
+            <p class="metric-value">{{ \App\Models\Assignment::count() }}</p>
+            <p class="metric-sub">Tugas aktif hasil seeder</p>
         </div>
 
     </div>
