@@ -41,6 +41,14 @@
             </div>
         @endif
 
+        {{-- Flash message gagal / error --}}
+        @if (session('error'))
+            <div class="alert alert-danger">
+                <span>&#9888;</span>
+                <div>{{ session('error') }}</div>
+            </div>
+        @endif
+
         {{-- Flash message validasi error --}}
         @if ($errors->any())
             <div class="alert alert-danger">

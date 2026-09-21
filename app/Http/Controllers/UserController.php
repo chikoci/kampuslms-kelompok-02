@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -10,9 +12,20 @@ class UserController extends Controller
     /**
      * Menampilkan daftar seluruh pengguna.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->get();
+        $users = User::query()
+            ->when($request->filled('q'), fn ($query) =>
+                $query->where(function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->q . '%')
+                      ->orWhere('email', 'like', '%' . $request->q . '%')
+                      ->orWhere('nim_nip', 'like', '%' . $request->q . '%');
+                }))
+            ->when($request->filled('role'), fn ($query) =>
+                $query->where('role', $request->role))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
 
         return view('users.index', compact('users'));
     }
@@ -29,15 +42,9 @@ class UserController extends Controller
      * Menyimpan data pengguna baru ke database.
      * PENTING: Kolom 'role' TIDAK ada di $fillable dan diisi secara eksplisit.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:admin,dosen,mahasiswa'],
-            'nim_nip' => ['nullable', 'string', 'unique:users,nim_nip'],
-        ]);
+        $validated = $request->validated();
 
         // Mengisi atribut aman yang ada di $fillable (name, email, password, nim_nip)
         $user = new User($validated);
@@ -70,15 +77,9 @@ class UserController extends Controller
     /**
      * Memperbarui data pengguna di database.
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email,' . $user->id],
-            'password' => ['nullable', 'string', 'min:6'],
-            'role' => ['required', 'in:admin,dosen,mahasiswa'],
-            'nim_nip' => ['nullable', 'string', 'unique:users,nim_nip,' . $user->id],
-        ]);
+        $validated = $request->validated();
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
