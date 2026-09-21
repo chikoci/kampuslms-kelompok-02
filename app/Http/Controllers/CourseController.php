@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCourseRequest;
+use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,9 +13,20 @@ class CourseController extends Controller
     /**
      * Menampilkan daftar seluruh mata kuliah dari database.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $courses = Course::with('lecturer')->latest()->get();
+        $courses = Course::query()
+            ->with('lecturer')
+            ->when($request->filled('q'), fn ($query) =>
+                $query->where(function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->q . '%')
+                      ->orWhere('code', 'like', '%' . $request->q . '%');
+                }))
+            ->when($request->filled('status'), fn ($query) =>
+                $query->where('status', $request->status))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
 
         return view('courses.index', compact('courses'));
     }
@@ -31,18 +44,9 @@ class CourseController extends Controller
     /**
      * Menyimpan data mata kuliah baru ke database.
      */
-    public function store(Request $request)
+    public function store(StoreCourseRequest $request)
     {
-        $validated = $request->validate([
-            'code' => ['required', 'string', 'max:20', 'unique:courses,code'],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'sks' => ['required', 'integer', 'min:1', 'max:6'],
-            'lecturer_id' => ['required', 'exists:users,id'],
-            'status' => ['required', 'in:draft,active,archived'],
-        ]);
-
-        Course::create($validated);
+        Course::create($request->validated());
 
         return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil ditambahkan.');
     }
@@ -70,18 +74,9 @@ class CourseController extends Controller
     /**
      * Memperbarui data mata kuliah di database.
      */
-    public function update(Request $request, Course $course)
+    public function update(UpdateCourseRequest $request, Course $course)
     {
-        $validated = $request->validate([
-            'code' => ['required', 'string', 'max:20', 'unique:courses,code,' . $course->id],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'sks' => ['required', 'integer', 'min:1', 'max:6'],
-            'lecturer_id' => ['required', 'exists:users,id'],
-            'status' => ['required', 'in:draft,active,archived'],
-        ]);
-
-        $course->update($validated);
+        $course->update($request->validated());
 
         return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil diperbarui.');
     }

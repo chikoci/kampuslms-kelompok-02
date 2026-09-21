@@ -11,6 +11,25 @@
         </a>
     </div>
 
+    {{-- Form Pencarian & Filter Status --}}
+    <div class="filter-card">
+        <form action="{{ route('courses.index') }}" method="GET" class="filter-form">
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau kode mata kuliah..." class="form-control filter-input">
+            
+            <select name="status" class="form-select filter-select">
+                <option value="">-- Semua Status --</option>
+                <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
+                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+            @if(request()->hasAny(['q', 'status']))
+                <a href="{{ route('courses.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+            @endif
+        </form>
+    </div>
+
     {{-- Tabel daftar mata kuliah --}}
     <div class="table-container">
         <table class="data-table">
@@ -67,12 +86,19 @@
                 @empty
                     <tr>
                         <td colspan="6" class="empty-cell">
-                            Belum ada data mata kuliah di database.
+                            Belum ada data mata kuliah yang sesuai filter.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
+    {{-- Link Pagination --}}
+    @if ($courses->hasPages())
+        <div class="pagination-wrapper">
+            {{ $courses->links() }}
+        </div>
+    @endif
 
 </x-layout>

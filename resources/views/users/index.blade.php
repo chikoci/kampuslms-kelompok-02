@@ -11,6 +11,25 @@
         </a>
     </div>
 
+    {{-- Form Pencarian & Filter Peran (Role) --}}
+    <div class="filter-card">
+        <form action="{{ route('users.index') }}" method="GET" class="filter-form">
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, email, atau NIM/NIP..." class="form-control filter-input">
+            
+            <select name="role" class="form-select filter-select">
+                <option value="">-- Semua Role --</option>
+                <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                <option value="dosen" {{ request('role') === 'dosen' ? 'selected' : '' }}>Dosen</option>
+                <option value="mahasiswa" {{ request('role') === 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+            @if(request()->hasAny(['q', 'role']))
+                <a href="{{ route('users.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+            @endif
+        </form>
+    </div>
+
     {{-- Tabel daftar pengguna --}}
     <div class="table-container">
         <table class="data-table">
@@ -63,12 +82,19 @@
                 @empty
                     <tr>
                         <td colspan="5" class="empty-cell">
-                            Belum ada pengguna terdaftar di database.
+                            Belum ada data pengguna yang sesuai dengan filter.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
+    {{-- Link Pagination --}}
+    @if ($users->hasPages())
+        <div class="pagination-wrapper">
+            {{ $users->links() }}
+        </div>
+    @endif
 
 </x-layout>
