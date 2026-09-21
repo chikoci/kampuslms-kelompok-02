@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\View\View;
 
-class ControllerTentang extends Controller
+class TentangController extends Controller
 {
     public function index(): View
     {
