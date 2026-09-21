@@ -167,3 +167,36 @@ Index biasa memang bikin query pencarian lebih cepat, tapi tidak mencegah duplik
 
 **Solusi Paling Aman (`Unique`):**   
 Dengan constraint `unique`, database sendiri yang akan jadi satpam di pintu masuk paling akhir. Meskipun kode backend kita sedang bermasalah atau terjadi klik ganda (race condition), database akan dengan tegas menolak data nilai kedua masuk ke `submission_id` yang sama.
+
+
+##
+
+### PENGERTIAN PENGERTIAN YANG PERLU DIPAHAMI
+
+| **Materi**            | **Pengertian**                                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **CRUD**              | Singkatan dari **Create, Read, Update, Delete**, yaitu operasi dasar untuk membuat, melihat, mengubah, dan menghapus data.           |
+| **Migration**         | **File untuk mengatur struktur dan perubahan database**, seperti membuat tabel, menambah kolom, atau menghapus tabel.                |
+| **Model**             | **Representasi data/tabel** dalam aplikasi yang digunakan untuk berinteraksi dengan database melalui Eloquent.                       |
+| **Seeder**            | **File untuk mengisi data awal atau data pengujian** ke dalam database secara otomatis.                                              |
+| **Factory**           | **Pembuat data dummy** yang digunakan untuk menghasilkan data pengujian sesuai struktur model.                                       |
+| **Controller**        | **Penangan request dan pengatur alur proses** dari pengguna, misalnya mengambil data dari model lalu mengirimkannya ke view.         |
+| **Route**             | **Pengatur URL/endpoint** yang menentukan request pengguna akan diarahkan ke mana, misalnya ke controller atau view.                 |
+| **Relasi Database**   | **Hubungan antar tabel/data** dalam database, seperti One-to-One, One-to-Many, dan Many-to-Many.                                     |
+| **One-to-One**        | Relasi **1 ke 1**, yaitu satu data berhubungan dengan satu data lainnya.                                                             |
+| **One-to-Many**       | Relasi **1 ke banyak**, yaitu satu data dapat berhubungan dengan banyak data, misalnya satu dosen mengajar banyak mata kuliah.       |
+| **Many-to-Many**      | Relasi **banyak ke banyak**, yaitu banyak data dapat berhubungan dengan banyak data lainnya, misalnya mahasiswa dan mata kuliah.     |
+| **`up()`**            | Method migration untuk **menjalankan atau menerapkan perubahan** pada struktur database.                                             |
+| **`down()`**          | Method migration untuk **mengembalikan perubahan** yang dilakukan oleh `up()`.                                                       |
+| **Rollback**          | Proses **membatalkan/mengembalikan migration** ke kondisi sebelumnya menggunakan `down()`.                                           |
+| **Constraint**        | **Aturan pada database** untuk menjaga data tetap valid dan konsisten, seperti `UNIQUE`, `NOT NULL`, dan `FOREIGN KEY`.              |
+| **`$fillable`**       | Properti model sebagai **allowlist atribut** yang boleh diisi melalui mass assignment.                                               |
+| **Mass Assignment**   | Proses **mengisi beberapa atribut model sekaligus**, biasanya menggunakan array; atribut yang boleh diisi dibatasi oleh `$fillable`. |
+| **Validation**        | Proses **memeriksa data** agar sesuai dengan aturan sebelum diproses atau disimpan.                                                  |
+| **Authentication**    | Proses **memastikan identitas pengguna**, sederhananya menjawab pertanyaan: **"Kamu siapa?"**                                        |
+| **Authorization**     | Proses **menentukan hak akses pengguna**, sederhananya menjawab: **"Kamu boleh melakukan apa?"**                                     |
+| **Eloquent**          | **ORM Laravel** yang memungkinkan aplikasi berinteraksi dengan database menggunakan model dan sintaks Laravel/PHP.                   |
+| **Relationship**      | **Hubungan antar model** di Laravel yang menggambarkan relasi data dalam database.                                                   |
+| **Controller Tipis**  | Controller yang hanya menangani **alur utama request**, sedangkan logika yang kompleks tidak semuanya diletakkan di controller.      |
+| **Commit Message**    | **Catatan perubahan** pada Git yang sebaiknya menjelaskan dengan jelas apa yang diubah.                                              |
+| **Pull Request (PR)** | Mekanisme untuk **mengajukan perubahan agar direview** sebelum digabungkan ke branch lain.                                           |
