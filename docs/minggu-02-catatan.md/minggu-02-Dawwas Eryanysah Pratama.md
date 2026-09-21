@@ -8,7 +8,7 @@
 
 ## 1. READ
 
-### Analisis Route /tentang
+### Analisis Route `/tentang`
 
 ### 1. Baris Route (Baris mana di routes/web.php yang menangkapnya?)
 

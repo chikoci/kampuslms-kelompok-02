@@ -101,6 +101,6 @@ Ketika validasi gagal, Laravel otomatis memanggil method `withInput()` yang mem-
 
 #
 ### 6. Buka DevTools → Application → Cookies. Temukan cookie session Laravel. Catat namanya.
-Ketika saya membuka browser, klik kanan **Inspect Element -> tab Application -> Storage -> Cookies -> http://127.0.0.1:8000**, cookie session yang ditemukan bernama:
-* **`laravel_session`** : Cookie yang menyimpan ID sesi terenkripsi milik pengguna agar server mengenali request antar-halaman (contoh nilai saat diuji di DevTools: `eyJpdGls...`).
+Ketika saya membuka browser, klik kanan **Inspect Element -> tab Application -> Storage -> Cookies -> https://kampuslms-kelompok-02.test**, cookie session yang ditemukan bernama:
+* **`laravel_session`** : Cookie yang menyimpan ID sesi terenkripsi milik pengguna agar server mengenali request antar-halaman (contoh nilai saat diuji di DevTools: `eyjpdil6lmp...`).
 * *(Tambahan)* **`XSRF-TOKEN`** : Cookie yang menyimpan token CSRF terenkripsi untuk keamanan form.
