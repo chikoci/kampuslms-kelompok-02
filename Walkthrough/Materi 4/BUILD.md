@@ -90,3 +90,47 @@ php artisan route:list --path=users
 | **Proteksi CSRF** | Terpenuhi | Seluruh form menyertakan direktif `@csrf` |
 | **User Experience Form** | Terpenuhi | Menggunakan helper `old()` dan pesan kesalahan kustom `@error` berbahasa Indonesia |
 | **Pencegahan N+1 Query** | Terpenuhi | Menggunakan eager loading `with('lecturer')` pada query course |
+
+---
+
+## Alur Kerja dan Lokasi Kode Tiap Poin (Singkat & Ringkas)
+
+Berikut adalah rangkuman alur kerja dan lokasi berkas kode untuk setiap poin implementasi tahap BUILD:
+
+### 1. Form Request Mata Kuliah (Store & Update)
+* **Alur:** Request form masuk -> dicegat Form Request sebelum masuk controller -> diperiksa aturan validasi (tipe data, rentang SKS 1-6, keabsahan dosen `exists`, enum status `in`, dan kode unik) -> jika gagal otomatis redirect balik + kirim pesan error bahasa Indonesia -> jika valid diserahkan ke controller via `$request->validated()`.
+* **Lokasi Kode:**
+  - [StoreCourseRequest.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Requests/StoreCourseRequest.php) : Aturan validasi tambah mata kuliah dan kustomisasi pesan error (`messages()`).
+  - [UpdateCourseRequest.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Requests/UpdateCourseRequest.php) : Aturan update dengan `Rule::unique('courses', 'code')->ignore($this->course)`.
+
+### 2. Form Blade Mata Kuliah (Create & Edit)
+* **Alur:** Browser menampilkan form -> form diproteksi token `@csrf` -> input diisi helper `old('field', $default)` agar ketikan tidak hilang saat validasi gagal -> jika terdapat error validasi, direktif `@error('field')` menampilkan pesan error di bawah input dan menambahkan kelas CSS `.is-invalid` (border merah).
+* **Lokasi Kode:**
+  - [courses/create.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/courses/create.blade.php) : Form tambah mata kuliah lengkap dengan `@csrf`, `old()`, dan `@error`.
+  - [courses/edit.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/courses/edit.blade.php) : Form edit mata kuliah lengkap dengan `@csrf`, `@method('PUT')`, `old('field', $course->field)`, dan `@error`.
+
+### 3. Flash Message Global di Layout
+* **Alur:** Setelah controller berhasil/gagal memproses data (store/update/destroy) -> controller menyisipkan flash session (`with('success', ...)` atau `with('error', ...)`) -> layout utama mendeteksi `session('success')` atau `session('error')` -> banner alert notifikasi otomatis muncul di bagian atas halaman mana saja.
+* **Lokasi Kode:**
+  - [layout.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/components/layout.blade.php) : Pengecekan `@if(session('success'))` dan `@if(session('error'))` untuk merender kotak alert global.
+  - [CourseController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/CourseController.php) & [UserController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/UserController.php) : Pengiriman pesan flash saat redirect.
+
+### 4. Daftar Mata Kuliah (Filter & Pagination)
+* **Alur:** Pengguna mengetik pencarian atau memilih status di form GET -> controller menerima parameter `q` dan `status` -> menyaring data database secara fleksibel menggunakan query builder `when()` -> memuat relasi dosen `with('lecturer')` agar hemat query -> membatasi data per halaman `paginate(15)` dan menempelkan parameter URL `withQueryString()` -> view merender tabel dan link pagination `$courses->links()`.
+* **Lokasi Kode:**
+  - [CourseController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/CourseController.php#L16-L32) : Logika method `index()` (`when()`, `with('lecturer')`, `paginate(15)->withQueryString()`).
+  - [courses/index.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/courses/index.blade.php) : Form input pencarian GET, dropdown status, tombol reset, tabel data, dan blok `$courses->links()`.
+
+### 5. Penerapan Penuh pada Modul Pengguna (Users)
+* **Alur:** Menerapkan seluruh standar arsitektur di atas ke entitas Pengguna -> validasi request ditangani kelas khusus dengan proteksi email & NIM unik -> controller hanya mengolah data tervalidasi `$request->validated()` (role ditetapkan terpisah demi keamanan) -> form create/edit dilengkapi proteksi CSRF, `old()`, dan `@error` -> halaman index menyediakan pencarian (nama/email/NIM), filter role, dan pagination terjaga.
+* **Lokasi Kode:**
+  - [StoreUserRequest.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Requests/StoreUserRequest.php) & [UpdateUserRequest.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Requests/UpdateUserRequest.php) : Validasi data user baru dan update user dengan `ignore`.
+  - [UserController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/UserController.php) : Controller CRUD pengguna dengan validasi dan pagination.
+  - [users/index.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/users/index.blade.php), [users/create.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/users/create.blade.php), [users/edit.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/users/edit.blade.php) : Tampilan form dan index pengguna.
+
+### 6. Konfirmasi Penghapusan & Method DELETE
+* **Alur:** Pengguna menekan tombol Hapus -> event JavaScript `onsubmit="return confirm(...)"` memunculkan dialog konfirmasi pencegahan klik tidak sengaja -> jika dikonfirmasi "OK", form dikirim via method POST dengan menyertakan `@csrf` dan spoofing method `@method('DELETE')` -> rute `destroy` memanggil model `delete()` dan me-redirect dengan notifikasi sukses.
+* **Lokasi Kode:**
+  - [courses/index.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/courses/index.blade.php#L76-L82) : Form tombol hapus mata kuliah (`@method('DELETE')` + `confirm`).
+  - [users/index.blade.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/resources/views/users/index.blade.php#L77-L83) : Form tombol hapus pengguna (`@method('DELETE')` + `confirm`).
+  - [CourseController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/CourseController.php#L84-L89) & [UserController.php](file:///d:/Semester%205/Pemweb/Week1/kampuslms-kelompok-02/app/Http/Controllers/UserController.php#L98-L103) : Method `destroy()` yang mengeksekusi penghapusan.
