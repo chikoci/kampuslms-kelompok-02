@@ -840,11 +840,115 @@ textarea.form-control {
     min-width: 150px !important;
 }
 
+/* Pagination Container & Layout */
 .pagination-wrapper {
-    margin-top: 1.5rem !important;
-    margin-bottom: 2rem !important;
+    margin-top: 1.75rem !important;
+    margin-bottom: 2.5rem !important;
+    width: 100% !important;
+}
+
+.pagination-wrapper nav {
+    width: 100% !important;
     display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+    background: transparent !important;
+}
+
+/* Text: Showing 1 to 15 of 34 results */
+.pagination-wrapper p {
+    color: #64748b !important;
+    font-size: 0.875rem !important;
+    margin: 0 !important;
+    font-weight: 500 !important;
+}
+
+.pagination-wrapper p span {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+}
+
+/* Button Group Container */
+.pagination-wrapper nav > div:last-child {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.pagination-wrapper .shadow-sm {
+    display: inline-flex !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+}
+
+/* Individual page items & links */
+.pagination-wrapper a,
+.pagination-wrapper span[aria-disabled="true"] > span,
+.pagination-wrapper span[aria-current="page"] > span {
+    display: inline-flex !important;
+    align-items: center !important;
     justify-content: center !important;
+    min-width: 38px !important;
+    height: 38px !important;
+    padding: 0 0.75rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: #334155 !important;
+    background-color: #ffffff !important;
+    border: none !important;
+    border-right: 1px solid #e2e8f0 !important;
+    text-decoration: none !important;
+    margin: 0 !important;
+    transition: all 0.15s ease !important;
+}
+
+/* Remove right border on the last item */
+.pagination-wrapper .shadow-sm > *:last-child,
+.pagination-wrapper .shadow-sm > *:last-child a,
+.pagination-wrapper .shadow-sm > *:last-child span {
+    border-right: none !important;
+}
+
+/* Hover state for links */
+.pagination-wrapper a:hover {
+    background-color: #f1f5f9 !important;
+    color: #2563eb !important;
+}
+
+/* Active page (current) */
+.pagination-wrapper span[aria-current="page"] > span {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* Disabled state (e.g. disabled prev/next arrow) */
+.pagination-wrapper span[aria-disabled="true"] > span {
+    color: #94a3b8 !important;
+    background-color: #f8fafc !important;
+    cursor: not-allowed !important;
+}
+
+/* SVG Arrows */
+.pagination-wrapper svg {
+    width: 18px !important;
+    height: 18px !important;
+    display: block !important;
+}
+
+/* Mobile fallback buttons (Previous / Next) */
+.pagination-wrapper .sm\:hidden span,
+.pagination-wrapper .sm\:hidden a {
+    border-radius: 6px !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 0.5rem 1rem !important;
+    height: auto !important;
+    background-color: #ffffff !important;
+    color: #334155 !important;
 }
 }
 
