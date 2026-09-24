@@ -168,3 +168,27 @@ Jawab:
   Index biasa hanya mempercepat pencarian, tetapi tetap mengizinkan data ganda. Jika hanya memakai index, dosen (atau sistem karena klik ganda/bug) bisa memasukkan 2 atau 3 nilai berbeda untuk 1 tugas mahasiswa yang sama, sehingga nilai mahasiswa menjadi rancu dan membingungkan sistem rekap IPK.
 * **Keuntungan constraint `unique`:**
   Database menjamin secara mutlak di lapisan paling dasar bahwa satu `submission_id` tidak akan pernah bisa dimasuki baris nilai kedua. Upaya memasukkan nilai ganda akan langsung digagalkan oleh database, bahkan jika ada bug di controller atau ada dua request yang masuk bersamaan (*race condition*).
+
+
+## Break
+**1. Hapus unique(`['course_id','user_id']`) dari `course_user`, lalu daftarkan mahasiswa yang sama dua kali.**
+
+Jawab: Hasilnya adalah mahasiswa yang sama berhasil terdaftar dua kali pada mata kuliah yang sama, karena unique(`['course_id', 'user_id']`) berfungsi memastikan kombinasi `course_id` dan `user_id` tidak boleh sama. Jika constraint tersebut dihapus, database tidak lagi mencegah kombinasi yang sama dimasukkan berulang kali atau data enrollment. Jadi Unique composite diperlukan untuk menjaga agar satu mahasiswa hanya memiliki satu enrollment pada satu mata kuliah.
+
+**2. Tambahkan role ke `$fillable` model User, lalu kirim request pembuatan user dengan `role=admin` lewat form yang tidak punya `field role`.**
+
+Jawab: Hasilnya adalah jika request dikirim dengan `role=admin`, nilai `role` tetap dapat diterima dan disimpan, meskipun form yang terlihat oleh pengguna tidak memiliki `field role`. `$fillable` menentukan atribut yang diperbolehkan untuk `mass assignment`. Ketika role dimasukkan ke dalam `$fillable`, Laravel menganggap role sebagai atribut yang boleh diisi melalui `User::create()` atau `update()`. Field seperti `role` sebaiknya tidak dimasukkan ke `$fillable` jika nilainya tidak boleh ditentukan langsung oleh pengguna.
+
+**3. Ganti seluruh `$fillable` dengan protected `$guarded = [];` lalu ulangi nomor 2.**
+Jawab: Hasilnya adalah Request dengan `role=admin` juga dapat diterima dan disimpan, bahkan seluruh atribut pada model menjadi terbuka untuk `mass assignment`. `$guarded = []` berarti tidak ada atribut yang dilindungi dari `mass assignment`. Akibatnya, semua atribut yang dikirim melalui request dapat diproses oleh `User::create()` atau `update()`. `$fillable` lebih aman karena kita dapat menentukan secara eksplisit field apa saja yang boleh diisi.
+
+**4. Kosongkan isi `down()` di satu migrasi, lalu jalankan `php artisan migrate:refresh`.**
+
+Jawab: Hasilnya adalah Migration dapat gagal saat proses refresh, terutama ketika migration yang `down()` -nya dikosongkan mencoba dibuat kembali. Sebelumnya `public function down(): void
+{
+    Schema::dropIfExists('materials');}`kemudian diubah menjadi `public function down(): void
+{
+}`. Karena `down()` kosong, tabel materials tidak dihapus saat rollback.
+
+**5. Ubah `restrictOnDelete` pada `lecturer_id` menjadi `cascadeOnDelete`, lalu hapus satu dosen.**
+Jawab:Hasilnya adalah ketika dosen dihapus, mata kuliah yang menggunakan dosen tersebut juga otomatis terhapus. Untuk data mata kuliah, `restrictOnDelete()` lebih aman karena mencegah penghapusan dosen jika masih digunakan oleh mata kuliah, sehingga data course tidak hilang secara tidak sengaja
