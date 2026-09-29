@@ -48,7 +48,11 @@ class CourseController extends Controller
     {
         Course::create($request->validated());
 
-        return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil ditambahkan.');
+        $courses = Course::with('lecturer')
+            ->latest()
+            ->paginate(15);
+
+        return view('courses.index', compact('courses'));
     }
 
     /**

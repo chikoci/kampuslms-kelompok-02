@@ -118,3 +118,12 @@ cookie session yang ditemukan bernama:
 
 - `laravel_session`: Cookie yang digunakan Laravel untuk menyimpan ID sesi pengguna secara terenkripsi, sehingga server dapat mengenali session pengguna antar-request atau ketika berpindah halaman. Contoh nilai yang terlihat saat diuji di DevTools adalah `eyJpdi....`
 - `XSRF-TOKEN (tambahan)`: Cookie yang menyimpan token CSRF untuk membantu melindungi aplikasi dari request yang tidak sah, terutama pada form yang menggunakan method POST.
+
+## 2. BREAK
+
+
+### 1. Hapus @csrf dari Form
+Hasil percobaan sesuai dengan prediksi, yaitu muncul Error 419 (Page Expired) setelah @csrf dihapus dari form. Error terjadi karena request POST tidak lagi membawa token CSRF yang dibutuhkan Laravel untuk memverifikasi bahwa request berasal dari form yang sah. Akibatnya, Laravel menolak request tersebut sebelum proses penyimpanan data dilakukan. Percobaan ini menunjukkan bahwa @csrf penting untuk melindungi form dari request yang tidak sah atau serangan CSRF.
+
+### 6.
+Percobaan menunjukkan bahwa penggunaan return view() membuat browser tetap berada pada hasil request POST. Hal ini menyebabkan ketika halaman di-refresh, browser meminta konfirmasi untuk mengirim ulang data formulir. Data tidak menjadi ganda pada percobaan ini karena validasi unique berhasil mencegah kode mata kuliah yang sama disimpan kembali. Namun, kondisi ini tetap menunjukkan bahwa POST langsung ke view dapat menyebabkan pengiriman ulang request, sehingga pola PRG digunakan untuk mengarahkan pengguna ke request GET setelah data berhasil disimpan. 
