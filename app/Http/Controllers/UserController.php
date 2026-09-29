@@ -71,6 +71,14 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        if (auth()->check()) {
+            abort_unless(
+                auth()->user()->role === 'admin' || $user->id === auth()->id(),
+                403,
+                'Akses ditolak: Anda tidak memiliki izin untuk mengedit data pengguna lain.'
+            );
+        }
+
         return view('users.edit', compact('user'));
     }
 
@@ -79,6 +87,14 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        if (auth()->check()) {
+            abort_unless(
+                auth()->user()->role === 'admin' || $user->id === auth()->id(),
+                403,
+                'Akses ditolak: Anda tidak memiliki izin untuk memperbarui data pengguna lain.'
+            );
+        }
+
         $validated = $request->validated();
 
         $user->name = $validated['name'];
@@ -101,6 +117,14 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if (auth()->check()) {
+            abort_unless(
+                auth()->user()->role === 'admin',
+                403,
+                'Akses ditolak: Hanya Admin yang diizinkan menghapus pengguna.'
+            );
+        }
+
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
