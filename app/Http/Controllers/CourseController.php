@@ -66,6 +66,14 @@ class CourseController extends Controller
      */
     public function edit(Course $course)
     {
+        if (auth()->check()) {
+            abort_unless(
+                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
+                403,
+                'Akses ditolak: Anda tidak memiliki izin untuk mengedit mata kuliah ini.'
+            );
+        }
+
         $lecturers = User::where('role', 'dosen')->orderBy('name')->get();
 
         return view('courses.edit', compact('course', 'lecturers'));
@@ -76,6 +84,14 @@ class CourseController extends Controller
      */
     public function update(UpdateCourseRequest $request, Course $course)
     {
+        if (auth()->check()) {
+            abort_unless(
+                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
+                403,
+                'Akses ditolak: Anda tidak memiliki izin untuk memperbarui mata kuliah ini.'
+            );
+        }
+
         $course->update($request->validated());
 
         return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil diperbarui.');
@@ -86,6 +102,14 @@ class CourseController extends Controller
      */
     public function destroy(Course $course)
     {
+        if (auth()->check()) {
+            abort_unless(
+                auth()->user()->role === 'admin',
+                403,
+                'Akses ditolak: Hanya Admin yang diizinkan menghapus mata kuliah.'
+            );
+        }
+
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil dihapus.');
