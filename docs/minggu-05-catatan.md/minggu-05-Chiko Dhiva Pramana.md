@@ -5,7 +5,7 @@
 
 ---
 
-## 5.3 Bagian READ: Peta Route Sendiri & Titik Rawan IDOR
+## Bagian READ:
 
 Pada tahap ini, saya memeriksa peta rute yang saat ini sudah terdaftar di aplikasi KampusLMS kelompok kami dengan menjalankan perintah `php artisan route:list --except-vendor`. 
 
@@ -102,3 +102,7 @@ Dari penelusuran ini, saya memahami bahwa **Route Model Binding otomatis mengamb
 Tanpa adanya middleware grup peran dan pengecekan kepemilikan di controller, aplikasi sangat rentan terhadap serangan IDOR karena pengguna hanya perlu mengganti angka ID pada URL untuk memanipulasi data orang lain. 
 
 Temuan ini menjadi dasar kebutuhan perbaikan yang akan kami kerjakan di tahap BUILD (memasang middleware dan route group) serta tahap BREAK (menguji pembuktian kerusakannya).
+
+## Bagian BREAK:
+
+1. Prediksi: 

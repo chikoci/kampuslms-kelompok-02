@@ -77,9 +77,9 @@
                             <td class="font-semibold text-body">{{ $material->title }}</td>
                             <td class="text-muted">{{ $material->description ?? '-' }}</td>
                             <td>
-                                <span class="badge badge-file">
-                                    {{ $material->original_name ?? 'PDF' }}
-                                </span>
+                                <a href="{{ route('materials.download', $material) }}" class="badge badge-file" style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Klik untuk mengunduh berkas">
+                                    &#128190; {{ $material->original_name ?? 'Unduh Berkas' }}
+                                </a>
                             </td>
                         </tr>
                     @empty
@@ -113,7 +113,11 @@
                 <tbody>
                     @forelse ($course->assignments as $assignment)
                         <tr>
-                            <td class="font-semibold text-body">{{ $assignment->title }}</td>
+                            <td class="font-semibold text-body">
+                                <a href="{{ route('assignments.show', $assignment) }}" style="color: #2563eb; text-decoration: none; font-weight: 600;">
+                                    {{ $assignment->title }} &rarr;
+                                </a>
+                            </td>
                             <td class="text-body">
                                 {{ $assignment->due_at?->format('d M Y, H:i') ?? '-' }}
                                 @if ($assignment->due_at?->isPast())
@@ -128,7 +132,9 @@
                                 </span>
                             </td>
                             <td class="text-right font-semibold text-body">
-                                {{ $assignment->submissions()->count() }} Pengumpulan
+                                <a href="{{ route('assignments.submissions.index', $assignment) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">
+                                    {{ $assignment->submissions()->count() }} Pengumpulan &rarr;
+                                </a>
                             </td>
                         </tr>
                     @empty
