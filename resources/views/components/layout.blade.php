@@ -50,7 +50,7 @@
         @endif
 
         {{-- Flash message validasi error --}}
-        @if ($errors->any())
+        @if (isset($errors) && $errors->any())
             <div class="alert alert-danger">
                 <div>
                     <p class="alert-title">Terjadi kesalahan pengisian formulir:</p>
