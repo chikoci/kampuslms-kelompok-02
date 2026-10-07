@@ -22,6 +22,7 @@ class Grade extends Model
         'score',
         'feedback',
         'graded_at',
+        'graded_by',
     ];
 
     /**
