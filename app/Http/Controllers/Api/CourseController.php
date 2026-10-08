@@ -23,9 +23,9 @@ class CourseController extends Controller
         $user = $request->user();
         $query = Course::with('lecturer')->withCount(['materials', 'assignments', 'students']);
 
-        if ($user->role === 'dosen') {
+        if ($user?->role === 'dosen') {
             $query->where('lecturer_id', $user->id);
-        } elseif ($user->role === 'mahasiswa') {
+        } elseif ($user?->role === 'mahasiswa') {
             $query->whereHas('students', fn ($q) => $q->where('user_id', $user->id));
         }
 
