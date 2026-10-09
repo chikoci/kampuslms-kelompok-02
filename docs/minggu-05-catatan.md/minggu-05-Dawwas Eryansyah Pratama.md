@@ -8,8 +8,6 @@
 
 ## 1. READ
 
-### 
-
 ### 1. Jalankan php artisan route:list --except-vendor. Salin keluarannya ke catatan.
 
 (base) PS D:\PROWEB\kampuslms-kelompok-02> php artisan route:list --except-vendor
