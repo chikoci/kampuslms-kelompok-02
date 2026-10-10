@@ -6,14 +6,18 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
     /**
      * Menampilkan daftar seluruh pengguna.
+     * Hanya Admin yang berhak mengakses direktori pengguna.
      */
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', User::class);
+
         $users = User::query()
             ->when($request->filled('q'), fn ($query) =>
                 $query->where(function ($q) use ($request) {
@@ -35,21 +39,21 @@ class UserController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', User::class);
+
         return view('users.create');
     }
 
     /**
      * Menyimpan data pengguna baru ke database.
-     * PENTING: Kolom 'role' TIDAK ada di $fillable dan diisi secara eksplisit.
      */
     public function store(StoreUserRequest $request)
     {
+        Gate::authorize('create', User::class);
+
         $validated = $request->validated();
 
-        // Mengisi atribut aman yang ada di $fillable (name, email, password, nim_nip)
         $user = new User($validated);
-
-        // Penugasan eksplisit untuk role (role dikeluarkan dari $fillable demi keamanan)
         $user->role = $validated['role'];
         $user->save();
 
@@ -57,10 +61,12 @@ class UserController extends Controller
     }
 
     /**
-     * Menampilkan detail satu pengguna beserta relasi terkaitnya.
+     * Menampilkan detail satu pengguna.
      */
     public function show(User $user)
     {
+        Gate::authorize('view', $user);
+
         $user->load(['taughtCourses', 'courses']);
 
         return view('users.show', compact('user'));
@@ -71,29 +77,18 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $user->id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki izin untuk mengedit data pengguna lain.'
-            );
-        }
+        Gate::authorize('update', $user);
 
         return view('users.edit', compact('user'));
     }
 
     /**
      * Memperbarui data pengguna di database.
+     * Pencegahan Privilege Escalation: Kolom role hanya diperbarui jika lolos policy updateRole.
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $user->id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki izin untuk memperbarui data pengguna lain.'
-            );
-        }
+        Gate::authorize('update', $user);
 
         $validated = $request->validated();
 
@@ -101,12 +96,14 @@ class UserController extends Controller
         $user->email = $validated['email'];
         $user->nim_nip = $validated['nim_nip'] ?? null;
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $user->password = $validated['password'];
         }
 
-        // Penugasan eksplisit untuk role
-        $user->role = $validated['role'];
+        if (! empty($validated['role']) && Gate::allows('updateRole', $user)) {
+            $user->role = $validated['role'];
+        }
+
         $user->save();
 
         return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui.');
@@ -117,13 +114,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin',
-                403,
-                'Akses ditolak: Hanya Admin yang diizinkan menghapus pengguna.'
-            );
-        }
+        Gate::authorize('delete', $user);
 
         $user->delete();
 

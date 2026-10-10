@@ -7,23 +7,36 @@ use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CourseController extends Controller
 {
     /**
-     * Menampilkan daftar seluruh mata kuliah dari database.
+     * Menampilkan daftar mata kuliah dengan penyaringan di level query.
+     * Mahasiswa hanya melihat mata kuliah yang diikutinya.
+     * Dosen hanya melihat mata kuliah yang diampunya.
+     * Admin melihat seluruh mata kuliah.
      */
     public function index(Request $request)
     {
-        $courses = Course::query()
+        $user = auth()->user();
+
+        $query = match ($user?->role) {
+            'admin'     => Course::query(),
+            'dosen'     => $user->taughtCourses(),
+            'mahasiswa' => $user->courses(),
+            default     => Course::where('status', 'active'),
+        };
+
+        $courses = $query
             ->with('lecturer')
-            ->when($request->filled('q'), fn ($query) =>
-                $query->where(function ($q) use ($request) {
-                    $q->where('name', 'like', '%' . $request->q . '%')
-                      ->orWhere('code', 'like', '%' . $request->q . '%');
-                }))
-            ->when($request->filled('status'), fn ($query) =>
-                $query->where('status', $request->status))
+            ->when($request->filled('q'), fn ($q) =>
+                $q->where(fn ($sub) =>
+                    $sub->where('name', 'like', '%' . $request->q . '%')
+                        ->orWhere('code', 'like', '%' . $request->q . '%')
+                ))
+            ->when($request->filled('status'), fn ($q) =>
+                $q->where('status', $request->status))
             ->latest()
             ->paginate(15)
             ->withQueryString();
@@ -36,6 +49,8 @@ class CourseController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Course::class);
+
         $lecturers = User::where('role', 'dosen')->orderBy('name')->get();
 
         return view('courses.create', compact('lecturers'));
@@ -46,16 +61,20 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request)
     {
+        Gate::authorize('create', Course::class);
+
         Course::create($request->validated());
 
         return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil ditambahkan.');
     }
 
     /**
-     * Menampilkan detail satu mata kuliah beserta dosen, materi, dan tugasnya.
+     * Menampilkan detail satu mata kuliah beserta relasinya.
      */
     public function show(Course $course)
     {
+        Gate::authorize('view', $course);
+
         $course->load(['lecturer', 'materials', 'assignments']);
 
         return view('courses.show', compact('course'));
@@ -66,13 +85,7 @@ class CourseController extends Controller
      */
     public function edit(Course $course)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki izin untuk mengedit mata kuliah ini.'
-            );
-        }
+        Gate::authorize('update', $course);
 
         $lecturers = User::where('role', 'dosen')->orderBy('name')->get();
 
@@ -84,13 +97,7 @@ class CourseController extends Controller
      */
     public function update(UpdateCourseRequest $request, Course $course)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki izin untuk memperbarui mata kuliah ini.'
-            );
-        }
+        Gate::authorize('update', $course);
 
         $course->update($request->validated());
 
@@ -102,13 +109,7 @@ class CourseController extends Controller
      */
     public function destroy(Course $course)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin',
-                403,
-                'Akses ditolak: Hanya Admin yang diizinkan menghapus mata kuliah.'
-            );
-        }
+        Gate::authorize('delete', $course);
 
         $course->delete();
 

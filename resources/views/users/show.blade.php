@@ -5,16 +5,20 @@
             &larr; Kembali ke Daftar
         </a>
         <div class="header-actions-group">
-            <a href="{{ route('users.edit', $user) }}" class="btn btn-edit btn-sm">
-                Edit Pengguna
-            </a>
-            <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun pengguna ini?');" class="inline-form">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm">
-                    Hapus
-                </button>
-            </form>
+            @can('update', $user)
+                <a href="{{ route('users.edit', $user) }}" class="btn btn-edit btn-sm">
+                    Edit Pengguna
+                </a>
+            @endcan
+            @can('delete', $user)
+                <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun pengguna ini?');" class="inline-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Hapus
+                    </button>
+                </form>
+            @endcan
         </div>
     </div>
 
