@@ -12,8 +12,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // TODO: Minggu 7 diganti dengan pengecekan otorisasi Policy sungguhan
-        return true;
+        return $this->user()?->can('update', $this->route('user')) ?? false;
     }
 
     /**

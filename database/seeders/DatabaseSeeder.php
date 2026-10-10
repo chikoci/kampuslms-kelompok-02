@@ -82,11 +82,13 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5. Pendaftaran Mahasiswa ke Mata Kuliah (tiap MK >= 15 mahasiswa terdaftar)
-        foreach ($courses as $course) {
-            // Mahasiswa demo selalu didaftarkan ke seluruh mata kuliah
-            $enrolledStudentIds = collect([$demoStudent->id]);
+        foreach ($courses as $index => $course) {
+            // Mahasiswa demo didaftarkan ke Course 1 s.d. 4 (index 0 - 3),
+            // dan sengaja tidak didaftarkan ke Course 5 (index 4) untuk memvalidasi
+            // CoursePolicy bahwa mahasiswa dilarang melihat MK yang tidak diikutinya (HTTP 403)
+            $enrolledStudentIds = ($index < 4) ? collect([$demoStudent->id]) : collect();
 
-            // Ambil 18 - 22 mahasiswa acak lainnya untuk di-enroll
+            // Ambil 18 - 22 mahasiswa acak lainnya untuk di-enroll (memenuhi ketentuan dosen: tiap MK >= 15 mahasiswa)
             $randomOthers = $otherStudents->random(rand(18, 22))->pluck('id');
             $allStudentIdsToEnroll = $enrolledStudentIds->merge($randomOthers)->unique();
 

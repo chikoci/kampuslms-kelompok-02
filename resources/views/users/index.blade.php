@@ -6,9 +6,11 @@
             <h1 class="page-title">Manajemen Pengguna</h1>
             <p class="page-subtitle">Daftar akun administrator, dosen, dan mahasiswa di KampusLMS</p>
         </div>
-        <a href="{{ route('users.create') }}" class="btn btn-primary">
-            + Tambah Pengguna Baru
-        </a>
+        @can('create', App\Models\User::class)
+            <a href="{{ route('users.create') }}" class="btn btn-primary">
+                + Tambah Pengguna Baru
+            </a>
+        @endcan
     </div>
 
     {{-- Form Pencarian & Filter Peran (Role) --}}
@@ -66,16 +68,20 @@
                                 <a href="{{ route('users.show', $user) }}" class="btn btn-secondary btn-sm">
                                     Detail
                                 </a>
-                                <a href="{{ route('users.edit', $user) }}" class="btn btn-edit btn-sm">
-                                    Edit
-                                </a>
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $user->name }}?');" class="inline-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        Hapus
-                                    </button>
-                                </form>
+                                @can('update', $user)
+                                    <a href="{{ route('users.edit', $user) }}" class="btn btn-edit btn-sm">
+                                        Edit
+                                    </a>
+                                @endcan
+                                @can('delete', $user)
+                                    <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $user->name }}?');" class="inline-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>
