@@ -19,7 +19,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     // 1. Rute Publik (Autentikasi Login dengan throttle 5 permintaan per menit)
-    Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login');
+    // Berikan nama unik 'api.v1.login' agar tidak menimpa rute web 'login' (/login)
+    // yang digunakan oleh controller untuk redirect pengguna browser.
+    Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('api.v1.login');
 
     // 2. Rute Terlindungi Sanctum (Throttle 60 permintaan per menit)
     Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
