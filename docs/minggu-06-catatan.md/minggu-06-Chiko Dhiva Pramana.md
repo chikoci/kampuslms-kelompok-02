@@ -417,7 +417,7 @@ Mengembalikan model database langsung via `response()->json($user)` sangat berba
 **Langkah Peragaan:**
 1. Tambahkan rute uji coba sementara di `routes/api.php`:
    ```php
-   Route::get('/v1/test-bocor', fn () => response()->json(\App\Models\User::first()));
+   Route::get('/test-bocor', fn () => response()->json(\App\Models\User::first()));
    ```
 2. Jalankan perintah curl di terminal:
    ```bash
