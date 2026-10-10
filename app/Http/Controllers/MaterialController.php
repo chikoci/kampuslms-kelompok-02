@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Material;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class MaterialController extends Controller
 {
     /**
-     * Menampilkan daftar materi perkuliahan.
+     * Menampilkan daftar materi perkuliahan dalam satu mata kuliah.
      */
     public function index(Course $course)
     {
+        Gate::authorize('view', $course);
+
         $materials = $course->materials()->latest()->paginate(10);
 
         return view('materials.index', compact('course', 'materials'));
@@ -24,13 +27,7 @@ class MaterialController extends Controller
      */
     public function create(Course $course)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda bukan dosen pengampu mata kuliah ini.'
-            );
-        }
+        Gate::authorize('create', [Material::class, $course]);
 
         return view('materials.create', compact('course'));
     }
@@ -40,13 +37,7 @@ class MaterialController extends Controller
      */
     public function store(Request $request, Course $course)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda bukan dosen pengampu mata kuliah ini.'
-            );
-        }
+        Gate::authorize('create', [Material::class, $course]);
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -63,10 +54,12 @@ class MaterialController extends Controller
     }
 
     /**
-     * Menampilkan detail satu materi (shallow route).
+     * Menampilkan detail satu materi.
      */
     public function show(Material $material)
     {
+        Gate::authorize('view', $material);
+
         return view('materials.show', compact('material'));
     }
 
@@ -75,13 +68,7 @@ class MaterialController extends Controller
      */
     public function edit(Material $material)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $material->course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki hak untuk mengedit materi ini.'
-            );
-        }
+        Gate::authorize('update', $material);
 
         return view('materials.edit', compact('material'));
     }
@@ -91,13 +78,7 @@ class MaterialController extends Controller
      */
     public function update(Request $request, Material $material)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $material->course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki hak untuk memperbarui materi ini.'
-            );
-        }
+        Gate::authorize('update', $material);
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -114,13 +95,7 @@ class MaterialController extends Controller
      */
     public function destroy(Material $material)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $material->course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki hak untuk menghapus materi ini.'
-            );
-        }
+        Gate::authorize('delete', $material);
 
         $course = $material->course;
         $material->delete();
@@ -129,17 +104,13 @@ class MaterialController extends Controller
     }
 
     /**
-     * Mengunduh berkas materi (dengan proteksi IDOR).
+     * Mengunduh berkas materi (dengan otorisasi Policy).
      */
     public function download(Material $material)
     {
-        if (auth()->check() && auth()->user()->role === 'mahasiswa') {
-            // Mahasiswa hanya boleh unduh jika terdaftar di kelas ini
-            $isEnrolled = $material->course->students()->where('user_id', auth()->id())->exists();
-            abort_unless($isEnrolled, 403, 'Akses ditolak: Anda tidak terdaftar pada mata kuliah ini.');
-        }
+        Gate::authorize('download', $material);
 
-        if (! Storage::exists($material->file_path)) {
+        if (! $material->file_path || ! Storage::exists($material->file_path)) {
             return back()->with('error', 'Berkas materi tidak ditemukan pada penyimpanan server.');
         }
 

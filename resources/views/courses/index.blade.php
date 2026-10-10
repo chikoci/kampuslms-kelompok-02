@@ -6,9 +6,11 @@
             <h1 class="page-title">Mata Kuliah</h1>
             <p class="page-subtitle">Kelola seluruh mata kuliah akademik yang terdaftar di database</p>
         </div>
-        <a href="{{ route('courses.create') }}" class="btn btn-primary">
-            + Tambah Mata Kuliah
-        </a>
+        @can('create', App\Models\Course::class)
+            <a href="{{ route('courses.create') }}" class="btn btn-primary">
+                + Tambah Mata Kuliah
+            </a>
+        @endcan
     </div>
 
     {{-- Form Pencarian & Filter Status --}}
@@ -70,16 +72,20 @@
                                 <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary btn-sm">
                                     Detail
                                 </a>
-                                <a href="{{ route('courses.edit', $course) }}" class="btn btn-edit btn-sm">
-                                    Edit
-                                </a>
-                                <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" class="inline-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        Hapus
-                                    </button>
-                                </form>
+                                @can('update', $course)
+                                    <a href="{{ route('courses.edit', $course) }}" class="btn btn-edit btn-sm">
+                                        Edit
+                                    </a>
+                                @endcan
+                                @can('delete', $course)
+                                    <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" class="inline-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>
