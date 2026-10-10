@@ -6,16 +6,20 @@
             &larr; Kembali ke Daftar
         </a>
         <div class="header-actions-group">
-            <a href="{{ route('courses.edit', $course) }}" class="btn btn-edit btn-sm">
-                Edit Mata Kuliah
-            </a>
-            <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini beserta seluruh materi dan tugasnya?');" class="inline-form">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm">
-                    Hapus
-                </button>
-            </form>
+            @can('update', $course)
+                <a href="{{ route('courses.edit', $course) }}" class="btn btn-edit btn-sm">
+                    Edit Mata Kuliah
+                </a>
+            @endcan
+            @can('delete', $course)
+                <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini beserta seluruh materi dan tugasnya?');" class="inline-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Hapus
+                    </button>
+                </form>
+            @endcan
         </div>
     </div>
 
@@ -58,9 +62,16 @@
 
     {{-- Tabel Materi Perkuliahan --}}
     <div class="section-block">
-        <div class="section-header">
-            <h2 class="section-title">Materi Perkuliahan</h2>
-            <span class="section-counter">Total: {{ $course->materials->count() }} Berkas</span>
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 class="section-title">Materi Perkuliahan</h2>
+                <span class="section-counter">Total: {{ $course->materials->count() }} Berkas</span>
+            </div>
+            @can('create', [\App\Models\Material::class, $course])
+                <a href="{{ route('courses.materials.create', $course) }}" class="btn btn-primary btn-sm">
+                    + Tambah Materi
+                </a>
+            @endcan
         </div>
         <div class="table-container">
             <table class="data-table">
@@ -69,6 +80,7 @@
                         <th class="col-title-wide">Judul Materi</th>
                         <th>Keterangan</th>
                         <th class="col-file-badge">Berkas</th>
+                        <th class="col-actions">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -81,10 +93,26 @@
                                     &#128190; {{ $material->original_name ?? 'Unduh Berkas' }}
                                 </a>
                             </td>
+                            <td class="action-buttons-cell">
+                                <div class="action-buttons-group">
+                                    @can('update', $material)
+                                        <a href="{{ route('materials.edit', $material) }}" class="btn btn-edit btn-sm">
+                                            Edit
+                                        </a>
+                                    @endcan
+                                    @can('delete', $material)
+                                        <form action="{{ route('materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Hapus materi ini?');" class="inline-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        </form>
+                                    @endcan
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="empty-cell-sm">
+                            <td colspan="4" class="empty-cell-sm">
                                 Belum ada materi perkuliahan untuk mata kuliah ini.
                             </td>
                         </tr>
@@ -96,9 +124,16 @@
 
     {{-- Tabel Tugas Akademik --}}
     <div>
-        <div class="section-header">
-            <h2 class="section-title">Tugas Akademik</h2>
-            <span class="section-counter">Total: {{ $course->assignments->count() }} Tugas</span>
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 class="section-title">Tugas Akademik</h2>
+                <span class="section-counter">Total: {{ $course->assignments->count() }} Tugas</span>
+            </div>
+            @can('create', [\App\Models\Assignment::class, $course])
+                <a href="{{ route('courses.assignments.create', $course) }}" class="btn btn-primary btn-sm">
+                    + Tambah Tugas
+                </a>
+            @endcan
         </div>
         <div class="table-container">
             <table class="data-table">

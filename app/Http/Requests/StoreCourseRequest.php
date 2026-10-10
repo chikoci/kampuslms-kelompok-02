@@ -11,8 +11,7 @@ class StoreCourseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // TODO: Minggu 7 diganti dengan pengecekan otorisasi Policy sungguhan
-        return true;
+        return $this->user()?->can('create', \App\Models\Course::class) ?? false;
     }
 
     /**
