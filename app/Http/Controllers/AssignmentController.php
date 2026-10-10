@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentController extends Controller
 {
@@ -13,6 +14,8 @@ class AssignmentController extends Controller
      */
     public function index(Course $course)
     {
+        Gate::authorize('view', $course);
+
         $assignments = $course->assignments()->latest()->paginate(10);
 
         return view('assignments.index', compact('course', 'assignments'));
@@ -23,14 +26,7 @@ class AssignmentController extends Controller
      */
     public function create(Course $course)
     {
-        // Proteksi IDOR: Hanya Admin atau Dosen pengampu yang boleh menambah tugas
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda bukan dosen pengampu mata kuliah ini.'
-            );
-        }
+        Gate::authorize('create', [Assignment::class, $course]);
 
         return view('assignments.create', compact('course'));
     }
@@ -40,21 +36,15 @@ class AssignmentController extends Controller
      */
     public function store(Request $request, Course $course)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda bukan dosen pengampu mata kuliah ini.'
-            );
-        }
+        Gate::authorize('create', [Assignment::class, $course]);
 
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title'        => ['required', 'string', 'max:255'],
             'instructions' => ['nullable', 'string'],
-            'due_at' => ['required', 'date'],
-            'max_score' => ['required', 'integer', 'between:1,100'],
-            'allow_late' => ['boolean'],
-            'status' => ['required', 'in:draft,published,closed'],
+            'due_at'       => ['required', 'date'],
+            'max_score'    => ['required', 'integer', 'between:1,100'],
+            'allow_late'   => ['boolean'],
+            'status'       => ['required', 'in:draft,published,closed'],
         ]);
 
         $validated['created_by'] = auth()->id() ?? $course->lecturer_id;
@@ -68,7 +58,9 @@ class AssignmentController extends Controller
      */
     public function show(Assignment $assignment)
     {
-        $assignment->load(['course', 'submissions.student']);
+        Gate::authorize('view', $assignment);
+
+        $assignment->load(['course', 'submissions.student', 'submissions.grade']);
 
         return view('assignments.show', compact('assignment'));
     }
@@ -78,14 +70,7 @@ class AssignmentController extends Controller
      */
     public function edit(Assignment $assignment)
     {
-        // Proteksi IDOR: Hanya Admin atau Dosen pengampu yang boleh mengedit tugas
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $assignment->course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki hak untuk mengedit tugas ini.'
-            );
-        }
+        Gate::authorize('update', $assignment);
 
         return view('assignments.edit', compact('assignment'));
     }
@@ -95,21 +80,15 @@ class AssignmentController extends Controller
      */
     public function update(Request $request, Assignment $assignment)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $assignment->course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki hak untuk memperbarui tugas ini.'
-            );
-        }
+        Gate::authorize('update', $assignment);
 
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+            'title'        => ['required', 'string', 'max:255'],
             'instructions' => ['nullable', 'string'],
-            'due_at' => ['required', 'date'],
-            'max_score' => ['required', 'integer', 'between:1,100'],
-            'allow_late' => ['boolean'],
-            'status' => ['required', 'in:draft,published,closed'],
+            'due_at'       => ['required', 'date'],
+            'max_score'    => ['required', 'integer', 'between:1,100'],
+            'allow_late'   => ['boolean'],
+            'status'       => ['required', 'in:draft,published,closed'],
         ]);
 
         $assignment->update($validated);
@@ -122,13 +101,7 @@ class AssignmentController extends Controller
      */
     public function destroy(Assignment $assignment)
     {
-        if (auth()->check()) {
-            abort_unless(
-                auth()->user()->role === 'admin' || $assignment->course->lecturer_id === auth()->id(),
-                403,
-                'Akses ditolak: Anda tidak memiliki hak untuk menghapus tugas ini.'
-            );
-        }
+        Gate::authorize('delete', $assignment);
 
         $course = $assignment->course;
         $assignment->delete();
