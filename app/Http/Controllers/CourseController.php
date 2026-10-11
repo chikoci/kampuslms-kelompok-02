@@ -75,7 +75,7 @@ class CourseController extends Controller
     {
         Gate::authorize('view', $course);
 
-        $course->load(['lecturer', 'materials', 'assignments']);
+        $course->load(['lecturer', 'materials', 'assignments.submissions']);
 
         return view('courses.show', compact('course'));
     }
@@ -99,7 +99,12 @@ class CourseController extends Controller
     {
         Gate::authorize('update', $course);
 
-        $course->update($request->validated());
+        $data = $request->validated();
+        if (auth()->user()?->role !== 'admin') {
+            $data['lecturer_id'] = $course->lecturer_id;
+        }
+
+        $course->update($data);
 
         return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil diperbarui.');
     }

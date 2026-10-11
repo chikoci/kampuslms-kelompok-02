@@ -39,21 +39,32 @@ class SubmissionController extends Controller
     {
         Gate::authorize('create', [Submission::class, $assignment]);
 
+        $file = $request->file('file');
+
+        if (! $file || $file->getError() === UPLOAD_ERR_NO_FILE) {
+            return back()->withErrors(['file' => 'Silakan pilih berkas tugas yang ingin dikumpulkan terlebih dahulu.'])->withInput();
+        }
+
+        if ($file->getError() === UPLOAD_ERR_INI_SIZE || $file->getError() === UPLOAD_ERR_FORM_SIZE) {
+            return back()->withErrors(['file' => 'Ukuran berkas melebihi batas maksimal server (25MB).'])->withInput();
+        }
+
+        if (! $file->isValid()) {
+            return back()->withErrors(['file' => 'Terjadi kesalahan saat mengunggah berkas. Silakan coba lagi.'])->withInput();
+        }
+
         $validated = $request->validate([
             'note' => ['nullable', 'string'],
-            'file' => ['nullable', 'file', 'max:10240'], // max 10MB
+            'file' => ['required', 'file', 'max:10240'], // max 10MB
+        ], [
+            'file.required' => 'Silakan pilih berkas tugas yang ingin dikumpulkan terlebih dahulu.',
+            'file.max'      => 'Ukuran berkas tugas tidak boleh melebihi 10MB.',
+            'file.file'     => 'Berkas yang diunggah harus berupa file yang valid.',
         ]);
 
-        $filePath = null;
-        $originalName = null;
-        $fileSize = null;
-
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $filePath = $file->store('submissions');
-            $originalName = $file->getClientOriginalName();
-            $fileSize = $file->getSize();
-        }
+        $filePath = $file->store('submissions');
+        $originalName = $file->getClientOriginalName();
+        $fileSize = $file->getSize();
 
         $isLate = now()->greaterThan($assignment->due_at);
 

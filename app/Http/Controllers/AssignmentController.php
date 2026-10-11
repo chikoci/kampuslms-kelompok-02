@@ -48,6 +48,7 @@ class AssignmentController extends Controller
         ]);
 
         $validated['created_by'] = auth()->id() ?? $course->lecturer_id;
+        $validated['instructions'] = $validated['instructions'] ?? '';
         $course->assignments()->create($validated);
 
         return redirect()->route('courses.show', $course)->with('success', 'Tugas perkuliahan berhasil dibuat.');
@@ -91,6 +92,7 @@ class AssignmentController extends Controller
             'status'       => ['required', 'in:draft,published,closed'],
         ]);
 
+        $validated['instructions'] = $validated['instructions'] ?? '';
         $assignment->update($validated);
 
         return redirect()->route('assignments.show', $assignment)->with('success', 'Data tugas berhasil diperbarui.');

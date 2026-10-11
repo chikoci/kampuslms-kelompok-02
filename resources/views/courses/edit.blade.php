@@ -59,17 +59,23 @@
 
             <div class="form-group">
                 <label for="lecturer_id" class="form-label">Dosen Pengampu</label>
-                <select name="lecturer_id" id="lecturer_id" class="form-select @error('lecturer_id') is-invalid @enderror" required>
-                    <option value="">-- Pilih Dosen Pengampu --</option>
-                    @foreach ($lecturers as $lecturer)
-                        <option value="{{ $lecturer->id }}" {{ old('lecturer_id', $course->lecturer_id) == $lecturer->id ? 'selected' : '' }}>
-                            {{ $lecturer->name }} ({{ $lecturer->nim_nip ?? 'NIP Belum Ada' }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('lecturer_id')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
+                @if (auth()->user()?->role === 'admin')
+                    <select name="lecturer_id" id="lecturer_id" class="form-select @error('lecturer_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Dosen Pengampu --</option>
+                        @foreach ($lecturers as $lecturer)
+                            <option value="{{ $lecturer->id }}" {{ old('lecturer_id', $course->lecturer_id) == $lecturer->id ? 'selected' : '' }}>
+                                {{ $lecturer->name }} ({{ $lecturer->nim_nip ?? 'NIP Belum Ada' }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('lecturer_id')
+                        <p class="form-error">{{ $message }}</p>
+                    @enderror
+                @else
+                    <input type="text" class="form-control" value="{{ $course->lecturer?->name }} ({{ $course->lecturer?->nim_nip ?? 'NIP Belum Ada' }})" disabled readonly style="background-color: #f3f4f6; color: #4b5563; cursor: not-allowed;">
+                    <input type="hidden" name="lecturer_id" value="{{ $course->lecturer_id }}">
+                    <p class="form-hint" style="color: #6b7280; font-size: 0.8125rem; margin-top: 0.35rem;">* Hanya Administrator yang berwenang memindahkan atau mengganti Dosen Pengampu mata kuliah.</p>
+                @endif
             </div>
 
             <div class="form-actions">

@@ -7,7 +7,7 @@
             <p class="page-subtitle">Daftar akun administrator, dosen, dan mahasiswa di KampusLMS</p>
         </div>
         @can('create', App\Models\User::class)
-            <a href="{{ route('users.create') }}" class="btn btn-primary">
+            <a href="{{ route('register') }}" class="btn btn-primary">
                 + Tambah Pengguna Baru
             </a>
         @endcan

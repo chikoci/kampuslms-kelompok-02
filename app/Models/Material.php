@@ -27,6 +27,7 @@ class Material extends Model
         'file_size',
         'mime_type',
         'external_url',
+        'uploaded_by',
     ];
 
     /**
