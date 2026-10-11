@@ -42,6 +42,10 @@ class SubmissionController extends Controller
         $validated = $request->validate([
             'note' => ['nullable', 'string'],
             'file' => ['nullable', 'file', 'max:10240'], // max 10MB
+        ], [
+            'file.uploaded' => 'Berkas gagal diunggah. Pastikan ukuran berkas tidak melebihi batas maksimal server.',
+            'file.max'      => 'Ukuran berkas tugas tidak boleh melebihi 10MB.',
+            'file.file'     => 'Berkas yang diunggah harus berupa file yang valid.',
         ]);
 
         $filePath = null;
