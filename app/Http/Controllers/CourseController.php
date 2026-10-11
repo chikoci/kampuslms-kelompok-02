@@ -75,7 +75,7 @@ class CourseController extends Controller
     {
         Gate::authorize('view', $course);
 
-        $course->load(['lecturer', 'materials', 'assignments']);
+        $course->load(['lecturer', 'materials', 'assignments.submissions']);
 
         return view('courses.show', compact('course'));
     }
