@@ -173,7 +173,7 @@ class DatabaseSeeder extends Seeder
         // Target: >= 100 submission dengan sebagian terlambat
         $allSubmissions = collect();
 
-        foreach ($allAssignments as $assignment) {
+        foreach ($allAssignments as $assignmentIndex => $assignment) {
             $course = $assignment->course;
             $enrolledStudents = $course->students;
 
@@ -181,11 +181,24 @@ class DatabaseSeeder extends Seeder
 
             if ($isPastDue) {
                 // Untuk tugas yang sudah lewat deadline: 15 - 18 mahasiswa mengumpulkan
-                $studentsToSubmit = $enrolledStudents->random(min(rand(15, 18), $enrolledStudents->count()));
+                $targetCount = min(rand(15, 18), $enrolledStudents->count());
+
+                // Khusus tugas pertama (Assignment 1, Course 1):
+                // Pastikan mahasiswa demo ($demoStudent) mengumpulkan paling pertama (menghasilkan Submission ID 1),
+                // dan mahasiswa lain di urutan kedua (menghasilkan Submission ID 2)
+                // agar pengujian otorisasi IDOR di test-authz.sh selalu 100% konsisten & deterministik.
+                if ($assignmentIndex === 0 && $enrolledStudents->contains('id', $demoStudent->id)) {
+                    $otherEnrolled = $enrolledStudents->where('id', '!=', $demoStudent->id)->values();
+                    $firstOther = $otherEnrolled->first();
+                    $remainingOthers = $otherEnrolled->slice(1)->random(min(max(0, $targetCount - 2), $otherEnrolled->count() - 1));
+                    $studentsToSubmit = collect([$demoStudent, $firstOther])->merge($remainingOthers);
+                } else {
+                    $studentsToSubmit = $enrolledStudents->random($targetCount);
+                }
 
                 foreach ($studentsToSubmit as $student) {
-                    // 25% kemungkinan terlambat
-                    $isLate = (rand(1, 100) <= 25);
+                    // Mahasiswa demo pada tugas pertama selalu tepat waktu agar valid dan bersih
+                    $isLate = ($assignmentIndex === 0 && $student->id === $demoStudent->id) ? false : (rand(1, 100) <= 25);
 
                     if ($isLate) {
                         $submittedAt = (clone $assignment->due_at)->addHours(rand(2, 72));
