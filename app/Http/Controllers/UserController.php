@@ -41,7 +41,7 @@ class UserController extends Controller
     {
         Gate::authorize('create', User::class);
 
-        return view('users.create');
+        return view('auth.register');
     }
 
     /**

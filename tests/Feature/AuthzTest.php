@@ -222,6 +222,21 @@ class AuthzTest extends TestCase
         $response->assertStatus(403);
     }
 
+    public function test_dosen_cannot_change_lecturer_id_on_course_update(): void
+    {
+        $response = $this->actingAs($this->dosen1)->put("/courses/{$this->course1->id}", [
+            'code' => $this->course1->code,
+            'name' => $this->course1->name . ' Updated',
+            'sks' => $this->course1->sks,
+            'status' => 'active',
+            'lecturer_id' => $this->dosen2->id,
+        ]);
+
+        $response->assertRedirect('/courses');
+        $this->course1->refresh();
+        $this->assertEquals($this->dosen1->id, $this->course1->lecturer_id);
+    }
+
     public function test_mahasiswa_cannot_view_unregistered_course(): void
     {
         $response = $this->actingAs($this->mhs1)->get("/courses/{$this->course2->id}");
@@ -266,6 +281,24 @@ class AuthzTest extends TestCase
     {
         $response = $this->actingAs($this->mhs1)->get("/courses/{$this->course1->id}/assignments/create");
         $response->assertStatus(403);
+    }
+
+    public function test_assignment_can_be_created_without_instructions(): void
+    {
+        $response = $this->actingAs($this->admin)->post("/courses/{$this->course1->id}/assignments", [
+            'title' => 'Tugas Uji Coba Tanpa Petunjuk',
+            'due_at' => now()->addDays(3)->format('Y-m-d H:i:s'),
+            'max_score' => 100,
+            'status' => 'published',
+            'allow_late' => 1,
+        ]);
+
+        $response->assertRedirect("/courses/{$this->course1->id}");
+        $this->assertDatabaseHas('assignments', [
+            'title' => 'Tugas Uji Coba Tanpa Petunjuk',
+            'course_id' => $this->course1->id,
+            'instructions' => '',
+        ]);
     }
 
     // ==========================================
