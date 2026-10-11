@@ -107,8 +107,8 @@
                     <form action="{{ route('assignments.submissions.store', $assignment) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Unggah Berkas Tugas (Maks 10MB)</label>
-                            <input type="file" name="file" class="form-control" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Unggah Berkas Tugas (Maks 10MB) *</label>
+                            <input type="file" name="file" required class="form-control" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
                             @error('file')
                                 <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror

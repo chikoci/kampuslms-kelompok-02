@@ -301,6 +301,51 @@ class AuthzTest extends TestCase
         ]);
     }
 
+    public function test_student_can_upload_submission_file(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $file = \Illuminate\Http\UploadedFile::fake()->create('tugas.pdf', 100);
+
+        $assignment = Assignment::factory()->create([
+            'course_id' => $this->course1->id,
+            'title' => 'Tugas Upload Test',
+            'created_by' => $this->dosen1->id,
+            'due_at' => now()->addDays(7),
+            'max_score' => 100,
+            'status' => 'published',
+        ]);
+
+        $response = $this->actingAs($this->mhs1)->post("/assignments/{$assignment->id}/submissions", [
+            'file' => $file,
+            'note' => 'Catatan pengerjaan tugas',
+        ]);
+
+        $response->assertRedirect("/assignments/{$assignment->id}");
+        $this->assertDatabaseHas('submissions', [
+            'assignment_id' => $assignment->id,
+            'user_id' => $this->mhs1->id,
+            'original_name' => 'tugas.pdf',
+        ]);
+    }
+
+    public function test_student_cannot_submit_without_file(): void
+    {
+        $assignment = Assignment::factory()->create([
+            'course_id' => $this->course1->id,
+            'title' => 'Tugas Tanpa Berkas Test',
+            'created_by' => $this->dosen1->id,
+            'due_at' => now()->addDays(7),
+            'max_score' => 100,
+            'status' => 'published',
+        ]);
+
+        $response = $this->actingAs($this->mhs1)->post("/assignments/{$assignment->id}/submissions", [
+            'note' => 'Catatan tanpa berkas',
+        ]);
+
+        $response->assertSessionHasErrors('file');
+    }
+
     // ==========================================
     // 6. Pengujian IDOR Submission & Penilaian (Grade)
     // ==========================================
