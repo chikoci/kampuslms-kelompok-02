@@ -10,18 +10,33 @@
 # 4. Token valid dengan hak yang sesuai     -> Harus 200 OK / 201 Created
 # ==============================================================================
 
-BASE_URL="http://127.0.0.1:8000/api/v1"
+# Konfigurasi Target URL API:
+# 1) Argumen pertama ($1) jika diberikan
+# 2) Environment variable ($API_BASE_URL / $BASE_URL) jika diset
+# 3) Deteksi otomatis Laravel Herd (http://kampuslms-kelompok-02.test/api/v1)
+# 4) Fallback default php artisan serve (http://127.0.0.1:8000/api/v1)
+if [ -n "$1" ]; then
+    BASE_URL="$1"
+elif [ -z "$BASE_URL" ]; then
+    if curl -s -k --connect-timeout 1 -o /dev/null "http://kampuslms-kelompok-02.test/api/v1/courses"; then
+        BASE_URL="http://kampuslms-kelompok-02.test/api/v1"
+    else
+        BASE_URL="http://127.0.0.1:8000/api/v1"
+    fi
+fi
 
 # Warna terminal
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}======================================================${NC}"
 echo -e "${BLUE}   MEMULAI PENGUJIAN OTORISASI REST API KAMPUSLMS     ${NC}"
 echo -e "${BLUE}======================================================${NC}"
+echo -e "Target Base URL  : ${CYAN}${BASE_URL}${NC}"
 echo ""
 
 # Helper function untuk login dan mengambil token
@@ -61,7 +76,7 @@ TOKEN_DOSEN_A=$(get_token "dosen@kampuslms.test" "password")
 TOKEN_MHS=$(get_token "mahasiswa@kampuslms.test" "password")
 
 if [ -z "$TOKEN_DOSEN_A" ]; then
-    echo -e "${RED}[ERROR] Gagal login sebagai Dosen A. Pastikan server aktif di http://127.0.0.1:8000${NC}"
+    echo -e "${RED}[ERROR] Gagal login sebagai Dosen A. Pastikan server aktif di ${BASE_URL}${NC}"
     exit 1
 fi
 echo -e "  - Token Dosen A diperoleh."

@@ -12,7 +12,21 @@
 # 5. Otorisasi CRUD Materi & Tugas per mata kuliah
 # ==============================================================================
 
-BASE_URL="http://127.0.0.1:8000"
+# Konfigurasi Target URL:
+# 1) Argumen pertama ($1) jika diberikan
+# 2) Environment variable ($BASE_URL) jika diset
+# 3) Deteksi otomatis Laravel Herd (http://kampuslms-kelompok-02.test)
+# 4) Fallback default php artisan serve (http://127.0.0.1:8000)
+if [ -n "$1" ]; then
+    BASE_URL="$1"
+elif [ -z "$BASE_URL" ]; then
+    if curl -s -k --connect-timeout 1 -o /dev/null "http://kampuslms-kelompok-02.test/login"; then
+        BASE_URL="http://kampuslms-kelompok-02.test"
+    else
+        BASE_URL="http://127.0.0.1:8000"
+    fi
+fi
+
 COOKIE_DIR=$(mktemp -d)
 COOKIE_ADMIN="${COOKIE_DIR}/admin.cookie"
 COOKIE_DOSEN="${COOKIE_DIR}/dosen.cookie"
@@ -32,6 +46,7 @@ FAILED_COUNT=0
 echo -e "${BLUE}======================================================================${NC}"
 echo -e "${BLUE}    PENGUJIAN MENYELURUH OTORISASI & KEAMANAN IDOR KAMPUSLMS           ${NC}"
 echo -e "${BLUE}======================================================================${NC}"
+echo -e "Target Base URL  : ${CYAN}${BASE_URL}${NC}"
 echo ""
 
 # Helper function untuk verifikasi status code
@@ -48,6 +63,18 @@ assert_status() {
         FAILED_COUNT=$((FAILED_COUNT + 1))
     fi
 }
+
+# ------------------------------------------------------------------------------
+# 0. Pra-Pemeriksaan Server (Pre-flight Check)
+# ------------------------------------------------------------------------------
+if ! curl -s -k --connect-timeout 2 -o /dev/null "${BASE_URL}/login"; then
+    echo -e "${RED}[ERROR] Server tidak dapat diakses di ${BASE_URL}!${NC}"
+    echo -e "Pastikan salah satu dari berikut ini aktif:"
+    echo -e "  - Laravel Herd: http://kampuslms-kelompok-02.test"
+    echo -e "  - Atau jalankan di terminal: php artisan serve"
+    echo ""
+    exit 1
+fi
 
 # ------------------------------------------------------------------------------
 # 1. Inisialisasi Sesi Login untuk 3 Peran (Menggunakan POST /login Resmi)
