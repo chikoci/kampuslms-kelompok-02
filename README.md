@@ -30,9 +30,9 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek ini di komputer lokal:
    ```bash
    php artisan key:generate
    ```
-7. Jalankan migrasi untuk membuat tabel database:
+7. Jalankan migrasi dan seeder untuk menyiapkan struktur tabel serta data demo:
    ```bash
-   php artisan migrate
+   php artisan migrate --seed
    ```
 8. Nyalakan server lokal:
    ```bash
@@ -40,14 +40,24 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek ini di komputer lokal:
    ```
 9. Buka browser dan akses web di `http://127.0.0.1:8000`
 
-## Pembagian Peran
+## Akun Demo Standar (Hasil Seeder)
 
-| Nama Lengkap | NIM | Peran / Tugas |
-| :--- | :--- | :--- |
-| **Chiko Dhiva Pramana** | 10241017 |  |
-| **Armansyah** | 10241013 |  |
-| **Dawwas Eryansyah Pratama** | 10241019 |  |
-| **Bella Alviana** | 10241015 |  |
+Untuk mempermudah pengujian seluruh alur aplikasi dan otorisasi tiga peran civitas kampus, sistem menyediakan 3 akun demo bawaan:
+
+| Peran (Role) | Nama Pengguna | Alamat Email | Kata Sandi (Password) | Hak Akses Utama |
+| :--- | :--- | :--- | :--- | :--- |
+| **Administrator** | Administrator Demo | `admin@kampuslms.test` | `password` | Mengelola seluruh pengguna (`/users`), membuat mata kuliah (`/courses/create`), mendaftarkan mahasiswa, dan mengaudit sistem. |
+| **Dosen Pengampu** | Dosen Demo | `dosen@kampuslms.test` | `password` | Mengelola materi dan tugas pada kelas yang diampu (`/courses/1`), serta memeriksa dan menilai pengumpulan mahasiswa (`/submissions`). |
+| **Mahasiswa** | Mahasiswa Demo | `mahasiswa@kampuslms.test` | `password` | Mengakses materi kelas yang diikuti (Course 1-4), mengumpulkan tugas, dan melihat riwayat nilai pribadi. Ditolak dari Course 5 (IDOR check). |
+
+## Pembagian Peran dan Modul Tim
+
+| Nama Lengkap | NIM | Fitur Utama & Tanggung Jawab Modul |
+| :--- | :---: | :--- |
+| **Chiko Dhiva Pramana** | 10241017 | **Project Lead & Fitur 1**: Autentikasi Web Resmi, Sesi & Dashboard Multi-Peran, Proteksi Brute Force & Session Fixation, Komponen Layout, API Sanctum Auth. |
+| **Bella Alviana** | 10241015 | **Fitur 2**: Otorisasi Mata Kuliah & CRUD Materi Perkuliahan, `CoursePolicy`, `MaterialPolicy`, Form Request Validasi (`StoreCourseRequest`, `UpdateCourseRequest`), Views Courses & Materials. |
+| **Dawwas Eryansyah Pratama** | 10241019 | **Fitur 3**: Otorisasi Tugas, Pengumpulan Tugas (Anti-IDOR) & Penilaian (Grade), `AssignmentPolicy`, `SubmissionPolicy`, `GradePolicy`, Private File Storage Pipeline. |
+| **Armansyah** | 10241013 | **Fitur 4**: Otorisasi Pengguna, Anti Privilege Escalation (`UserPolicy`), Tabel IDOR (`docs/keamanan.md`), Skrip Pengujian Otomatis (`scripts/test-authz.sh`), `AuthzTest`, CI GitHub Actions. |
 
 ## Cara Kolaborasi (Git Workflow Kelompok)
 Karena branch `main` dilindungi (*Branch Protection*), berikut adalah alur kerja yang **WAJIB** diikuti oleh semua anggota kelompok:

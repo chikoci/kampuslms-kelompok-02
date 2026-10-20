@@ -101,7 +101,10 @@ class DashboardController extends Controller
     {
         $enrolledCourses = $user->courses()
             ->with('lecturer')
-            ->withCount(['materials', 'assignments'])
+            ->withCount([
+                'materials',
+                'assignments' => fn ($q) => $q->where('status', 'published'),
+            ])
             ->get();
 
         $courseIds = $enrolledCourses->pluck('id');

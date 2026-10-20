@@ -46,9 +46,28 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ route('assignments.submissions.index', $assignment) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">
-                                {{ $assignment->submissions()->count() }} Pengumpulan &rarr;
-                            </a>
+                            @if (auth()->user()?->role === 'mahasiswa')
+                                @php
+                                    $mySub = $assignment->submissions->firstWhere('user_id', auth()->id());
+                                @endphp
+                                @if ($mySub)
+                                    <a href="{{ route('submissions.show', $mySub) }}" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Klik untuk melihat detail pengumpulan Anda">
+                                        <span class="badge badge-active" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
+                                            &#10003; Sudah Dikumpulkan
+                                        </span>
+                                    </a>
+                                @else
+                                    <a href="{{ route('assignments.show', $assignment) }}" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Klik untuk mengumpulkan tugas">
+                                        <span class="badge badge-overdue" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a;">
+                                            Belum Mengumpulkan &rarr;
+                                        </span>
+                                    </a>
+                                @endif
+                            @else
+                                <a href="{{ route('assignments.submissions.index', $assignment) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">
+                                    {{ $assignment->submissions->count() }} Pengumpulan &rarr;
+                                </a>
+                            @endif
                         </td>
                         <td class="action-buttons-cell">
                             <div class="action-buttons-group">

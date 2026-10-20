@@ -72,7 +72,9 @@ class CourseController extends Controller
             ->with('creator')
             ->withCount('submissions');
 
-        if ($request->filled('status')) {
+        if ($request->user()?->role === 'mahasiswa') {
+            $query->where('status', 'published');
+        } elseif ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
