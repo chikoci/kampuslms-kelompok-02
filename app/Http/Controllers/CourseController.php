@@ -75,7 +75,19 @@ class CourseController extends Controller
     {
         Gate::authorize('view', $course);
 
-        $course->load(['lecturer', 'materials', 'assignments.submissions']);
+        $user = auth()->user();
+
+        $course->load([
+            'lecturer',
+            'materials',
+            'assignments' => function ($query) use ($user) {
+                if ($user?->role === 'mahasiswa') {
+                    $query->where('status', 'published');
+                }
+                $query->latest();
+            },
+            'assignments.submissions',
+        ]);
 
         return view('courses.show', compact('course'));
     }

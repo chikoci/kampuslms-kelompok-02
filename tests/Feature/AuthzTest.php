@@ -7,12 +7,12 @@ use App\Models\Course;
 use App\Models\Material;
 use App\Models\Submission;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AuthzTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     protected User $admin;
     protected User $dosen1;
@@ -299,6 +299,88 @@ class AuthzTest extends TestCase
             'course_id' => $this->course1->id,
             'instructions' => '',
         ]);
+    }
+
+    public function test_student_cannot_see_draft_assignment_in_course_detail(): void
+    {
+        $draftAssignment = Assignment::factory()->create([
+            'course_id' => $this->course1->id,
+            'title' => 'Tugas Konsep Draft Rahasia',
+            'created_by' => $this->dosen1->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($this->mhs1)->get("/courses/{$this->course1->id}");
+        $response->assertStatus(200);
+        $response->assertSee($this->assignment1->title);
+        $response->assertDontSee($draftAssignment->title);
+    }
+
+    public function test_student_cannot_view_draft_assignment_directly(): void
+    {
+        $draftAssignment = Assignment::factory()->create([
+            'course_id' => $this->course1->id,
+            'title' => 'Tugas Konsep Draft Rahasia 2',
+            'created_by' => $this->dosen1->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($this->mhs1)->get("/assignments/{$draftAssignment->id}");
+        $response->assertStatus(403);
+    }
+
+    public function test_dosen_and_admin_can_view_draft_assignment(): void
+    {
+        $draftAssignment = Assignment::factory()->create([
+            'course_id' => $this->course1->id,
+            'title' => 'Tugas Konsep Draft Dosen',
+            'created_by' => $this->dosen1->id,
+            'status' => 'draft',
+        ]);
+
+        // Dosen pengampu dapat melihat tugas draft
+        $responseDosen = $this->actingAs($this->dosen1)->get("/assignments/{$draftAssignment->id}");
+        $responseDosen->assertStatus(200);
+
+        // Admin dapat melihat tugas draft
+        $responseAdmin = $this->actingAs($this->admin)->get("/assignments/{$draftAssignment->id}");
+        $responseAdmin->assertStatus(200);
+    }
+
+    public function test_student_cannot_see_draft_assignment_in_assignments_index(): void
+    {
+        $draftAssignment = Assignment::factory()->create([
+            'course_id' => $this->course1->id,
+            'title' => 'Tugas Draft Pada Halaman Daftar',
+            'created_by' => $this->dosen1->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->actingAs($this->mhs1)->get("/courses/{$this->course1->id}/assignments");
+        $response->assertStatus(200);
+        $response->assertSee($this->assignment1->title);
+        $response->assertDontSee($draftAssignment->title);
+    }
+
+    public function test_student_cannot_submit_to_draft_assignment(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('local');
+        $file = \Illuminate\Http\UploadedFile::fake()->create('tugas_draft.pdf', 100);
+
+        $draftAssignment = Assignment::factory()->create([
+            'course_id' => $this->course1->id,
+            'title' => 'Tugas Draft Tidak Boleh Disubmit',
+            'created_by' => $this->dosen1->id,
+            'status' => 'draft',
+            'due_at' => now()->addDays(7),
+        ]);
+
+        $response = $this->actingAs($this->mhs1)->post("/assignments/{$draftAssignment->id}/submissions", [
+            'file' => $file,
+            'note' => 'Coba kumpul di tugas draft',
+        ]);
+
+        $response->assertStatus(403);
     }
 
     public function test_student_can_upload_submission_file(): void
