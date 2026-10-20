@@ -200,7 +200,8 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_DOSEN}" "${BASE_URL
 assert_status "Dosen pengampu mengakses tugas draft miliknya (Assignment 3)" 200 "$STATUS"
 
 # Mahasiswa dilarang mengumpulkan tugas pada tugas berstatus draft (403)
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" -X POST "${BASE_URL}/assignments/3/submissions")
+CSRF_MHS=$(curl -s -b "${COOKIE_MHS}" "${BASE_URL}/dashboard" | grep 'name="_token"' | head -n 1 | sed -e 's/.*value="//' -e 's/".*//')
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" --data-urlencode "_token=${CSRF_MHS}" "${BASE_URL}/assignments/3/submissions")
 assert_status "Mahasiswa mencoba mengumpulkan tugas draft (Assignment 3)" 403 "$STATUS"
 echo ""
 
