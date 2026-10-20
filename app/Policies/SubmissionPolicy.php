@@ -28,7 +28,8 @@ class SubmissionPolicy
         }
 
         if ($user->role === 'mahasiswa') {
-            return $assignment->course->students()->where('user_id', $user->id)->exists();
+            return $assignment->status !== 'draft'
+                && $assignment->course->students()->where('user_id', $user->id)->exists();
         }
 
         return false;
@@ -72,6 +73,10 @@ class SubmissionPolicy
 
         if (! $assignment) {
             return true;
+        }
+
+        if ($assignment->status === 'draft') {
+            return false;
         }
 
         return $assignment->course->students()->where('user_id', $user->id)->exists();

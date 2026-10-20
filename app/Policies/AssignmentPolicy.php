@@ -53,7 +53,8 @@ class AssignmentPolicy
         }
 
         if ($user->role === 'mahasiswa') {
-            return $course->students()->where('user_id', $user->id)->exists();
+            return $assignment->status !== 'draft'
+                && $course->students()->where('user_id', $user->id)->exists();
         }
 
         return false;

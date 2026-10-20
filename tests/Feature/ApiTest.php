@@ -11,6 +11,10 @@ use Tests\TestCase;
 
 class ApiTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected bool $seed = true;
+
     /**
      * Uji coba login sukses mengembalikan token dan format UserResource.
      */
@@ -161,5 +165,32 @@ class ApiTest extends TestCase
             ]);
             $response2->assertStatus(200);
         }
+    }
+
+    /**
+     * Memastikan mahasiswa hanya menerima tugas berstatus published dari API assignments.
+     */
+    public function test_student_api_assignments_only_returns_published(): void
+    {
+        $mahasiswa = User::where('role', 'mahasiswa')->first();
+        $course = $mahasiswa->courses()->first();
+
+        // Buat tugas draft baru pada mata kuliah yang diikuti mahasiswa
+        $draftAssignment = Assignment::create([
+            'course_id' => $course->id,
+            'created_by' => $course->lecturer_id,
+            'title' => 'Tugas Konsep Draft API Rahasia',
+            'instructions' => 'Belum siap dipublikasikan.',
+            'due_at' => now()->addDays(5),
+            'max_score' => 100,
+            'status' => 'draft',
+            'allow_late' => false,
+        ]);
+
+        $response = $this->actingAs($mahasiswa, 'sanctum')->getJson("/api/v1/courses/{$course->id}/assignments");
+
+        $response->assertStatus(200);
+        $titles = collect($response->json('data'))->pluck('title');
+        $this->assertFalse($titles->contains('Tugas Konsep Draft API Rahasia'));
     }
 }

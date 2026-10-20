@@ -16,7 +16,13 @@ class AssignmentController extends Controller
     {
         Gate::authorize('view', $course);
 
-        $assignments = $course->assignments()->latest()->paginate(10);
+        $query = $course->assignments()->with('submissions')->latest();
+
+        if (auth()->user()?->role === 'mahasiswa') {
+            $query->where('status', 'published');
+        }
+
+        $assignments = $query->paginate(10);
 
         return view('assignments.index', compact('course', 'assignments'));
     }

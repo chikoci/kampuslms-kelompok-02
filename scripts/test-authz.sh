@@ -163,6 +163,18 @@ assert_status "Dosen mencoba buat tugas pada MK dosen lain" 403 "$STATUS"
 # Mahasiswa mencoba membuat tugas baru (403)
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/courses/1/assignments/create")
 assert_status "Mahasiswa mencoba buat tugas baru" 403 "$STATUS"
+
+# Mahasiswa dilarang melihat tugas yang masih berstatus draft (403)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/assignments/3")
+assert_status "Mahasiswa mencoba akses tugas berstatus draft (Assignment 3)" 403 "$STATUS"
+
+# Dosen pengampu dapat melihat tugas draft miliknya sendiri (200)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_DOSEN}" "${BASE_URL}/assignments/3")
+assert_status "Dosen pengampu mengakses tugas draft miliknya (Assignment 3)" 200 "$STATUS"
+
+# Mahasiswa dilarang mengumpulkan tugas pada tugas berstatus draft (403)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" -X POST "${BASE_URL}/assignments/3/submissions")
+assert_status "Mahasiswa mencoba mengumpulkan tugas draft (Assignment 3)" 403 "$STATUS"
 echo ""
 
 # ------------------------------------------------------------------------------

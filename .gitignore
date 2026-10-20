@@ -22,6 +22,7 @@ yarn-error.log
 /.vscode
 /.zed
 cookies.txt
+*.cookie
 create.html
 Modul/
 Distribusi-Tim/

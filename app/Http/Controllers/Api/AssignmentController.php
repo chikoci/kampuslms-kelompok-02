@@ -124,7 +124,7 @@ class AssignmentController extends Controller
         }
 
         $isEnrolled = $assignment->course->students()->where('users.id', $user->id)->exists();
-        if (! $isEnrolled) {
+        if (! $isEnrolled || $assignment->status === 'draft') {
             abort(response()->json([
                 'message' => 'Anda tidak memiliki akses ke sumber daya ini.',
             ], 403));
