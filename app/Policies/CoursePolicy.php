@@ -76,4 +76,31 @@ class CoursePolicy
     {
         return $user->role === 'admin';
     }
+
+    /**
+     * Menentukan apakah pengguna dapat mendaftarkan mahasiswa ke mata kuliah.
+     * Aturan:
+     * - Admin dapat mendaftarkan mahasiswa ke mata kuliah manapun.
+     * - Dosen dapat mendaftarkan mahasiswa ke mata kuliah yang diampunya sendiri.
+     */
+    public function enroll(User $user, Course $course): bool
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ($user->role === 'dosen') {
+            return $user->id === $course->lecturer_id;
+        }
+
+        return false;
+    }
+
+    /**
+     * Menentukan apakah pengguna dapat mengeluarkan mahasiswa dari mata kuliah.
+     */
+    public function unenroll(User $user, Course $course): bool
+    {
+        return $this->enroll($user, $course);
+    }
 }

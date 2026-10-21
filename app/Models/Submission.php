@@ -44,6 +44,19 @@ class Submission extends Model
     }
 
     /**
+     * Boot model untuk mendaftarkan event lifecycle Eloquent.
+     * Menghapus berkas fisik di disk privat saat record submission dihapus.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Submission $submission) {
+            if ($submission->file_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($submission->file_path)) {
+                \Illuminate\Support\Facades\Storage::disk('local')->delete($submission->file_path);
+            }
+        });
+    }
+
+    /**
      * Relasi: Pengumpulan tugas merujuk ke satu Tugas.
      */
     public function assignment(): BelongsTo
@@ -65,5 +78,13 @@ class Submission extends Model
     public function grade(): HasOne
     {
         return $this->hasOne(Grade::class);
+    }
+
+    /**
+     * Accessor untuk menampilkan ukuran berkas dalam format yang terbaca manusia (KB, MB).
+     */
+    public function getFormattedFileSizeAttribute(): string
+    {
+        return $this->file_size ? \Illuminate\Support\Number::fileSize($this->file_size) : '-';
     }
 }

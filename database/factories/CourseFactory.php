@@ -34,7 +34,7 @@ class CourseFactory extends Factory
         ];
 
         return [
-            'code' => 'SI' . fake()->unique()->numerify('###'),
+            'code' => 'SI' . fake()->unique()->numerify('#####'),
             'name' => fake()->randomElement($courseNames),
             'description' => 'Mata kuliah yang membahas topik fundamental dan praktikum terapan untuk mahasiswa.',
             'sks' => fake()->randomElement([2, 3, 4]),
