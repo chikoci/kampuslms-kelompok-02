@@ -37,6 +37,16 @@
                     &#128190; Unduh Berkas
                 </a>
             </div>
+        @elseif($material->type === 'link' && $material->external_url)
+            <div style="padding: 1.25rem; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="color: #1e40af; font-size: 0.95rem;">Tautan Eksternal</strong>
+                    <p style="color: #3b82f6; font-size: 0.85rem; margin-top: 0.25rem;">{{ $material->external_url }}</p>
+                </div>
+                <a href="{{ $material->external_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                    &#128279; Buka Tautan Eksternal &rarr;
+                </a>
+            </div>
         @endif
     </div>
 </x-layout>

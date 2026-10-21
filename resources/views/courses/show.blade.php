@@ -89,9 +89,18 @@
                             <td class="font-semibold text-body">{{ $material->title }}</td>
                             <td class="text-muted">{{ $material->description ?? '-' }}</td>
                             <td>
-                                <a href="{{ route('materials.download', $material) }}" class="badge badge-file" style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Klik untuk mengunduh berkas">
-                                    &#128190; {{ $material->original_name ?? 'Unduh Berkas' }}
-                                </a>
+                                @if($material->type === 'link' && $material->external_url)
+                                    <a href="{{ $material->external_url }}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Buka tautan materi eksternal">
+                                        &#128279; Tautan Eksternal &rarr;
+                                    </a>
+                                @elseif($material->file_path)
+                                    <a href="{{ route('materials.download', $material) }}" class="badge badge-file" style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Klik untuk mengunduh berkas">
+                                        &#128190; {{ $material->original_name ?? 'Unduh Berkas' }}
+                                        <span style="font-size: 0.75rem; opacity: 0.85;">({{ $material->formatted_file_size }})</span>
+                                    </a>
+                                @else
+                                    <span class="text-muted" style="font-size: 0.8rem;">Catatan Teks</span>
+                                @endif
                             </td>
                             <td class="action-buttons-cell">
                                 <div class="action-buttons-group">
@@ -201,6 +210,74 @@
                         <tr>
                             <td colspan="4" class="empty-cell-sm">
                                 Belum ada tugas untuk mata kuliah ini.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- Tabel Mahasiswa Terdaftar (Peserta Kelas) & Form Pendaftaran --}}
+    <div class="section-block" style="margin-top: 2rem;">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 class="section-title">Peserta Mahasiswa Terdaftar</h2>
+                <span class="section-counter">Total: {{ $course->students->count() }} Mahasiswa</span>
+            </div>
+            @can('enroll', $course)
+                @if(isset($availableStudents) && $availableStudents->isNotEmpty())
+                    <form action="{{ route('courses.enroll', $course) }}" method="POST" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        @csrf
+                        <select name="student_id" required class="form-control" style="padding: 0.375rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; max-width: 280px;">
+                            <option value="">-- Pilih Mahasiswa Baru --</option>
+                            @foreach($availableStudents as $mhs)
+                                <option value="{{ $mhs->id }}">{{ $mhs->name }} ({{ $mhs->nim_nip ?? 'NIM -' }})</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            + Daftarkan ke Kelas
+                        </button>
+                    </form>
+                @endif
+            @endcan
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 150px;">NIM</th>
+                        <th>Nama Lengkap</th>
+                        <th style="width: 200px;">Terdaftar Sejak</th>
+                        @can('unenroll', $course)
+                            <th class="col-actions" style="width: 120px;">Aksi</th>
+                        @endcan
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($course->students as $student)
+                        <tr>
+                            <td class="text-muted" style="font-size: 0.85rem;">{{ $student->nim_nip ?? '-' }}</td>
+                            <td class="font-semibold text-body">{{ $student->name }}</td>
+                            <td class="text-muted" style="font-size: 0.85rem;">
+                                {{ $student->pivot->enrolled_at ? \Carbon\Carbon::parse($student->pivot->enrolled_at)->format('d M Y, H:i') : '-' }}
+                            </td>
+                            @can('unenroll', $course)
+                                <td class="action-buttons-cell">
+                                    <form action="{{ route('courses.unenroll', [$course, $student]) }}" method="POST" onsubmit="return confirm('Keluarkan mahasiswa {{ $student->name }} dari mata kuliah ini?');" class="inline-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" style="font-size: 0.75rem; padding: 2px 8px;">
+                                            Keluarkan
+                                        </button>
+                                    </form>
+                                </td>
+                            @endcan
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="{{ auth()->user()?->can('unenroll', $course) ? 4 : 3 }}" class="empty-cell-sm">
+                                Belum ada mahasiswa yang terdaftar di kelas ini.
                             </td>
                         </tr>
                     @endforelse
