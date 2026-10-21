@@ -245,6 +245,32 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/
 assert_status "Mahasiswa mencoba akses daftar pengguna (/users)" 403 "$STATUS"
 echo ""
 
+# ------------------------------------------------------------------------------
+# 7. Pengujian Otorisasi & Pencegahan IDOR Unduhan Berkas Privat (Materi 9)
+# ------------------------------------------------------------------------------
+echo -e "${YELLOW}>> 7. Pengujian Otorisasi Unduhan Berkas Privat (Anti-IDOR)...${NC}"
+
+# Mahasiswa mengunduh materi dari kelas yang diikutinya (Course 1 -> Material 1 -> 200)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/materials/1/download")
+assert_status "Mahasiswa mengunduh materi kelas yang diikutinya (Material 1)" 200 "$STATUS"
+
+# Mahasiswa mencoba mengunduh materi dari kelas yang TIDAK diikutinya (Course 5 -> Material 9 -> 403)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/materials/9/download")
+assert_status "Mahasiswa mencoba unduh materi kelas yang tidak diambil (IDOR -> 403)" 403 "$STATUS"
+
+# Mahasiswa mengunduh tugas miliknya sendiri (Submission 1 -> 200)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/submissions/1/download")
+assert_status "Mahasiswa mengunduh berkas submission miliknya (Submission 1)" 200 "$STATUS"
+
+# Mahasiswa mencoba mengunduh tugas milik mahasiswa lain (Submission 2 -> 403)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/submissions/2/download")
+assert_status "Mahasiswa mencoba unduh submission orang lain (IDOR -> 403)" 403 "$STATUS"
+
+# Dosen pengampu mengunduh tugas mahasiswa di kelasnya (200)
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_DOSEN}" "${BASE_URL}/submissions/1/download")
+assert_status "Dosen pengampu mengunduh berkas tugas mahasiswa" 200 "$STATUS"
+echo ""
+
 # Cleanup temporary cookies
 rm -rf "${COOKIE_DIR}"
 
