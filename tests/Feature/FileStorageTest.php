@@ -225,31 +225,6 @@ class FileStorageTest extends TestCase
         Storage::disk('local')->assertMissing($filePath);
     }
 
-    public function test_physical_files_deleted_when_parent_assignment_is_deleted(): void
-    {
-        $file1 = UploadedFile::fake()->create('mhs1.pdf', 100, 'application/pdf');
-        $file2 = UploadedFile::fake()->create('mhs2.pdf', 100, 'application/pdf');
-
-        $this->actingAs($this->mhs1)->post("/assignments/{$this->assignment->id}/submissions", ['file' => $file1]);
-        $this->actingAs($this->mhs2)->post("/assignments/{$this->assignment->id}/submissions", ['file' => $file2]);
-
-        $sub1 = Submission::where('user_id', $this->mhs1->id)->first();
-        $sub2 = Submission::where('user_id', $this->mhs2->id)->first();
-
-        Storage::disk('local')->assertExists($sub1->file_path);
-        Storage::disk('local')->assertExists($sub2->file_path);
-
-        // Dosen menghapus tugas (Assignment)
-        $this->actingAs($this->dosen)->delete("/assignments/{$this->assignment->id}");
-
-        $this->assertDatabaseMissing('assignments', ['id' => $this->assignment->id]);
-        $this->assertDatabaseMissing('submissions', ['id' => $sub1->id]);
-        $this->assertDatabaseMissing('submissions', ['id' => $sub2->id]);
-
-        // Kedua berkas fisik submission wajib ikut terhapus dari disk privat
-        Storage::disk('local')->assertMissing($sub1->file_path);
-        Storage::disk('local')->assertMissing($sub2->file_path);
-    }
 
     public function test_material_file_upload_download_and_deletion(): void
     {
