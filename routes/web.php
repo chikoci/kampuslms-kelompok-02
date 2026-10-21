@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function () {
 
     // CRUD Mata Kuliah (Otorisasi via CoursePolicy)
     Route::resource('courses', CourseController::class);
+    Route::post('/courses/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
+    Route::delete('/courses/{course}/unenroll/{student}', [CourseController::class, 'unenroll'])->name('courses.unenroll');
 
     // Rute Bersarang (Materi & Tugas)
     Route::scopeBindings()->group(function () {
@@ -80,5 +82,7 @@ Route::middleware('auth')->group(function () {
     // Detail Pengumpulan, Unduhan, dan Penilaian (Grade)
     Route::get('/submissions/{submission}', [SubmissionController::class, 'show'])->name('submissions.show');
     Route::get('/submissions/{submission}/download', [SubmissionController::class, 'download'])->name('submissions.download');
+    Route::delete('/submissions/{submission}', [SubmissionController::class, 'destroy'])->name('submissions.destroy');
     Route::post('/submissions/{submission}/grades', [SubmissionController::class, 'grade'])->name('submissions.grades.store');
+    Route::delete('/submissions/{submission}/grades', [SubmissionController::class, 'destroyGrade'])->name('submissions.grades.destroy');
 });

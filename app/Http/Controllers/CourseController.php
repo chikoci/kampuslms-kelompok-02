@@ -79,6 +79,7 @@ class CourseController extends Controller
 
         $course->load([
             'lecturer',
+            'students' => fn ($q) => $q->orderBy('name'),
             'materials',
             'assignments' => function ($query) use ($user) {
                 if ($user?->role === 'mahasiswa') {
@@ -89,7 +90,16 @@ class CourseController extends Controller
             'assignments.submissions',
         ]);
 
-        return view('courses.show', compact('course'));
+        $availableStudents = collect();
+        if ($user && $user->can('enroll', $course)) {
+            $enrolledIds = $course->students->pluck('id');
+            $availableStudents = User::where('role', 'mahasiswa')
+                ->whereNotIn('id', $enrolledIds)
+                ->orderBy('name')
+                ->get();
+        }
+
+        return view('courses.show', compact('course', 'availableStudents'));
     }
 
     /**
@@ -131,5 +141,43 @@ class CourseController extends Controller
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Mata kuliah berhasil dihapus.');
+    }
+
+    /**
+     * Mendaftarkan mahasiswa ke mata kuliah (Admin atau Dosen Pengampu).
+     */
+    public function enroll(Request $request, Course $course)
+    {
+        Gate::authorize('enroll', $course);
+
+        $validated = $request->validate([
+            'student_id' => ['required', 'exists:users,id'],
+        ], [
+            'student_id.required' => 'Silakan pilih mahasiswa yang ingin didaftarkan.',
+            'student_id.exists'   => 'Mahasiswa yang dipilih tidak valid.',
+        ]);
+
+        $student = User::where('id', $validated['student_id'])->where('role', 'mahasiswa')->firstOrFail();
+
+        // Cegah pendaftaran ganda jika mahasiswa sudah terdaftar
+        if ($course->students()->where('user_id', $student->id)->exists()) {
+            return back()->with('info', "Mahasiswa {$student->name} sudah terdaftar pada kelas ini.");
+        }
+
+        $course->students()->attach($student->id, ['enrolled_at' => now()]);
+
+        return back()->with('success', "Mahasiswa {$student->name} ({$student->nim_nip}) berhasil didaftarkan ke kelas ini.");
+    }
+
+    /**
+     * Mengeluarkan mahasiswa dari mata kuliah (Admin atau Dosen Pengampu).
+     */
+    public function unenroll(Course $course, User $student)
+    {
+        Gate::authorize('unenroll', $course);
+
+        $course->students()->detach($student->id);
+
+        return back()->with('success', "Mahasiswa {$student->name} ({$student->nim_nip}) berhasil dikeluarkan dari kelas ini.");
     }
 }

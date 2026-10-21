@@ -43,6 +43,19 @@ class Material extends Model
     }
 
     /**
+     * Boot model untuk mendaftarkan event lifecycle Eloquent.
+     * Menghapus berkas fisik materi di disk privat saat record materi dihapus.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Material $material) {
+            if ($material->file_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($material->file_path)) {
+                \Illuminate\Support\Facades\Storage::disk('local')->delete($material->file_path);
+            }
+        });
+    }
+
+    /**
      * Relasi: Materi dimiliki oleh satu mata kuliah.
      */
     public function course(): BelongsTo
@@ -56,5 +69,13 @@ class Material extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /**
+     * Accessor untuk menampilkan ukuran berkas dalam format yang terbaca manusia (KB, MB).
+     */
+    public function getFormattedFileSizeAttribute(): string
+    {
+        return $this->file_size ? \Illuminate\Support\Number::fileSize($this->file_size) : '-';
     }
 }
