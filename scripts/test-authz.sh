@@ -245,6 +245,7 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" -b "${COOKIE_MHS}" "${BASE_URL}/
 assert_status "Mahasiswa mencoba akses daftar pengguna (/users)" 403 "$STATUS"
 echo ""
 
+
 # Cleanup temporary cookies
 rm -rf "${COOKIE_DIR}"
 
