@@ -42,7 +42,7 @@
             <div style="margin-bottom: 2rem;">
                 <a href="{{ route('submissions.download', $submission) }}" 
                    style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 500; border-radius: 8px; background-color: #2563eb; color: #ffffff; text-decoration: none;">
-                    &#128190; Unduh Berkas: {{ $submission->original_name ?: 'Berkas Tugas' }}
+                    &#128190; Unduh Berkas: {{ $submission->original_name ?: 'Berkas Tugas' }} ({{ $submission->formatted_file_size }})
                 </a>
             </div>
         @endif
@@ -101,11 +101,47 @@
                             @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-weight: 600;">
-                            Simpan Nilai
-                        </button>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-weight: 600;">
+                                {{ $submission->grade ? 'Perbarui Nilai' : 'Simpan Nilai' }}
+                            </button>
                     </form>
+                    @if($submission->grade)
+                        <form action="{{ route('submissions.grades.destroy', $submission) }}" method="POST" onsubmit="return confirm('Hapus nilai untuk pengumpulan tugas mahasiswa ini?');" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1.25rem; font-weight: 600;">
+                                Hapus Nilai
+                            </button>
+                        </form>
+                    @endif
+                        </div>
                 </div>
+
+                {{-- Navigasi Looping Penilaian Berurutan (Dosen/Admin) --}}
+                @if(isset($prevSubmission) || isset($nextSubmission))
+                    <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                        <div>
+                            @if($prevSubmission)
+                                <a href="{{ route('submissions.show', $prevSubmission) }}" class="btn btn-secondary btn-sm">
+                                    &larr; Nilai Sebelumnya: {{ $prevSubmission->student->name }}
+                                </a>
+                            @endif
+                        </div>
+                        <div>
+                            <a href="{{ route('assignments.submissions.index', $submission->assignment) }}" style="font-size: 0.875rem; color: #2563eb; text-decoration: none; font-weight: 500;">
+                                &uarr; Kembali ke Daftar Pengumpulan
+                            </a>
+                        </div>
+                        <div>
+                            @if($nextSubmission)
+                                <a href="{{ route('submissions.show', $nextSubmission) }}" class="btn btn-secondary btn-sm">
+                                    Nilai Berikutnya: {{ $nextSubmission->student->name }} &rarr;
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             @endcan
         </div>
     </div>

@@ -93,22 +93,59 @@
                         </div>
                     @endif
 
-                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
                         @if($mySubmission->file_path)
-                            <a href="{{ route('submissions.download', $mySubmission) }}" class="btn btn-secondary btn-sm">
-                                &#128190; Unduh Berkas Anda ({{ $mySubmission->original_name ?? 'Berkas' }})
+                            <a href="{{ route('submissions.download', $mySubmission) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 4px;">
+                                &#128190; Unduh Berkas: {{ $mySubmission->original_name ?? 'Berkas' }}
+                                <span style="font-size: 0.75rem; opacity: 0.85;">({{ $mySubmission->formatted_file_size }})</span>
                             </a>
                         @endif
                         <a href="{{ route('submissions.show', $mySubmission) }}" class="btn btn-secondary btn-sm">
                             Lihat Detail Pengumpulan &rarr;
                         </a>
+                        @can('delete', $mySubmission)
+                            <form action="{{ route('submissions.destroy', $mySubmission) }}" method="POST" onsubmit="return confirm('Hapus pengumpulan tugas Anda? Berkas fisik akan ikut terhapus dari disk server.');" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus Pengumpulan</button>
+                            </form>
+                        @endcan
                     </div>
+
+                    {{-- Form Kumpulkan Ulang (Re-submission via updateOrCreate) --}}
+                    @can('update', $mySubmission)
+                        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed #d1d5db;">
+                            <details>
+                                <summary style="cursor: pointer; font-size: 0.875rem; font-weight: 600; color: #2563eb;">
+                                    &#8635; Ingin Mengumpulkan Ulang? Klik di sini untuk mengunggah berkas baru (akan menimpa berkas lama)
+                                </summary>
+                                <form action="{{ route('assignments.submissions.store', $assignment) }}" method="POST" enctype="multipart/form-data" style="margin-top: 1rem;">
+                                    @csrf
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem;">Pilih Berkas Pengganti (PDF, DOC, DOCX - Maksimal 5 MB) *</label>
+                                        <input type="file" name="file" accept=".pdf,.doc,.docx" required class="form-control" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                                        @error('file')
+                                            <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem;">Catatan Pembaruan (Opsional)</label>
+                                        <textarea name="note" rows="2" class="form-control" placeholder="Catatan revisi atau pembaruan tugas..." style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">{{ old('note', $mySubmission->note) }}</textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        Perbarui dan Timpa Pengumpulan
+                                    </button>
+                                </form>
+                            </details>
+                        </div>
+                    @endcan
                 @else
                     <form action="{{ route('assignments.submissions.store', $assignment) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div style="margin-bottom: 1rem;">
-                            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Unggah Berkas Tugas (Maks 10MB) *</label>
-                            <input type="file" name="file" required class="form-control" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">Unggah Berkas Tugas (PDF, DOC, DOCX - Maksimal 5 MB) *</label>
+                            <input type="file" name="file" accept=".pdf,.doc,.docx" required class="form-control" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                            <p style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem;">Berkas disimpan di disk privat `storage/app/private` untuk menjaga kerahasiaan lembar jawaban.</p>
                             @error('file')
                                 <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror
