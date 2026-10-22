@@ -211,10 +211,16 @@ Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, ak
   Waktu di komputer pengguna (browser) sangat mudah dimanipulasi. Mahasiswa bisa dengan mudah memundurkan jam laptopnya atau mengubah nilai input formulir via inspect element agar tampak tepat waktu.
 * **Tempat Peragaan:** VS Code.
 * **Langkah Praktik Langsung:**
-  1. Di VS Code, buka `app/Http/Controllers/SubmissionController.php` baris 55.
+  1. Di VS Code, buka `app/Http/Controllers/SubmissionController.php` **baris 55**.
   2. Tunjukkan baris kodenya:
      ```php
      $isLate = now()->greaterThan($assignment->due_at);
      ```
+* **Penjelasan Singkat Baris Kode `isLate` (`SubmissionController.php` baris 55):**
+  1. **`now()`**: Mengambil waktu saat ini mengacu langsung pada jam server (bukan jam laptop/browser user).
+  2. **`->greaterThan($assignment->due_at)`**: Memeriksa apakah waktu saat ini sudah melewati tenggat waktu tugas.
+  3. **Hasil Boolean (`true`/`false`)**:
+     - Jika `true` (terlambat) dan tugas tidak mengizinkan terlambat, langsung ditolak di **baris 56**.
+     - Nilai `$isLate` ini disimpan permanen ke kolom `is_late` di database pada **baris 121**.
 * **Kalimat ke Dosen:**
   *"Status keterlambatan kami hitung secara independen di server menggunakan fungsi `now()` yang mengacu pada jam server, sehingga mahasiswa tidak bisa mencurangi batas waktu meskipun jam di laptopnya dimundurkan."*
