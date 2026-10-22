@@ -180,11 +180,11 @@ Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, ak
 * **Tempat Peragaan:** VS Code & Browser Chrome.
 * **Akun yang Dipakai:** `mahasiswa@kampuslms.test` (User ID: 3, pemilik Submission ID: 1).
 * **Langkah Praktik Langsung:**
-  1. Di VS Code, buka `app/Http/Controllers/SubmissionController.php` baris method `download()`:
+  1. Di VS Code, buka `app/Http/Controllers/SubmissionController.php` **baris 160-169** (khususnya **baris 162**):
      ```php
      Gate::authorize('download', $submission);
      ```
-  2. Buka `app/Policies/SubmissionPolicy.php` baris method `view()`:
+  2. Buka `app/Policies/SubmissionPolicy.php` **baris 124-127** (method `download`) dan **baris 55-57** (method `view`):
      ```php
      if ($user->role === 'mahasiswa') {
          return $user->id === $submission->user_id;
@@ -197,10 +197,10 @@ Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, ak
      ```
   5. Tekan Enter.
   6. **Hasil di Layar:** Muncul layar merah **HTTP 403 Forbidden** (*This action is unauthorized*).
-* **Penjelasan Singkat 3 Baris Kode `download()`:**
-  1. `Gate::authorize('download', $submission)`: Satpam izin. Langsung melempar HTTP 403 jika yang login bukan pemilik, bukan dosen pengampu, dan bukan admin.
-  2. `Storage::disk('local')->exists(...)`: Pengecek fisik. Memastikan berkasnya benar-benar ada di harddisk privat agar server tidak crash jika file hilang.
-  3. `Storage::disk('local')->download(...)`: Pengirim aman. Mengalirkan berkas ke browser sekaligus mengembalikan nama asli berkas (`->original_name`), bukan nama acak hash di harddisk.
+* **Penjelasan Singkat 3 Baris Kode `download()` (`SubmissionController.php` baris 160-169):**
+  1. **Baris 162** (`Gate::authorize('download', $submission)`): Satpam izin. Langsung melempar HTTP 403 jika yang login bukan pemilik, bukan dosen pengampu, dan bukan admin.
+  2. **Baris 164** (`Storage::disk('local')->exists(...)`): Pengecek fisik. Memastikan berkasnya benar-benar ada di harddisk privat agar server tidak crash jika file hilang.
+  3. **Baris 168** (`Storage::disk('local')->download(...)`): Pengirim aman. Mengalirkan berkas ke browser sekaligus mengembalikan nama asli berkas (`->original_name`), bukan nama acak hash di harddisk.
 * **Kalimat ke Dosen:**
   *"Ini pembuktian proteksi anti-IDOR kami Pak/Bu. Saat mahasiswa mencoba mengganti ID pengumpulan di URL menjadi milik temannya, sistem langsung mencegatnya lewat Gate dan melempar status 403 Forbidden."*
 
@@ -216,11 +216,5 @@ Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, ak
      ```php
      $isLate = now()->greaterThan($assignment->due_at);
      ```
-* **Penjelasan Singkat 3 Baris Kode `download()`:**
-  1. `Gate::authorize('download', $submission)`: Satpam izin. Langsung melempar HTTP 403 jika yang login bukan pemilik, bukan dosen pengampu, dan bukan admin.
-  2. `Storage::disk('local')->exists(...)`: Pengecek fisik. Memastikan berkasnya benar-benar ada di harddisk privat agar server tidak crash jika file hilang.
-  3. `Storage::disk('local')->download(...)`: Pengirim aman. Mengalirkan berkas ke browser sekaligus mengembalikan nama asli berkas (`->original_name`), bukan nama acak hash di harddisk.
 * **Kalimat ke Dosen:**
   *"Status keterlambatan kami hitung secara independen di server menggunakan fungsi `now()` yang mengacu pada jam server, sehingga mahasiswa tidak bisa mencurangi batas waktu meskipun jam di laptopnya dimundurkan."*
-
-
