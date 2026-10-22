@@ -82,79 +82,138 @@ Berikut 8 eksperimen kerusakan yang saya uji untuk membuktikan pertahanan sistem
 
 ---
 
-## Bagian CHECKPOINT: Evaluasi Pemahaman & Peragaan Mandiri
+## Bagian CHECKPOINT: Evaluasi Pemahaman & Panduan Peragaan Live
 
-Berikut jawaban checkpoint yang to the point dan siap saya peragakan langsung saat presentasi di depan dosen:
+Berikut panduan jawaban Checkpoint Minggu 7 lengkap dengan **tempat peragaan, akun yang dipakai, perintah copy-paste, dan kalimat yang diucapkan saat presentasi di depan dosen**:
+
+---
 
 ### 1. Apa beda autentikasi dan otorisasi? Tunjukkan contohnya di kode Anda!
 * **Bedanya Singkatnya:**
-  * **Autentikasi (*Authentication* - "Siapa kamu?"):** Membuktikan identitas akun pengguna (proses login).
+  * **Autentikasi (*Authentication* - "Siapa kamu?"):** Membuktikan identitas akun pengguna (proses login dengan email & password).
   * **Otorisasi (*Authorization* - "Boleh ngapain aja?"):** Menentukan hak akses pengguna yang sudah login (apakah boleh buka, edit, atau hapus suatu data).
-* **Contoh di Kode Kita:**
-  1. *Autentikasi:* Di `AuthController.php`:
+* **Tempat Peragaan:** VS Code.
+* **Langkah Praktik Langsung:**
+  1. Di VS Code, buka file `app/Http/Controllers/AuthController.php` baris 52:
+     Tunjukkan baris:
      ```php
-     Auth::attempt($credentials);
+     if (Auth::attempt($credentials, $remember))
      ```
-  2. *Otorisasi:* Di `CourseController.php`:
+     *(Ini Autentikasi: mengecek apakah email dan password cocok).*
+  2. Buka file `app/Http/Controllers/CourseController.php` baris 70:
+     Tunjukkan baris:
      ```php
      Gate::authorize('update', $course);
      ```
-     Meskipun dosen sudah login, kalau dia bukan pengampu mata kuliah tersebut, sistem menolak dengan HTTP 403.
+     *(Ini Otorisasi: meskipun dosen sudah login, kalau dia bukan pengampu mata kuliah ini, dia tetap dilarang mengedit).*
+* **Kalimat ke Dosen:**
+  *"Autentikasi adalah pembuktian identitas saat login lewat `Auth::attempt()`, sedangkan Otorisasi adalah pemeriksaan hak akses objek menggunakan `Gate::authorize()` seperti pada edit mata kuliah ini."*
+
+---
 
 ### 2. Tunjukkan Policy yang Anda tulis dan jelaskan logikanya!
-* **Saya menunjukkan `app/Policies/CoursePolicy.php`:**
-  ```php
-  // Hanya Dosen pengampu dan Admin yang boleh mengedit mata kuliah
-  public function update(User $user, Course $course): bool
-  {
-      if ($user->role === 'admin') {
-          return true;
-      }
+* **Tempat Peragaan:** VS Code.
+* **Langkah Praktik Langsung:**
+  1. Buka file `app/Policies/CoursePolicy.php`.
+  2. Arahkan kursor ke method `update()`:
+     ```php
+     public function update(User $user, Course $course): bool
+     {
+         if ($user->role === 'admin') {
+             return true;
+         }
 
-      return $user->role === 'dosen' && $user->id === $course->lecturer_id;
-  }
-  ```
-* **Penjelasan Barisnya:**
-  1. Baris `if ($user->role === 'admin') return true;` memberi izin penuh kepada Administrator.
-  2. Baris `$user->role === 'dosen' && $user->id === $course->lecturer_id;` memastikan bahwa hanya dosen yang ID-nya tercatat sebagai pemilik (`lecturer_id`) yang berhak mengedit kelas tersebut.
+         return $user->role === 'dosen' && $user->id === $course->lecturer_id;
+     }
+     ```
+* **Penjelasan Logika ke Dosen:**
+  1. Baris `if ($user->role === 'admin') return true;` memberi hak penuh kepada Admin untuk mengelola semua kelas.
+  2. Baris `$user->role === 'dosen' && $user->id === $course->lecturer_id;` memastikan hanya Dosen yang ID-nya tercatat sebagai pemilik (`lecturer_id`) yang boleh mengedit kelas tersebut.
+* **Kalimat ke Dosen:**
+  *"Policy ini memastikan Dosen A tidak bisa mengubah data mata kuliah milik Dosen B, sementara Admin memiliki hak akses penuh untuk mengelola seluruh kelas."*
+
+---
 
 ### 3. Kenapa `@can` di Blade saja tidak cukup? Peragakan kebocorannya!
 * **Alasannya:**
-  Direktif `@can` di Blade **hanya menyembunyikan tombol di tampilan layar**. Hacker tidak butuh tombol; mereka bisa langsung menembak URL endpoint secara langsung menggunakan cURL atau Postman.
-* **Langkah Memperagakannya ke Dosen:**
-  1. Buka `CourseController.php` method `destroy()`, hapus sementara baris `Gate::authorize('delete', $course);`.
-  2. Login sebagai Mahasiswa di browser. Di layar, tombol "Hapus Kelas" memang tidak terlihat.
-  3. Buka terminal, lalu kirim request hapus langsung via cURL:
+  Direktif `@can` di Blade **hanya menyembunyikan tombol di tampilan HTML layar**. Hacker tidak membutuhkan tombol; mereka bisa langsung mengirimkan HTTP Request langsung (menggunakan cURL atau Postman) ke URL endpoint tersebut.
+* **Tempat Peragaan:** Browser Chrome & Terminal Git Bash.
+* **Akun yang Dipakai:** `mahasiswa@kampuslms.test` | Password: `password`.
+* **Langkah Praktik Langsung:**
+  1. Di Browser, login sebagai `mahasiswa@kampuslms.test`.
+  2. Buka halaman detail mata kuliah: `http://127.0.0.1:8000/courses/1`.
+  3. Perlihatkan ke dosen: tombol **"Hapus Mata Kuliah"** memang tidak ada di tampilan layar mahasiswa (karena disembunyikan oleh `@can`).
+  4. Sekarang buka Terminal Git Bash, simulasikan hacker yang menembak langsung rute hapus via cURL:
      ```bash
-     curl -X DELETE http://127.0.0.1:8000/courses/1 -b mhs.cookie
+     # 1. Login via cURL dan simpan cookie mahasiswa
+     curl -s -c mhs.cookie -X POST "http://127.0.0.1:8000/login" -F "email=mahasiswa@kampuslms.test" -F "password=password"
+
+     # 2. Coba kirim request DELETE langsung ke rute courses
+     curl -i -b mhs.cookie -X DELETE "http://127.0.0.1:8000/courses/1"
      ```
-  4. Perlihatkan ke dosen: Course ID 1 langsung terhapus dari database!
-  5. Kembalikan lagi `Gate::authorize()` dan ulangi cURL: server langsung membalas **403 Forbidden**. Ini bukti mutlak bahwa penjagaan wajib ada di Controller, bukan cuma di Blade.
+  5. **Hasil di Layar:** Server membalas **HTTP/1.1 403 Forbidden**!
+* **Kalimat ke Dosen:**
+  *"Jika proteksi hanya dipasang di Blade menggunakan `@can`, mahasiswa masih bisa menghapus kelas dengan menembak URL langsung via cURL. Maka dari itu, penjagaan di Controller menggunakan `Gate::authorize()` adalah keharusan mutlak agar server tetap membalas 403 Forbidden."*
+
+---
 
 ### 4. Buka `docs/keamanan.md`. Pilih satu baris, jelaskan penutupannya, lalu buktikan dengan cURL!
-* **Baris yang Dipilih:** Rute `PUT /courses/{course}` (Pengeditan Mata Kuliah).
+* **Baris yang Dipilih:** Baris No. 7 di tabel matriks keamanan:
+  `PUT /courses/{course}` (Pengeditan Mata Kuliah).
 * **Potensi Bahaya IDOR:**
-  Dosen A login, lalu mencoba mengedit atau menyabotase mata kuliah milik Dosen B dengan mengganti ID di URL menjadi `/courses/2`.
+  Dosen 2 login, lalu mencoba mengubah nama atau data mata kuliah Course 1 milik Dosen 1.
 * **Cara Kode Menutupnya:**
-  Dipagari oleh `CoursePolicy@update`: server mengecek apakah `$user->id === $course->lecturer_id`.
-* **Perintah cURL Pembuktian:**
+  Dipagari oleh `CoursePolicy@update` yang mengecek `$user->id === $course->lecturer_id`.
+* **Tempat Peragaan:** Terminal Git Bash.
+* **Langkah Praktik Langsung (Tinggal Tempel):**
   ```bash
-  # Dosen 1 mencoba mengedit Course 2 milik Dosen 2
-  curl -i -b dosen1.cookie -X PUT "http://127.0.0.1:8000/courses/2" \
-    -F "_token=TOKEN_CSRF" \
-    -F "name=Mata Kuliah Bajakan"
+  # 1. Login sebagai Dosen tambahan (Dosen yang bukan pengampu Course 1)
+  curl -s -c dosen_lain.cookie -X POST "http://127.0.0.1:8000/login" \
+    -F "email=dosen@kampuslms.test" \
+    -F "password=password"
+
+  # 2. Ambil token CSRF
+  CSRF_TOKEN=$(curl -s -b dosen_lain.cookie "http://127.0.0.1:8000/courses" | grep -oP 'name="_token" value="\K[^"]+' | head -n 1)
+
+  # 3. Coba kirim request edit ke Course ID 2 (milik Dosen lain)
+  curl -i -b dosen_lain.cookie -X PUT "http://127.0.0.1:8000/courses/2" \
+    -F "_token=${CSRF_TOKEN}" \
+    -F "name=Mata Kuliah Disabotase"
   ```
-  **Hasil:** Server membalas **HTTP/1.1 403 Forbidden**.
+* **Hasil di Layar:** Mengembalikan **HTTP/1.1 403 Forbidden**.
+* **Kalimat ke Dosen:**
+  *"Sesuai dokumen matriks keamanan kami, rute update mata kuliah terlindungi anti-IDOR. Dosen pengampu kelas lain yang mencoba menembak rute ini langsung ditolak dengan status 403 Forbidden."*
+
+---
 
 ### 5. Kenapa kata sandi di-hash, bukan dienkripsi? Apa konsekuensinya untuk fitur lupa password?
 * **Kenapa di-hash:**
-  * **Enkripsi** bersifat bolak-balik (bisa di-decrypt kembali jika tahu kuncinya). Kalau kunci server bocor, semua password pengguna langsung ketahuan.
-  * **Hashing** bersifat satu arah (*one-way*). Sekali di-hash, nilainya secara matematika **mustahil dikembalikan** ke password aslinya.
+  * **Enkripsi** bersifat bolak-balik (bisa didekripsi kembali menjadi teks asli jika kunci bocor).
+  * **Hashing** bersifat satu arah (*one-way*). Secara matematika dan kriptografi, nilai hash **mustahil dikembalikan** ke teks password aslinya.
 * **Konsekuensinya untuk Lupa Password:**
-  Karena server sendiri tidak tahu dan tidak bisa mendekripsi password asli pengguna, sistem **tidak bisa mengirimkan password lama ke email**. Sistem wajib mengirimkan **link reset token** agar pengguna **membuat kata sandi baru**.
+  Karena server sendiri tidak tahu dan tidak bisa memulihkan password asli pengguna, sistem **tidak boleh mengirimkan password lama ke email**. Sistem wajib menggunakan mekanisme **Password Reset Token** agar pengguna diarahkan untuk **membuat kata sandi baru**.
+* **Tempat Peragaan:** VS Code & Database MySQL.
+* **Langkah Praktik Langsung:**
+  1. Di VS Code, buka `app/Models/User.php` baris 48:
+     Tunjukkan kode: `'password' => 'hashed'`.
+  2. Buka tabel `users` di database / terminal tinker:
+     Tunjukkan bahwa password tersimpan sebagai string `$2y$12$...` (hash Bcrypt).
+* **Kalimat ke Dosen:**
+  *"Password kami hash satu arah menggunakan Bcrypt agar jika database bocor, password pengguna tetap aman. Konsekuensinya, fitur lupa password wajib menggunakan link reset token untuk membuat kata sandi baru."*
+
+---
 
 ### 6. Apa fungsi `session()->regenerate()` saat login?
 * **Fungsi Utamanya:**
-  Membuat ID sesi baru dan memusnahkan ID sesi lama tepat saat pengguna berhasil login.
-* **Manfaatnya:**
-  Menangkal serangan **Session Fixation**: mencegah hacker yang sudah menyiapkan ID sesi palsu sebelum korban login untuk membajak akun korban setelah korban berhasil masuk.
+  Membuat ID sesi baru yang segar dan memusnahkan ID sesi lama tepat saat pengguna berhasil login.
+* **Mencegah Serangan Apa:**
+  Menangkal serangan **Session Fixation**: mencegah penyerang membajak akun korban menggunakan session ID lama yang sudah disiapkan penyerang sebelum korban login.
+* **Tempat Peragaan:** Browser Chrome (DevTools F12).
+* **Langkah Praktik Langsung:**
+  1. Buka Browser Chrome, tekan **F12** -> buka tab **Application** -> klik menu **Cookies** -> pilih `http://127.0.0.1:8000`.
+  2. Sebelum login, lihat nilai cookie `kampuslms_session` (misal berawalan `eyJpdi...A`).
+  3. Isi form login dan klik tombol **Masuk**.
+  4. Perlihatkan ke dosen di tab Application: nilai cookie `kampuslms_session` **langsung berganti total dengan string baru** (berawalan `eyJpdi...B`).
+* **Kalimat ke Dosen:**
+  *"Bisa dilihat di DevTools Pak/Bu, saat login berhasil, nilai cookie session langsung digenerasi ulang total oleh `session()->regenerate()` untuk memastikan penyerang tidak bisa membajak sesi login pengguna."*
+

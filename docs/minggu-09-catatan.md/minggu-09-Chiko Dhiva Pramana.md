@@ -69,78 +69,132 @@ Berikut 8 eksperimen kerusakan yang saya uji untuk membuktikan ketahanan sistem 
 
 ---
 
-## Bagian CHECKPOINT: Evaluasi Pemahaman & Peragaan Mandiri
+## Bagian CHECKPOINT: Evaluasi Pemahaman & Panduan Peragaan Live
 
-Berikut jawaban checkpoint yang to the point dan siap saya peragakan langsung saat presentasi di depan dosen:
+Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, akun yang dipakai, perintah copy-paste, dan kalimat yang diucapkan saat presentasi di depan dosen**:
+
+---
 
 ### 1. Kenapa submission tidak boleh disimpan di `storage/app/public`? Peragakan kebocorannya!
 * **Alasannya:**
-  Folder `storage/app/public` punya jalan pintas (*symlink*) ke web publik di `public/storage`. Siapa pun di internet bisa mengunduh file di sana tanpa login, tanpa middleware, dan tanpa dicegat Policy.
-* **Langkah Memperagakannya ke Dosen:**
-  1. Buat file dummy di `storage/app/public/submissions/tugas_rahasia.pdf`.
-  2. Buka browser jendela **Incognito** (mode penyamaran tanpa login).
-  3. Buka URL: `http://127.0.0.1:8000/storage/submissions/tugas_rahasia.pdf`.
-  4. Perlihatkan ke dosen: file langsung terunduh bebas!
-  5. Sekarang tunjukkan file tugas asli kita di disk privat `storage/app/private`: buka URL yang sama, hasilnya pasti **404 Not Found** karena tidak ada akses publik langsung.
+  Folder `storage/app/public` terhubung langsung ke web server publik lewat symlink (`public/storage`). Siapa pun di internet bisa langsung mengunduh berkas tanpa perlu login dan tanpa dicek oleh sistem otorisasi (Policy).
+* **Tempat Peragaan:** Terminal Git Bash & Browser Chrome (Mode Incognito).
+* **Langkah Praktik Langsung (Tinggal Tempel):**
+  1. Buka Terminal Git Bash di folder proyek, buat berkas tes tiruan di folder public:
+     ```bash
+     mkdir -p storage/app/public/submissions && echo "Ini dokumen rahasia bocor" > storage/app/public/submissions/bocor.pdf
+     ```
+  2. Buka Browser Chrome biasa (atau mode Incognito), lalu ketik/tempel URL ini:
+     ```text
+     http://127.0.0.1:8000/storage/submissions/bocor.pdf
+     ```
+  3. **Hasil di Layar:** Berkas langsung terbuka dan terunduh bebas tanpa diminta login sama sekali!
+  4. Sekarang bandingkan dengan berkas tugas kita di disk privat (`storage/app/private`). Coba ketik URL langsung di browser:
+     ```text
+     http://127.0.0.1:8000/storage/app/private/submissions/bocor.pdf
+     ```
+  5. **Hasil di Layar:** Muncul **HTTP 404 Not Found**.
+* **Kalimat ke Dosen:**
+  *"Bisa dilihat Pak/Bu, berkas di disk public bisa diunduh siapa saja tanpa login lewat symlink, sedangkan berkas tugas mahasiswa kita simpan di disk privat yang otomatis menghasilkan 404 jika ditembak langsung, karena wajib lewat Controller yang dilindungi Gate."*
+
+---
 
 ### 2. Kenapa nama berkas fisik dibuat acak? Serangan apa yang dicegah?
 * **Alasannya:**
-  Nama file yang dikirim dari laptop pengguna adalah data yang tidak boleh dipercaya (*untrusted input*). Sistem kita memakai `$file->store()`, bukan `storeAs()` nama asli.
+  Nama berkas asli yang dikirim dari laptop pengguna adalah masukan yang tidak terpercaya (*untrusted input*). Sistem kita menggunakan `$file->store()`, bukan `storeAs()` dengan nama asli.
 * **Serangan yang Dicegah:**
-  1. **Path Traversal:** Mencegah hacker menamai file `../../test.txt` untuk menimpa file penting sistem di folder lain.
-  2. **File Overwrite (Tabrakan Berkas):** Mencegah file Mahasiswa A tertimpa oleh Mahasiswa B yang mengunggah file dengan nama yang kebetulan sama persis (misal sama-sama bernama `tugas1.pdf`).
-  3. **Penebakan URL Langsung:** Hacker tidak bisa menebak nama file fisik karena berupa kode hash acak 40 karakter.
+  1. **Path Traversal:** Mencegah hacker menamai berkas `../../test.txt` untuk menimpa berkas sistem di folder induk.
+  2. **File Overwrite (Tabrakan Berkas):** Mencegah berkas Mahasiswa A tertimpa oleh Mahasiswa B yang mengunggah berkas dengan nama yang kebetulan sama persis (misalnya sama-sama mengunggah `tugas1.pdf`).
+  3. **Penebakan URL Langsung:** Hacker tidak bisa menebak nama fisik berkas karena berbentuk string hash acak 40 karakter.
+* **Tempat Peragaan:** VS Code & File Explorer.
+* **Langkah Praktik Langsung:**
+  1. Di VS Code, buka file `app/Http/Controllers/SubmissionController.php` baris 108:
+     Tunjukkan kode: `$filePath = $file->store('submissions/' . $assignment->id, 'local');`.
+  2. Di File Explorer, buka folder: `storage/app/private/submissions/`.
+  3. Tunjukkan ke dosen: nama berkas fisiknya berupa kode acak unik (seperti `a8Bc...pdf`), sedangkan nama aslinya disimpan terpisah di kolom database `original_name`.
+* **Kalimat ke Dosen:**
+  *"Nama fisik berkas sengaja kami acak dengan hash 40 karakter untuk mencegah serangan Path Traversal, mencegah berkas saling menimpa saat dua mahasiswa mengunggah nama file yang sama, dan agar URL fisik tidak bisa ditebak hacker."*
+
+---
 
 ### 3. Apa beda validasi `mimes` dan `extensions`? Mana yang lebih aman dan kenapa?
 * **Bedanya:**
-  * `extensions`: Hanya membaca teks tulisan di ujung nama file (misal kata `.pdf`). Sangat mudah dibohongi cuma dengan mengganti nama file.
+  * `extensions`: Hanya membaca teks tulisan di ujung nama berkas (misal kata `.pdf`). Sangat mudah dibohongi hanya dengan me-rename file.
   * `mimes`: Membaca langsung biner asli berkas (*magic bytes*) menggunakan modul PHP `fileinfo`.
-* **Mana yang Lebih Aman:**
-  Jelas **`mimes`**.
-* **Langkah Memperagakannya ke Dosen:**
-  1. Buat file script PHP palsu di terminal:
+* **Mana yang Lebih Aman:** Jelas **`mimes`**.
+* **Tempat Peragaan:** Terminal Git Bash & Browser Chrome.
+* **Akun yang Dipakai:** `mahasiswa@kampuslms.test` | Password: `password`.
+* **Langkah Praktik Langsung:**
+  1. Buka Terminal Git Bash, buat skrip PHP palsu berektensi `.pdf`:
      ```bash
      echo "<?php phpinfo(); ?>" > script_jahat.pdf
      ```
-  2. Coba unggah file `script_jahat.pdf` ini ke form pengumpulan tugas.
-  3. Perlihatkan ke dosen: Laravel langsung menolaknya dengan pesan error *"Format berkas harus berupa PDF, DOC, atau DOCX."* karena Laravel tahu biner aslinya adalah skrip teks/PHP, bukan dokumen PDF biner.
+  2. Buka Browser, login dengan email `mahasiswa@kampuslms.test` dan password `password`.
+  3. Buka halaman tugas: `http://127.0.0.1:8000/assignments/1`.
+  4. Pada form pengumpulan, pilih berkas `script_jahat.pdf` tadi, lalu klik tombol **Kumpulkan Tugas**.
+  5. **Hasil di Layar:** Muncul kotak peringatan merah: *"Format berkas harus berupa PDF, DOC, atau DOCX."*
+* **Kalimat ke Dosen:**
+  *"Meskipun ekstensi file sudah saya samarkan menjadi .pdf, validasi mimes di Laravel membaca magic bytes biner aslinya dan mengetahui bahwa ini adalah skrip teks/PHP, sehingga langsung ditolak demi mencegah eksekusi malware di server."*
+
+---
 
 ### 4. `max:5120` berarti berapa MB? Apa yang bisa membatalkan batas ini di level server?
 * **Artinya:**
-  Satuan `max` untuk file di Laravel adalah **Kilobyte (KB)**.  
+  Satuan `max` untuk berkas di Laravel adalah **Kilobyte (KB)**.  
   `5120 KB` / `1024` = **5 Megabyte (MB)**.
 * **Yang Membatalkan di Level Server:**
-  Pengaturan di file konfigurasi `php.ini` server:
-  1. `upload_max_filesize` (bawaan PHP sering kali cuma `2M`).
+  Pengaturan pada berkas `php.ini` server:
+  1. `upload_max_filesize` (bawaan PHP sering kali hanya disetel `2M`).
   2. `post_max_size` (bawaan PHP biasanya `8M`).
-  *Contoh:* Jika `upload_max_filesize` disetel `2M`, mahasiswa yang mengunggah file 3 MB akan langsung ditolak mental oleh server PHP sebelum kode validasi Laravel sempat membacanya.
+* **Tempat Peragaan:** Terminal Git Bash.
+* **Langkah Praktik Langsung:**
+  1. Di Terminal Git Bash, ketik/tempel perintah ini:
+     ```bash
+     php -r "echo 'upload_max_filesize: ' . ini_get('upload_max_filesize') . PHP_EOL . 'post_max_size: ' . ini_get('post_max_size') . PHP_EOL;"
+     ```
+  2. Perlihatkan outputnya ke dosen.
+* **Kalimat ke Dosen:**
+  *"`max:5120` di Laravel itu artinya 5 Megabyte. Namun jika di server direktif `upload_max_filesize` disetel 2M, maka berkas 3 MB akan langsung ditolak mental oleh server PHP sebelum kode validasi Laravel sempat membacanya."*
+
+---
 
 ### 5. Tunjukkan di kode Anda apa yang mencegah mahasiswa mengunduh submission mahasiswa lain!
-* **Langkah Memperagakannya ke Dosen:**
-  1. **Buka file `app/Http/Controllers/SubmissionController.php` baris method `download()`:**
-     Tunjukkan baris penjaganya:
+* **Tempat Peragaan:** VS Code & Browser Chrome.
+* **Akun yang Dipakai:** `mahasiswa@kampuslms.test` (User ID: 3, pemilik Submission ID: 1).
+* **Langkah Praktik Langsung:**
+  1. Di VS Code, buka `app/Http/Controllers/SubmissionController.php` baris method `download()`:
      ```php
      Gate::authorize('download', $submission);
      ```
-  2. **Buka file `app/Policies/SubmissionPolicy.php` baris method `view()`:**
-     Tunjukkan logikanya:
+  2. Buka `app/Policies/SubmissionPolicy.php` baris method `view()`:
      ```php
      if ($user->role === 'mahasiswa') {
          return $user->id === $submission->user_id;
      }
      ```
-  3. **Demokan Langsung di Browser:**
-     - Login sebagai Mahasiswa A, buka tugas miliknya: berhasil diunduh.
-     - Ubah ID di URL menjadi submission milik Mahasiswa B: `http://127.0.0.1:8000/submissions/2/download`.
-     - Tunjukkan hasilnya ke dosen: seketika muncul layar merah **HTTP 403 Forbidden**.
+  3. Di Browser Chrome, login sebagai Mahasiswa biasa.
+  4. Ketik/tempel URL download tugas milik mahasiswa lain di address bar:
+     ```text
+     http://127.0.0.1:8000/submissions/2/download
+     ```
+  5. Tekan Enter.
+  6. **Hasil di Layar:** Muncul layar merah **HTTP 403 Forbidden** (*This action is unauthorized*).
+* **Kalimat ke Dosen:**
+  *"Ini pembuktian proteksi anti-IDOR kami Pak/Bu. Saat mahasiswa mencoba mengganti ID pengumpulan di URL menjadi milik temannya, sistem langsung mencegatnya lewat Gate dan melempar status 403 Forbidden."*
+
+---
 
 ### 6. Kenapa `is_late` dihitung di server, bukan dikirim dari browser?
 * **Alasannya:**
-  Waktu di komputer pengguna (browser) sangat mudah dicurangi. Mahasiswa bisa dengan mudah memundurkan jam di laptopnya atau mengubah nilai input tersembunyi via inspect element.
-* **Solusinya di Kode Kita:**
-  Server menghitung keterlambatan secara adil dan objektif menggunakan jam server:
-  ```php
-  $isLate = now()->greaterThan($assignment->due_at);
-  ```
-  Dengan cara ini, mahasiswa tidak bisa memalsukan status pengumpulan tepat waktu.
+  Waktu di komputer pengguna (browser) sangat mudah dimanipulasi. Mahasiswa bisa dengan mudah memundurkan jam laptopnya atau mengubah nilai input formulir via inspect element agar tampak tepat waktu.
+* **Tempat Peragaan:** VS Code.
+* **Langkah Praktik Langsung:**
+  1. Di VS Code, buka `app/Http/Controllers/SubmissionController.php` baris 55.
+  2. Tunjukkan baris kodenya:
+     ```php
+     $isLate = now()->greaterThan($assignment->due_at);
+     ```
+* **Kalimat ke Dosen:**
+  *"Status keterlambatan kami hitung secara independen di server menggunakan fungsi `now()` yang mengacu pada jam server, sehingga mahasiswa tidak bisa mencurangi batas waktu meskipun jam di laptopnya dimundurkan."*
+
 
