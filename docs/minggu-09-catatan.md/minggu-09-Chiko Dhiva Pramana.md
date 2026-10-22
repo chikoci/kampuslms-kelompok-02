@@ -96,6 +96,12 @@ Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, ak
   5. **Hasil di Layar:** Muncul **HTTP 404 Not Found**.
 * **Kalimat ke Dosen:**
   *"Bisa dilihat Pak/Bu, berkas di disk public bisa diunduh siapa saja tanpa login lewat symlink, sedangkan berkas tugas mahasiswa kita simpan di disk privat yang otomatis menghasilkan 404 jika ditembak langsung, karena wajib lewat Controller yang dilindungi Gate."*
+* **Cara Membersihkan Kembali Berkas Uji Coba (Cleanup):**
+  Setelah peragaan selesai, hapus folder uji coba tersebut lewat Terminal Git Bash agar penyimpanan bersih kembali:
+  ```bash
+  rm -rf storage/app/public/submissions
+  ```
+  *(Setelah dihapus, jika halaman browser tadi di-refresh, statusnya seketika kembali menjadi 404 Not Found).*
 
 ---
 
