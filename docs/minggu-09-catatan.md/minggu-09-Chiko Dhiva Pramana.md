@@ -149,23 +149,30 @@ Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, ak
   Satuan `max` untuk berkas di Laravel adalah **Kilobyte (KB)**.  
   `5120 KB` / `1024` = **5 Megabyte (MB)**.
 * **Yang Membatalkan di Level Server:**
-  Pengaturan pada berkas `php.ini` server:
-  1. `upload_max_filesize` (bawaan PHP sering kali hanya disetel `2M`).
-  2. `post_max_size` (bawaan PHP biasanya `8M`).
+  Pengaturan pada berkas konfigurasi **`php.ini`** server:
+  1. `upload_max_filesize`: Batas ukuran maksimal satu berkas yang diunggah.
+  2. `post_max_size`: Batas ukuran total muatan HTTP POST.
+* **Lokasi Berkas Pengaturannya:**
+  Dapat dicek dengan perintah `php --ini`. Di laptop kita tersimpan di:
+  `C:\Users\XBOOK B15\.config\herd\bin\php84\php.ini`.
+* **Kenapa Nilai di Laptop Kita 25M dan 30M?**
+  1. **Standar Laravel Herd Modern:** Herd otomatis menetapkan 25M dan 30M (bukan 2M jadul).
+  2. **Berada di Atas Validasi Aplikasi:** Di proyek kita, tugas dibatasi 5 MB dan materi dosen 20 MB. Nilai server 25M memastikan server PHP tidak akan menolak berkas sebelum divalidasi Laravel.
+  3. **`post_max_size` (30M) Wajib Lebih Besar dari `upload_max_filesize` (25M):** Karena muatan POST membawa berkas ditambah token CSRF, input teks lain, dan header HTTP.
 * **Tempat Peragaan:** Terminal Git Bash.
 * **Langkah Praktik Langsung:**
-  1. Di Terminal Git Bash, ketik/tempel salah satu perintah berikut:
+  1. Untuk menunjukkan lokasi file pengaturannya:
+     ```bash
+     php --ini
+     ```
+  2. Untuk menunjukkan nilai batas aktifnya:
      ```bash
      php -i | grep upload_max_filesize
      php -i | grep post_max_size
      ```
-     *(Atau melalui artisan tinker):*
-     ```bash
-     php artisan tinker --execute="echo 'upload_max_filesize: ' . ini_get('upload_max_filesize') . PHP_EOL . 'post_max_size: ' . ini_get('post_max_size');"
-     ```
-  2. Perlihatkan outputnya ke dosen. Output di laptop kita menunjukkan `25M` dan `30M`.
+     *(Muncul output: `upload_max_filesize => 25M` dan `post_max_size => 30M`).*
 * **Kalimat ke Dosen:**
-  *"`max:5120` di Laravel itu artinya 5 Megabyte. Namun jika di server direktif `upload_max_filesize` disetel 2M, maka berkas 3 MB akan langsung ditolak mental oleh server PHP sebelum kode validasi Laravel sempat membacanya."*
+  *"`max:5120` di Laravel itu artinya 5 Megabyte. Lokasi pengaturannya ada di berkas `php.ini` pada direktif `upload_max_filesize` (25M) dan `post_max_size` (30M). Nilai ini sengaja disetel di atas batas aplikasi kita (5 MB dan 20 MB) agar tidak ditolak server, dan `post_max_size` wajib lebih besar untuk menampung file sekaligus data form lainnya."*
 
 ---
 
