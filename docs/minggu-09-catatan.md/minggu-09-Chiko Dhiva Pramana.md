@@ -154,11 +154,16 @@ Berikut panduan jawaban Checkpoint Minggu 9 lengkap dengan **tempat peragaan, ak
   2. `post_max_size` (bawaan PHP biasanya `8M`).
 * **Tempat Peragaan:** Terminal Git Bash.
 * **Langkah Praktik Langsung:**
-  1. Di Terminal Git Bash, ketik/tempel perintah ini:
+  1. Di Terminal Git Bash, ketik/tempel salah satu perintah berikut:
      ```bash
-     php -r "echo 'upload_max_filesize: ' . ini_get('upload_max_filesize') . PHP_EOL . 'post_max_size: ' . ini_get('post_max_size') . PHP_EOL;"
+     php -i | grep upload_max_filesize
+     php -i | grep post_max_size
      ```
-  2. Perlihatkan outputnya ke dosen.
+     *(Atau melalui artisan tinker):*
+     ```bash
+     php artisan tinker --execute="echo 'upload_max_filesize: ' . ini_get('upload_max_filesize') . PHP_EOL . 'post_max_size: ' . ini_get('post_max_size');"
+     ```
+  2. Perlihatkan outputnya ke dosen. Output di laptop kita menunjukkan `25M` dan `30M`.
 * **Kalimat ke Dosen:**
   *"`max:5120` di Laravel itu artinya 5 Megabyte. Namun jika di server direktif `upload_max_filesize` disetel 2M, maka berkas 3 MB akan langsung ditolak mental oleh server PHP sebelum kode validasi Laravel sempat membacanya."*
 
