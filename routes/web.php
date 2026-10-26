@@ -4,7 +4,9 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GradeController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\TentangController;
@@ -85,4 +87,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/submissions/{submission}', [SubmissionController::class, 'destroy'])->name('submissions.destroy');
     Route::post('/submissions/{submission}/grades', [SubmissionController::class, 'grade'])->name('submissions.grades.store');
     Route::delete('/submissions/{submission}/grades', [SubmissionController::class, 'destroyGrade'])->name('submissions.grades.destroy');
+
+    // Rekap Nilai Akademik (Milestone M3)
+    Route::get('/courses/{course}/grades', [GradeController::class, 'courseGrades'])->name('courses.grades');
+    Route::get('/my-grades', [GradeController::class, 'studentGrades'])->name('grades.student');
+
+    // Modul Notifikasi Asinkron (Milestone M3)
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unreadCount');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
