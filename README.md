@@ -34,11 +34,15 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek ini di komputer lokal:
    ```bash
    php artisan migrate --seed
    ```
-8. Nyalakan server lokal:
+8. Jalankan worker antrean (*Queue Worker*) di terminal terpisah untuk memproses pengiriman notifikasi latar belakang:
+   ```bash
+   php artisan queue:work
+   ```
+9. Nyalakan server lokal:
    ```bash
    php artisan serve
    ```
-9. Buka browser dan akses web di `http://127.0.0.1:8000`
+10. Buka browser dan akses web di `http://127.0.0.1:8000`
 
 ## Akun Demo Standar (Hasil Seeder)
 
