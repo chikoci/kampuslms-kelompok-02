@@ -54,6 +54,10 @@ class AssignmentController extends Controller
         $assignment = Assignment::create($validated);
         $assignment->load(['course', 'creator']);
 
+        if ($assignment->status === 'published') {
+            \App\Events\AssignmentPublished::dispatch($assignment);
+        }
+
         return (new AssignmentResource($assignment))
             ->response()
             ->setStatusCode(201);
