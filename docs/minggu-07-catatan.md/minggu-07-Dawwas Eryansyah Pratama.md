@@ -1,4 +1,4 @@
-# Catatan Praktikum Minggu 07
+# Minggu 07
 
 **Nama:** Dawwas Eryansyah Pratama  
 
@@ -7,8 +7,6 @@
 ---
 
 ## 1. READ — Bedah Starter Kit & Mekanisme Keamanan
-
-Pada tahap ini, saya melakukan penelusuran arsitektur kode autentikasi dan pengelolaan sesi bawaan aplikasi KampusLMS secara langsung pada repositori lokal:
 
 ### 1. Berkas mana yang menangani POST login? Method apa?
 

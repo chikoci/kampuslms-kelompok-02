@@ -1,15 +1,12 @@
-# Catatan Praktikum Minggu 09
+# Minggu 09
 
-**Nama:** Dawwas Eryansyah Pratama  
-**NIM:** 10241019  
-**Kelompok:** Kelompok 02 (Kelas B / SI)  
-**Fokus Kontribusi:** Pengelolaan Unggahan Berkas Privat (Materi & Tugas), Validasi Magic Bytes & Ukuran Berkas, Download Berkas dengan Otorisasi Policy, serta Pencegahan Berkas Yatim (*Orphan Files*).
+**Nama:** Dawwas Eryansyah Pratama
+
+**NIM:** 10241019
 
 ---
 
 ## 1. READ — Telusuri Satu Berkas (30 menit)
-
-Pada tahap ini, saya melakukan penelusuran arsitektur penyimpanan berkas privat pada aplikasi KampusLMS setelah mengunggah satu berkas dokumen tugas/materi:
 
 ### 1. Temukan berkas fisiknya di sistem berkas. Path lengkapnya apa?
 
