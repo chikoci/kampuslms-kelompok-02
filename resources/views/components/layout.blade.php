@@ -30,10 +30,24 @@
                         <li><a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">Pengguna</a></li>
                     @endcan
 
+                    @if (auth()->user()->role === 'mahasiswa')
+                        <li><a href="{{ route('grades.student') }}" class="{{ request()->routeIs('grades.*') ? 'active' : '' }}">Nilai Saya</a></li>
+                    @endif
+
                     <li><a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'active' : '' }}">Tentang</a></li>
 
+                    {{-- Lonceng Notifikasi Asinkron --}}
+                    <li style="display: flex; align-items: center; margin-left: 0.5rem;">
+                        <a href="{{ route('notifications.index') }}" id="notificationBellBtn" title="Pusat Notifikasi" style="position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 0.35rem 0.5rem; text-decoration: none; color: #f8fafc; font-size: 1.15rem; border-radius: 6px; transition: background 0.15s ease;">
+                            🔔
+                            <span id="notificationBadge" style="{{ auth()->user()->unreadNotifications->count() > 0 ? 'display: inline-flex;' : 'display: none;' }} position: absolute; top: -3px; right: -3px; background: #ef4444; color: #ffffff; font-size: 0.65rem; font-weight: 700; border-radius: 9999px; min-width: 17px; height: 17px; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                {{ auth()->user()->unreadNotifications->count() }}
+                            </span>
+                        </a>
+                    </li>
+
                     {{-- Informasi Profil & Logout --}}
-                    <li style="display: flex; align-items: center; gap: 0.75rem; margin-left: 0.75rem; padding-left: 0.75rem; border-left: 1px solid rgba(255,255,255,0.15);">
+                    <li style="display: flex; align-items: center; gap: 0.75rem; margin-left: 0.5rem; padding-left: 0.75rem; border-left: 1px solid rgba(255,255,255,0.15);">
                         <div style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;">
                             <span style="font-size: 0.85rem; color: #f8fafc; font-weight: 600;">{{ auth()->user()->name }}</span>
                             <span class="badge {{ auth()->user()->role === 'admin' ? 'badge-danger' : (auth()->user()->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">
@@ -97,6 +111,37 @@
     <footer class="footer">
         KampusLMS &copy; 2025 - Kelompok 02. Dibuat dengan Laravel 12.
     </footer>
+
+    @auth
+    {{-- Polling Otomatis Status Notifikasi (30 Detik) --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const badge = document.getElementById('notificationBadge');
+            if (!badge) return;
+
+            setInterval(function () {
+                fetch('{{ route('notifications.unreadCount') }}', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && typeof data.unread_count !== 'undefined') {
+                        if (data.unread_count > 0) {
+                            badge.textContent = data.unread_count;
+                            badge.style.display = 'inline-flex';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(() => {});
+            }, 30000);
+        });
+    </script>
+    @endauth
 
 </body>
 </html>
