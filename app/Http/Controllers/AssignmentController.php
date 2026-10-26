@@ -55,7 +55,11 @@ class AssignmentController extends Controller
 
         $validated['created_by'] = auth()->id() ?? $course->lecturer_id;
         $validated['instructions'] = $validated['instructions'] ?? '';
-        $course->assignments()->create($validated);
+        $assignment = $course->assignments()->create($validated);
+
+        if ($assignment->status === 'published') {
+            \App\Events\AssignmentPublished::dispatch($assignment);
+        }
 
         return redirect()->route('courses.show', $course)->with('success', 'Tugas perkuliahan berhasil dibuat.');
     }
@@ -99,7 +103,12 @@ class AssignmentController extends Controller
         ]);
 
         $validated['instructions'] = $validated['instructions'] ?? '';
+        $wasDraft = $assignment->status === 'draft';
         $assignment->update($validated);
+
+        if ($assignment->status === 'published' && $wasDraft) {
+            \App\Events\AssignmentPublished::dispatch($assignment);
+        }
 
         return redirect()->route('assignments.show', $assignment)->with('success', 'Data tugas berhasil diperbarui.');
     }
