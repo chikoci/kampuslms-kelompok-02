@@ -7,6 +7,9 @@
         </a>
         <div class="header-actions-group">
             @can('update', $course)
+                <a href="{{ route('courses.grades', $course) }}" class="btn btn-sm" style="background-color: #059669; color: #ffffff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+                    &#128202; Rekap Nilai Kelas
+                </a>
                 <a href="{{ route('courses.edit', $course) }}" class="btn btn-edit btn-sm">
                     Edit Mata Kuliah
                 </a>
@@ -138,11 +141,18 @@
                 <h2 class="section-title">Tugas Akademik</h2>
                 <span class="section-counter">Total: {{ $course->assignments->count() }} Tugas</span>
             </div>
-            @can('create', [\App\Models\Assignment::class, $course])
-                <a href="{{ route('courses.assignments.create', $course) }}" class="btn btn-primary btn-sm">
-                    + Tambah Tugas
-                </a>
-            @endcan
+            <div style="display: flex; gap: 8px;">
+                @can('update', $course)
+                    <a href="{{ route('courses.grades', $course) }}" class="btn btn-sm" style="background-color: #059669; color: #ffffff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 4px;">
+                        &#128202; Rekap Nilai
+                    </a>
+                @endcan
+                @can('create', [\App\Models\Assignment::class, $course])
+                    <a href="{{ route('courses.assignments.create', $course) }}" class="btn btn-primary btn-sm">
+                        + Tambah Tugas
+                    </a>
+                @endcan
+            </div>
         </div>
         <div class="table-container">
             <table class="data-table">
