@@ -94,9 +94,10 @@
 
         @php
             $uncreditedSubmissions = $submissions->filter(fn($s) => !$s->grade);
+            $canGradeAssignment = auth()->user()?->role === 'dosen' && $assignment->course->lecturer_id === auth()->id();
         @endphp
 
-        @if($uncreditedSubmissions->isNotEmpty())
+        @if($canGradeAssignment && $uncreditedSubmissions->isNotEmpty())
             <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
                     <h4 style="margin: 0; color: #1e40af; font-size: 1rem; font-weight: 700;">
@@ -169,12 +170,23 @@
                                     @if($sub->grade)
                                         <div style="display: inline-flex; align-items: center; gap: 6px;">
                                             <strong style="color: #16a34a; font-size: 0.95rem;">{{ $sub->grade->score }}</strong>
-                                            <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Ubah</a>
+                                            @if($canGradeAssignment)
+                                                <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Ubah</a>
+                                            @else
+                                                <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Lihat</a>
+                                            @endif
                                         </div>
                                     @else
-                                        <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-primary" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
-                                            &#9998; Beri Nilai
-                                        </a>
+                                        @if($canGradeAssignment)
+                                            <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-primary" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                                &#9998; Beri Nilai
+                                            </a>
+                                        @else
+                                            <div style="display: inline-flex; align-items: center; gap: 4px;">
+                                                <span class="badge" style="background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; font-weight: 500; font-size: 0.75rem;">Belum Dinilai</span>
+                                                <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Lihat</a>
+                                            </div>
+                                        @endif
                                     @endif
                                 @else
                                     <span class="text-muted">-</span>
