@@ -15,7 +15,7 @@
 
     @if(auth()->user()->role === 'mahasiswa')
         {{-- Tampilan khusus mahasiswa: hanya pengumpulan miliknya --}}
-        <div class="table-container">
+        <div class="table-container" style="overflow-x: auto;">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -112,16 +112,16 @@
             </div>
         @endif
 
-        <div class="table-container">
-            <table class="data-table">
+        <div class="table-container" style="overflow-x: auto; width: 100%;">
+            <table class="data-table" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 100px;">NIM</th>
-                        <th>Nama Mahasiswa</th>
-                        <th style="width: 140px;">Status</th>
-                        <th style="width: 140px;">Waktu Kumpul</th>
+                        <th style="width: 85px;">NIM</th>
+                        <th style="min-width: 140px;">Nama Mahasiswa</th>
+                        <th style="width: 95px; text-align: center;">Status</th>
+                        <th style="width: 115px;">Waktu Kumpul</th>
                         <th>Berkas Tugas</th>
-                        <th style="width: 140px; text-align: center;">Penilaian</th>
+                        <th style="width: 120px; text-align: center;">Penilaian</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -133,14 +133,14 @@
                             <td class="text-muted" style="font-size: 0.85rem;">{{ $student->nim_nip ?? '-' }}</td>
                             <td>
                                 @if($sub)
-                                    <a href="{{ route('submissions.show', $sub) }}" style="color: #2563eb; font-weight: 600; text-decoration: none;" title="Klik untuk membuka penilaian">
+                                    <a href="{{ route('submissions.show', $sub) }}" style="color: #2563eb; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Klik untuk membuka penilaian">
                                         {{ $student->name }} &rarr;
                                     </a>
                                 @else
                                     <span class="font-semibold text-body">{{ $student->name }}</span>
                                 @endif
                             </td>
-                            <td>
+                            <td style="text-align: center;">
                                 @if($sub)
                                     @if($sub->is_late)
                                         <span class="badge badge-overdue">Terlambat</span>
@@ -151,14 +151,14 @@
                                     <span class="badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">Belum Kumpul</span>
                                 @endif
                             </td>
-                            <td class="text-muted" style="font-size: 0.85rem;">
+                            <td class="text-muted" style="font-size: 0.825rem; white-space: nowrap;">
                                 {{ $sub?->submitted_at?->format('d M Y, H:i') ?? '-' }}
                             </td>
                             <td>
                                 @if($sub && $sub->file_path)
-                                    <a href="{{ route('submissions.download', $sub) }}" class="badge badge-file" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Unduh berkas submission">
-                                        &#128190; {{ $sub->original_name }}
-                                        <span style="font-size: 0.75rem; opacity: 0.85;">({{ $sub->formatted_file_size }})</span>
+                                    <a href="{{ route('submissions.download', $sub) }}" class="badge badge-file" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; max-width: 220px;" title="{{ $sub->original_name }} ({{ $sub->formatted_file_size }})">
+                                        &#128190; <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; display: inline-block; vertical-align: middle;">{{ $sub->original_name }}</span>
+                                        <span style="font-size: 0.72rem; opacity: 0.85; white-space: nowrap;">({{ $sub->formatted_file_size }})</span>
                                     </a>
                                 @else
                                     <span class="text-muted">-</span>
