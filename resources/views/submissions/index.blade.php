@@ -15,7 +15,7 @@
 
     @if(auth()->user()->role === 'mahasiswa')
         {{-- Tampilan khusus mahasiswa: hanya pengumpulan miliknya --}}
-        <div class="table-container">
+        <div class="table-container" style="overflow-x: auto;">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -94,9 +94,10 @@
 
         @php
             $uncreditedSubmissions = $submissions->filter(fn($s) => !$s->grade);
+            $canGradeAssignment = auth()->user()?->role === 'dosen' && $assignment->course->lecturer_id === auth()->id();
         @endphp
 
-        @if($uncreditedSubmissions->isNotEmpty())
+        @if($canGradeAssignment && $uncreditedSubmissions->isNotEmpty())
             <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
                     <h4 style="margin: 0; color: #1e40af; font-size: 1rem; font-weight: 700;">
@@ -112,16 +113,16 @@
             </div>
         @endif
 
-        <div class="table-container">
-            <table class="data-table">
+        <div class="table-container" style="overflow-x: auto; width: 100%;">
+            <table class="data-table" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 100px;">NIM</th>
-                        <th>Nama Mahasiswa</th>
-                        <th style="width: 140px;">Status</th>
-                        <th style="width: 140px;">Waktu Kumpul</th>
+                        <th style="width: 85px;">NIM</th>
+                        <th style="min-width: 140px;">Nama Mahasiswa</th>
+                        <th style="width: 95px; text-align: center;">Status</th>
+                        <th style="width: 115px;">Waktu Kumpul</th>
                         <th>Berkas Tugas</th>
-                        <th style="width: 140px; text-align: center;">Penilaian</th>
+                        <th style="width: 120px; text-align: center;">Penilaian</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -133,14 +134,14 @@
                             <td class="text-muted" style="font-size: 0.85rem;">{{ $student->nim_nip ?? '-' }}</td>
                             <td>
                                 @if($sub)
-                                    <a href="{{ route('submissions.show', $sub) }}" style="color: #2563eb; font-weight: 600; text-decoration: none;" title="Klik untuk membuka penilaian">
+                                    <a href="{{ route('submissions.show', $sub) }}" style="color: #2563eb; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Klik untuk membuka penilaian">
                                         {{ $student->name }} &rarr;
                                     </a>
                                 @else
                                     <span class="font-semibold text-body">{{ $student->name }}</span>
                                 @endif
                             </td>
-                            <td>
+                            <td style="text-align: center;">
                                 @if($sub)
                                     @if($sub->is_late)
                                         <span class="badge badge-overdue">Terlambat</span>
@@ -151,14 +152,14 @@
                                     <span class="badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">Belum Kumpul</span>
                                 @endif
                             </td>
-                            <td class="text-muted" style="font-size: 0.85rem;">
+                            <td class="text-muted" style="font-size: 0.825rem; white-space: nowrap;">
                                 {{ $sub?->submitted_at?->format('d M Y, H:i') ?? '-' }}
                             </td>
                             <td>
                                 @if($sub && $sub->file_path)
-                                    <a href="{{ route('submissions.download', $sub) }}" class="badge badge-file" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Unduh berkas submission">
-                                        &#128190; {{ $sub->original_name }}
-                                        <span style="font-size: 0.75rem; opacity: 0.85;">({{ $sub->formatted_file_size }})</span>
+                                    <a href="{{ route('submissions.download', $sub) }}" class="badge badge-file" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; max-width: 220px;" title="{{ $sub->original_name }} ({{ $sub->formatted_file_size }})">
+                                        &#128190; <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; display: inline-block; vertical-align: middle;">{{ $sub->original_name }}</span>
+                                        <span style="font-size: 0.72rem; opacity: 0.85; white-space: nowrap;">({{ $sub->formatted_file_size }})</span>
                                     </a>
                                 @else
                                     <span class="text-muted">-</span>
@@ -169,12 +170,23 @@
                                     @if($sub->grade)
                                         <div style="display: inline-flex; align-items: center; gap: 6px;">
                                             <strong style="color: #16a34a; font-size: 0.95rem;">{{ $sub->grade->score }}</strong>
-                                            <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Ubah</a>
+                                            @if($canGradeAssignment)
+                                                <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Ubah</a>
+                                            @else
+                                                <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Lihat</a>
+                                            @endif
                                         </div>
                                     @else
-                                        <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-primary" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
-                                            &#9998; Beri Nilai
-                                        </a>
+                                        @if($canGradeAssignment)
+                                            <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-primary" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                                &#9998; Beri Nilai
+                                            </a>
+                                        @else
+                                            <div style="display: inline-flex; align-items: center; gap: 4px;">
+                                                <span class="badge" style="background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; font-weight: 500; font-size: 0.75rem;">Belum Dinilai</span>
+                                                <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Lihat</a>
+                                            </div>
+                                        @endif
                                     @endif
                                 @else
                                     <span class="text-muted">-</span>

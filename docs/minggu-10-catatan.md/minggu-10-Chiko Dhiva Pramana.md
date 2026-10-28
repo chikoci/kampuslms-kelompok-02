@@ -107,18 +107,22 @@ Panduan jawaban 7 soal Checkpoint 10.4 yang **ringkas, to the point, dan 100% pe
 ---
 
 ### 4. Tunjukkan Listener yang Anda tulis. Apa akibatnya kalau `ShouldQueue` dihapus?
+* **Tempat Peragaan:**  
+  * **File Kode:** `app/Listeners/SendAssignmentNotification.php` (baris 12: `implements ShouldQueue`, baris 19-24: `$tries = 3`, `$backoff = 10`, baris 43: method `failed()`).
+  * **Media Uji:** Terminal (`php artisan queue:monitor default`) dan Browser (akun Dosen).
 * **Jawabannya:**  
-  Jika kontrak `ShouldQueue` dihapus, listener akan berubah menjadi proses sinkron. Akibatnya, saat dosen membuat tugas di kelas dengan puluhan mahasiswa, browser dosen akan *loading* berputar lama karena server harus menyisipkan puluhan notifikasi satu per satu sebelum merespons.
-* **Tempat Peragaan:** VS Code file `app/Listeners/SendAssignmentNotification.php`.
-* **Langkah Peragaan:**
-  1. Buka file `app/Listeners/SendAssignmentNotification.php` di VS Code.
-  2. Tunjukkan baris 12:
-     ```php
-     class SendAssignmentNotification implements ShouldQueue
-     ```
-  3. Tunjukkan properti penanganan kegagalan di baris 19-24 (`$tries = 3`, `$backoff = 10`) dan method `failed()` di baris 43.
+  Jika kontrak `ShouldQueue` dihapus, listener berubah dari **asinkron (antrean latar belakang)** menjadi **sinkron (dieksekusi langsung saat request)**.
+  Dua akibat utamanya:
+  1. **Browser Dosen Mengalami *Blocking*:** Dosen harus menunggu puluhan notifikasi selesai disisipkan satu per satu ke database sebelum halaman selesai dimuat.
+  2. **Tabel Antrean `jobs` Tetap Kosong (0):** Pekerjaan tidak pernah dititipkan ke antrean worker latar belakang karena langsung diproses seketika di siklus HTTP request.
+* **Langkah Peragaan Jika Dihapus:**
+  1. **Tunjukkan Kode Asli:** Buka `app/Listeners/SendAssignmentNotification.php` baris 12 yang memiliki `implements ShouldQueue`.
+  2. **Hapus / Komentari Kontrak:** Ubah baris 12 menjadi `class SendAssignmentNotification // implements ShouldQueue`.
+  3. **Buat Tugas Baru (Kondisi Worker Mati):** Pastikan queue worker di terminal mati. Buat tugas baru di browser dosen lalu klik Simpan. Tunjukkan browser mengalami jeda putaran *loading*.
+  4. **Buktikan di Terminal:** Jalankan `php artisan queue:monitor default`. Tunjukkan tabel antrean `jobs` tetap bernilai **0 (kosong)**, padahal notifikasi sudah langsung masuk ke akun mahasiswa (bukti proses berjalan langsung/sinkron tanpa antrean).
+  5. **Kembalikan Kode Semula:** Pasang kembali `implements ShouldQueue`, lalu tunjukkan saat tugas dibuat ulang, browser merespons instan dan tugas pengiriman dititipkan ke tabel `jobs`.
 * **Kalimat ke Dosen:**  
-  *"Ini listener kami Pak/Bu. Jika ShouldQueue dihapus, listener berjalan sinkron dan web dosen akan hang atau freeze saat mengirim tugas ke kelas besar. Dengan ShouldQueue, pengiriman berjalan di antrean latar belakang."*
+  *"Ini file listener kami Pak/Bu di SendAssignmentNotification.php. Jika ShouldQueue dihapus, listener berjalan sinkron sehingga web dosen akan loading lama menyandera request, dan tabel antrean jobs kosong karena melompati worker. Saat ShouldQueue dipasang, browser dosen merespons instan dan tugas pengiriman dialihkan aman ke antrean latar belakang."*
 
 ---
 

@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    {{-- Memuat stylesheet aplikasi konsisten dan rapi --}}
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {{-- Memuat stylesheet aplikasi konsisten dan rapi (dengan cache busting) --}}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ file_exists(public_path('css/style.css')) ? filemtime(public_path('css/style.css')) : time() }}">
 </head>
 <body>
 
