@@ -33,10 +33,14 @@ class SubmissionController extends Controller
         }
 
         // Khusus Dosen dan Admin:
-        // Ambil seluruh mahasiswa yang terdaftar di mata kuliah ini
-        $enrolledStudents = $assignment->course->students()->orderBy('name')->get();
         // Ambil pemetaan submission yang sudah masuk
         $submissions = $assignment->submissions()->with(['student', 'grade'])->get()->keyBy('user_id');
+        // Urutkan mahasiswa: yang sudah mengumpulkan tampil paling atas
+        $enrolledStudents = $assignment->course->students()
+            ->orderBy('name')
+            ->get()
+            ->sortByDesc(fn($student) => $submissions->has($student->id))
+            ->values();
 
         return view('submissions.index', compact('assignment', 'enrolledStudents', 'submissions'));
     }
@@ -205,6 +209,8 @@ class SubmissionController extends Controller
                 'graded_at' => now(),
             ]
         );
+
+        event(new \App\Events\SubmissionGraded($submission));
 
         return redirect()->route('submissions.show', $submission)->with('success', 'Nilai berhasil disimpan.');
     }

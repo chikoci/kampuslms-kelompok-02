@@ -92,17 +92,36 @@
             </div>
         </div>
 
+        @php
+            $uncreditedSubmissions = $submissions->filter(fn($s) => !$s->grade);
+        @endphp
+
+        @if($uncreditedSubmissions->isNotEmpty())
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h4 style="margin: 0; color: #1e40af; font-size: 1rem; font-weight: 700;">
+                        &#9998; {{ $uncreditedSubmissions->count() }} Pengumpulan Menunggu Penilaian
+                    </h4>
+                    <p style="margin: 0.25rem 0 0 0; color: #3b82f6; font-size: 0.85rem;">
+                        Klik tombol untuk langsung membuka form penilaian mahasiswa yang telah mengumpulkan tugas.
+                    </p>
+                </div>
+                <a href="{{ route('submissions.show', $uncreditedSubmissions->first()) }}" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    Mulai Beri Nilai &rarr;
+                </a>
+            </div>
+        @endif
+
         <div class="table-container">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>NIM</th>
+                        <th style="width: 100px;">NIM</th>
                         <th>Nama Mahasiswa</th>
-                        <th>Status Pengumpulan</th>
-                        <th>Waktu Kumpul</th>
+                        <th style="width: 140px;">Status</th>
+                        <th style="width: 140px;">Waktu Kumpul</th>
                         <th>Berkas Tugas</th>
-                        <th>Nilai</th>
-                        <th>Aksi</th>
+                        <th style="width: 140px; text-align: center;">Penilaian</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -110,9 +129,17 @@
                         @php
                             $sub = $submissions->get($student->id);
                         @endphp
-                        <tr>
+                        <tr style="{{ $sub ? 'background: #f8fafc;' : '' }}">
                             <td class="text-muted" style="font-size: 0.85rem;">{{ $student->nim_nip ?? '-' }}</td>
-                            <td class="font-semibold text-body">{{ $student->name }}</td>
+                            <td>
+                                @if($sub)
+                                    <a href="{{ route('submissions.show', $sub) }}" style="color: #2563eb; font-weight: 600; text-decoration: none;" title="Klik untuk membuka penilaian">
+                                        {{ $student->name }} &rarr;
+                                    </a>
+                                @else
+                                    <span class="font-semibold text-body">{{ $student->name }}</span>
+                                @endif
+                            </td>
                             <td>
                                 @if($sub)
                                     @if($sub->is_late)
@@ -121,7 +148,7 @@
                                         <span class="badge badge-upcoming">Tepat Waktu</span>
                                     @endif
                                 @else
-                                    <span class="badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">Belum Mengumpulkan</span>
+                                    <span class="badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">Belum Kumpul</span>
                                 @endif
                             </td>
                             <td class="text-muted" style="font-size: 0.85rem;">
@@ -137,30 +164,26 @@
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
-                            <td>
+                            <td style="text-align: center;">
                                 @if($sub)
                                     @if($sub->grade)
-                                        <strong style="color: #16a34a;">{{ $sub->grade->score }} / {{ $assignment->max_score }}</strong>
+                                        <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                            <strong style="color: #16a34a; font-size: 0.95rem;">{{ $sub->grade->score }}</strong>
+                                            <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-secondary" style="font-size: 0.7rem; padding: 2px 6px; text-decoration: none;">Ubah</a>
+                                        </div>
                                     @else
-                                        <span class="text-muted" style="font-size: 0.85rem;">Belum Dinilai</span>
+                                        <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm btn-primary" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                            &#9998; Beri Nilai
+                                        </a>
                                     @endif
                                 @else
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
-                            <td>
-                                @if($sub)
-                                    <a href="{{ route('submissions.show', $sub) }}" class="btn btn-sm" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 4px 10px; border-radius: 6px;">
-                                        Periksa &rarr;
-                                    </a>
-                                @else
-                                    <span class="text-muted" style="font-size: 0.85rem;">-</span>
-                                @endif
-                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="empty-cell-sm">Belum ada mahasiswa yang terdaftar pada mata kuliah ini.</td>
+                            <td colspan="6" class="empty-cell-sm">Belum ada mahasiswa yang terdaftar pada mata kuliah ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
