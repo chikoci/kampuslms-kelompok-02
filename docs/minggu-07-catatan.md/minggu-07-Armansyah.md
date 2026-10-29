@@ -1,12 +1,11 @@
 # Catatan Praktikum Minggu 7
 **Nama:** Armansyah  
 **NIM:** 10241013  
-**Kelompok:** Kelompok 02 (Kelas B / SI)  
-**Fokus Kontribusi:** Autentikasi Pengguna, UserPolicy & Anti-Privilege Escalation, Matriks Keamanan IDOR (`docs/keamanan.md`), Skrip Pengujian Otorisasi (`scripts/test-authz.sh`), dan CI GitHub Actions.
+
 
 ---
 
-# READ — Bedah Starter Kit & Mekanisme Keamanan (30 menit)
+# READ — Bedah Starter Kit & Mekanisme Keamanan
 
 Pada tahap ini, saya melakukan penelusuran arsitektur kode autentikasi dan pengelolaan sesi bawaan aplikasi KampusLMS secara langsung pada repositori lokal:
 
