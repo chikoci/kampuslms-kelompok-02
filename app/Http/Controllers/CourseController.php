@@ -80,13 +80,14 @@ class CourseController extends Controller
         $course->load([
             'lecturer',
             'students' => fn ($q) => $q->orderBy('name'),
-            'materials',
+            'materials.course',
             'assignments' => function ($query) use ($user) {
                 if ($user?->role === 'mahasiswa') {
                     $query->where('status', 'published');
                 }
-                $query->latest();
+                $query->withCount('submissions')->latest();
             },
+            'assignments.course',
             'assignments.submissions',
         ]);
 

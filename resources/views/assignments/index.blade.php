@@ -65,7 +65,7 @@
                                 @endif
                             @else
                                 <a href="{{ route('assignments.submissions.index', $assignment) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">
-                                    {{ $assignment->submissions->count() }} Pengumpulan &rarr;
+                                    {{ $assignment->submissions_count }} Pengumpulan &rarr;
                                 </a>
                             @endif
                         </td>

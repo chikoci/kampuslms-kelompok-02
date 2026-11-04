@@ -41,6 +41,7 @@ class GradeController extends Controller
 
         // Mahasiswa melihat nilai di setiap mata kuliah yang diikutinya
         $courses = $user->courses()->with([
+            'lecturer',
             'assignments' => function ($q) {
                 $q->where('status', '!=', 'draft')->orderBy('due_at');
             },

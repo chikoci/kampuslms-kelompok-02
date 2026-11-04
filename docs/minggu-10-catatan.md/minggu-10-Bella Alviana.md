@@ -1,23 +1,11 @@
-# Catatan Praktikum Minggu 10: Realtime, Event, Queue, dan Notifikasi
-
+# Minggu 10
 **Nama:** Bella Alviana  
 **NIM:** 10241015  
-**Kelompok:** Kelompok 02  
-**Kelas:** B / Sistem Informasi  
 
----
 
-## 10.3 Read → Break → Fix → Build
+## READ 
 
----
-
-### READ — Ikuti Satu Job Antrean (30 Menit)
-
-Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12: mulai dari pemanggilan *Event* (`AssignmentPublished`), peletakan job antrean di tabel `jobs`, penanganan oleh *Listener* (`SendAssignmentNotification`), hingga pembuatan baris notifikasi pada tabel `notifications`.
-
----
-
-#### 1. Matikan worker. Buat satu tugas baru. Buka tabel `jobs` — apa isinya?
+**1. Matikan worker. Buat satu tugas baru. Buka tabel `jobs` — apa isinya?**
 * **Langkah:**
   1. Memastikan pada `.env` konfigurasi queue disetel ke database: `QUEUE_CONNECTION=database`.
   2. Mematikan worker (`Ctrl + C` pada terminal `php artisan queue:work`).
@@ -49,7 +37,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 2. Baca kolom `payload`. Bisakah Anda mengenali nama Listener dan ID tugasnya?
+**2. Baca kolom `payload`. Bisakah Anda mengenali nama Listener dan ID tugasnya?**
 * **Langkah:**  
   Menganalisis string JSON di kolom `payload` yang tersimpan pada baris antrean tersebut.
 * **Hasil Pengamatan:**
@@ -62,7 +50,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 3. Jalankan `php artisan queue:work`, amati keluarannya. Periksa tabel `jobs` lagi.
+**3. Jalankan `php artisan queue:work`, amati keluarannya. Periksa tabel `jobs` lagi.**
 * **Langkah:**
   1. Menjalankan worker di terminal:
      ```powershell
@@ -87,7 +75,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 4. Periksa tabel `notifications`. Berapa baris yang muncul? Cocok dengan jumlah mahasiswa?
+**4. Periksa tabel `notifications`. Berapa baris yang muncul? Cocok dengan jumlah mahasiswa?**
 * **Langkah:**  
   Menghitung dan melihat data notifikasi baru yang masuk di database:
   ```powershell
@@ -105,7 +93,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 5. Baca kolom `data` pada satu notifikasi. Adakah yang tidak seharusnya tersimpan di situ?
+**5. Baca kolom `data` pada satu notifikasi. Adakah yang tidak seharusnya tersimpan di situ?**
 * **Langkah:**  
   Mengekstrak isi kolom `data` dari notifikasi terbaru:
   ```powershell
@@ -127,13 +115,11 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
   **Tidak ada data yang tidak semestinya.** Data yang disimpan murni merupakan metadata publik tugas (ID, nama mata kuliah, judul tugas, batas waktu, dan URL). Tidak ada nilai mahasiswa, catatan evaluasi privat dosen, atau token rahasia yang disimpan. Ini sesuai dengan prinsip *Data Minimization*.
 
 ---
----
 
-### BREAK — Delapan Kerusakan (50 Menit)
 
----
+## BREAK 
 
-#### 1. Set `QUEUE_CONNECTION=database`, jangan jalankan worker, buat tugas baru
+**1. Set `QUEUE_CONNECTION=database`, jangan jalankan worker, buat tugas baru**
 * **Prediksi:**  
   Tugas berhasil dibuat dan disimpan oleh dosen di antarmuka web, namun notifikasi gagal terkirim ke mahasiswa tanpa memunculkan satu pun pesan error (*silent failure*).
 * **Langkah Percobaan:**
@@ -158,7 +144,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 2. Hapus `implements ShouldQueue` dari Listener, buat tugas untuk banyak mahasiswa
+**2. Hapus `implements ShouldQueue` dari Listener, buat tugas untuk banyak mahasiswa**
 * **Prediksi:**  
   Browser dosen akan berputar (*loading*) lama saat menekan tombol simpan karena proses pembuatan dan pengiriman notifikasi dieksekusi secara sinkron di dalam siklus HTTP request saat itu juga.
 * **Langkah Percobaan:**
@@ -176,7 +162,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 3. Ganti `QUEUE_CONNECTION=sync`, ulangi nomor 2
+**3. Ganti `QUEUE_CONNECTION=sync`, ulangi nomor 2**
 * **Prediksi:**  
   Job langsung dikerjakan seketika tanpa masuk ke tabel antrean `jobs`, namun sifat asinkronnya tetap hilang.
 * **Langkah Percobaan:**
@@ -198,7 +184,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 4. Buat Notification melempar exception, jalankan worker
+**4. Buat Notification melempar exception, jalankan worker**
 * **Prediksi:**  
   Worker akan mendeteksi error, melakukan percobaan ulang (*retry*) sesuai nilai `$tries` dan jeda `$backoff`. Jika terus gagal, data pekerjaan dipindahkan ke tabel `failed_jobs`.
 * **Langkah Percobaan:**
@@ -229,7 +215,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 5. Hentikan worker di tengah pemrosesan job
+**5. Hentikan worker di tengah pemrosesan job**
 * **Prediksi:**  
   Pekerjaan yang sedang berjalan saat worker dimatikan secara mendadak tidak akan hilang dari database dan akan diambil kembali oleh worker baru (*At-Least-Once Delivery*).
 * **Langkah Percobaan:**
@@ -250,7 +236,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 6. Masukkan nilai mahasiswa ke payload notifikasi, lalu buka tabel `notifications` sebagai admin
+**6. Masukkan nilai mahasiswa ke payload notifikasi, lalu buka tabel `notifications` sebagai admin**
 * **Prediksi:**  
   Data nilai mahasiswa tersimpan dalam bentuk teks JSON biasa tanpa enkripsi dan dapat dibaca oleh pihak yang tidak berhak (*Information Disclosure*).
 * **Langkah Percobaan:**
@@ -282,7 +268,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 7. Panggil endpoint "tandai dibaca" dengan ID notifikasi orang lain
+**7. Panggil endpoint "tandai dibaca" dengan ID notifikasi orang lain**
 * **Prediksi:**  
   Jika controller mencari notifikasi secara global tanpa filter relasi pengguna yang sedang login, mahasiswa A dapat mengubah status notifikasi milik mahasiswa B (terjadi celah IDOR).
 * **Langkah Percobaan:**
@@ -296,11 +282,11 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
   4. Menguji endpoint `markAsRead`:
      * **Skenario Rentan (Tanpa Proteksi Kepemilikan):**
        ```php
-       DatabaseNotification::findOrFail($id)->markAsRead(); // ❌ IDOR: Mencari secara global
+       DatabaseNotification::findOrFail($id)->markAsRead();
        ```
      * **Skenario Aman (Proteksi Terpasang pada KampusLMS):**
        ```php
-       $request->user()->unreadNotifications()->findOrFail($id)->markAsRead(); // ✅ Aman
+       $request->user()->unreadNotifications()->findOrFail($id)->markAsRead();
        ```
   5. Mengirimkan permintaan POST untuk menandai ID milik Mahasiswa B menggunakan sesi Mahasiswa A.
 * **Hasil Sebenarnya / Pengamatan:**  
@@ -311,7 +297,7 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
 
 ---
 
-#### 8. Kalau memakai Reverb: ganti `PrivateChannel` menjadi `Channel`, langganan channel orang lain
+**8. Kalau memakai Reverb: ganti `PrivateChannel` menjadi `Channel`, langganan channel orang lain**
 * **Prediksi:**  
   Menggunakan `Channel` publik memungkinkan peramban pengguna lain berlangganan (*subscribe*) ke aliran data personal pengguna lain tanpa proses autentikasi (penyadapan realtime).
 * **Langkah Percobaan:**
@@ -320,14 +306,14 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
        ```php
        public function broadcastOn(): array
        {
-           return [new Channel('user.' . $this->userId)]; // ❌ Saluran terbuka tanpa autentikasi
+           return [new Channel('user.' . $this->userId)];
        }
        ```
      * **Skenario Aman (Privat):**
        ```php
        public function broadcastOn(): array
        {
-           return [new PrivateChannel('user.' . $this->userId)]; // ✅ Wajib lolos guard routes/channels.php
+           return [new PrivateChannel('user.' . $this->userId)];
        }
        ```
   2. Membuka dua browser: Browser 1 login sebagai Mahasiswa B (ID `3`), Browser 2 login sebagai Mahasiswa A (ID `2`).
@@ -342,135 +328,3 @@ Pada tahap ini, saya melakukan penelusuran mandiri pada alur asinkron Laravel 12
   * Pada `PrivateChannel`: Permintaan langganan Mahasiswa A langsung ditolak oleh backend dengan respon **`HTTP 403 Forbidden`** melalui rute otorisasi `/broadcasting/auth`.
 * **Penjelasan / Analisis:**  
   Saluran publik pada WebSocket tidak memerlukan jabat tangan (*handshake*) otorisasi. Siapa saja yang mengetahui format penamaan channel dapat melakukan penyadapan data (*Eavesdropping*). Saluran notifikasi pengguna wajib selalu menggunakan instansiasi `new PrivateChannel(...)` yang divalidasi pada `routes/channels.php`.
-
----
----
-
-## 10.4 Checkpoint Minggu 10 — Gerbang Interview Tugas 3
-
-- [x] Apa yang terjadi kalau queue worker mati saat notifikasi dikirim? Peragakan.
-- [x] Kenapa kegagalan itu tidak menghasilkan pesan error? Bagaimana Anda akan mengetahuinya di server produksi?
-- [x] Apa beda `QUEUE_CONNECTION=sync` dan `database`? Kapan masing-masing dipakai?
-- [x] Tunjukkan Listener yang Anda tulis. Apa akibatnya kalau `ShouldQueue` dihapus?
-- [x] Kenapa nilai mahasiswa tidak boleh masuk payload notifikasi?
-- [x] Tunjukkan apa yang mencegah mahasiswa menandai notifikasi orang lain sebagai sudah dibaca.
-- [x] Tunjukkan satu bagian yang Anda tulis dengan bantuan AI. Apa yang Anda ubah, dan kenapa?
-
----
-
-### 1. Apa yang terjadi kalau queue worker mati saat notifikasi dikirim? Peragakan.
-* **Jawaban:**  
-  Data tugas tetap tersimpan di database dan dosen melihat tampilan berhasil tanpa pesan error apa pun (*silent failure*). Namun, tugas pengiriman notifikasi **tertahan di tabel `jobs`** dan tidak pernah sampai ke akun mahasiswa (lonceng notifikasi mahasiswa tetap 0) sampai worker dihidupkan kembali.
-* **Langkah Peragaan:**
-  1. Hentikan worker di terminal (`Ctrl + C`).
-  2. Login sebagai Dosen di peramban, buat tugas baru pada kelas, klik **Simpan**.
-  3. Buka jendela Incognito, login sebagai Mahasiswa: tunjukkan bahwa **lonceng notifikasi masih angka 0**.
-  4. Buka terminal, tunjukkan baris pekerjaan yang tertahan di tabel `jobs`:
-     ```powershell
-     php artisan tinker --execute="echo DB::table('jobs')->count();"
-     ```
-  5. Nyalakan worker:
-     ```powershell
-     php artisan queue:work --once
-     ```
-  6. Refresh halaman Mahasiswa: seketika badge merah notifikasi muncul di ikon lonceng.
-
----
-
-### 2. Kenapa kegagalan itu tidak menghasilkan pesan error? Bagaimana Anda akan mengetahuinya di server produksi?
-* **Jawaban:**  
-  * **Kenapa tidak ada error:** Karena tugas request web dosen hanyalah menyisipkan satu baris data antrean ke tabel `jobs` (`INSERT INTO jobs ...`). Operasi database ini berhasil 100%, sehingga web server merespons dengan status HTTP 302 sukses. Pengiriman notifikasi sesungguhnya diserahkan ke proses background terpisah (*worker*).
-  * **Cara mengetahui di server produksi:**
-    1. Memasang *process supervisor* (seperti `Supervisor` atau `systemd` di Linux) yang bertugas menjaga proses worker selalu hidup 24 jam dan otomatis merestartnya jika mati mendadak.
-    2. Menjalankan perintah pemantau antrean Laravel:
-       ```bash
-       php artisan queue:monitor default --max=50
-       ```
-       Jika jumlah antrean menumpuk melebihi batas dan tidak berkurang, sistem mengirim peringatan ke Discord, Slack, atau email tim teknis.
-
----
-
-### 3. Apa beda `QUEUE_CONNECTION=sync` dan `database`? Kapan masing-masing dipakai?
-* **Jawaban:**  
-  * **`sync` (Sinkron):** Pekerjaan dieksekusi detik itu juga di dalam request HTTP yang sama. Pengguna dipaksa menunggu hingga seluruh notifikasi selesai dikirim sebelum halaman berpindah.
-  * **`database` (Asinkron):** Pekerjaan dicatat ke tabel antrean database dan dikerjakan oleh worker terpisah di latar belakang. Halaman web langsung merespons seketika (< 100 ms).
-  * **Kapan dipakai:**
-    * Mode `sync` dipakai saat **pengembangan lokal/unit testing** agar praktis tanpa perlu menyalakan terminal worker.
-    * Mode `database` wajib dipakai di **lingkungan produksi nyata** agar pengguna tidak tersandera loading lama saat sistem mengirim data ke puluhan mahasiswa.
-
----
-
-### 4. Tunjukkan Listener yang Anda tulis. Apa akibatnya kalau `ShouldQueue` dihapus?
-* **Jawaban:**  
-  Listener yang saya buat berada di file [`app/Listeners/SendAssignmentNotification.php`](file:///d:/kampuslms-kelompok-02/app/Listeners/SendAssignmentNotification.php):
-  ```php
-  namespace App\Listeners;
-
-  use App\Events\AssignmentPublished;
-  use App\Notifications\NewAssignmentNotification;
-  use Illuminate\Contracts\Queue\ShouldQueue;
-  use Illuminate\Support\Facades\Notification;
-
-  class SendAssignmentNotification implements ShouldQueue
-  {
-      public int $tries = 3;
-      public int $backoff = 10;
-
-      public function handle(AssignmentPublished $event): void
-      {
-          $students = $event->assignment->course->students;
-
-          if ($students->isNotEmpty()) {
-              Notification::send($students, new NewAssignmentNotification($event->assignment));
-          }
-      }
-  }
-  ```
-  * **Akibat jika `implements ShouldQueue` dihapus:**  
-    Listener berubah menjadi proses sinkron. Saat dosen mempublikasikan tugas di kelas yang berisi 40 mahasiswa, Laravel akan mengeksekusi loop pengiriman notifikasi ke 40 mahasiswa saat dosen menekan tombol Simpan. Dosen dipaksa menunggu (browser berputar lama), dan jika satu pengiriman gagal atau timeout, seluruh transaksi pembuatan tugas bisa ikut gagal (*HTTP 500/504*).
-
----
-
-### 5. Kenapa nilai mahasiswa tidak boleh masuk payload notifikasi?
-* **Jawaban:**  
-  1. **Tabel Notifikasi Tidak Terenkripsi:** Kolom `data` di tabel `notifications` menyimpan teks JSON biasa tanpa enkripsi. Siapa pun yang memiliki akses ke database, membaca file backup `.sql`, atau melihat log dapat membaca nilai rahasia mahasiswa.
-  2. **Privasi Akademik (*Information Disclosure*):** Nilai adalah data sensitif yang hanya boleh diketahui oleh mahasiswa bersangkutan dan dosen pengampu (*prinsip Data Minimization*).
-  3. **Mencegah Penyadapan Realtime:** Menghindari kebocoran nilai jika terjadi celah pada saluran penyiaran (*broadcast*).
-  4. **Data Nilai Bersifat Dinamis:** Jika dosen meralat nilai mahasiswa (misal dari 70 diperbaiki menjadi 85), teks notifikasi lama yang memuat angka 70 akan menjadi tidak konsisten.
-  * *Solusi:* Payload notifikasi hanya memuat referensi ID dan judul tugas. Nilai asli selalu ditarik langsung dari controller yang dilindungi oleh Gate & Policy otorisasi.
-
----
-
-### 6. Tunjukkan apa yang mencegah mahasiswa menandai notifikasi orang lain sebagai sudah dibaca.
-* **Jawaban:**  
-  Pencegahan serangan IDOR diterapkan pada controller [`app/Http/Controllers/NotificationController.php`](file:///d:/kampuslms-kelompok-02/app/Http/Controllers/NotificationController.php) di method `markAsRead`:
-  ```php
-  public function markAsRead(Request $request, string $id)
-  {
-      $notification = $request->user()
-          ->unreadNotifications()
-          ->where('id', $id)
-          ->firstOrFail();
-
-      $notification->markAsRead();
-
-      return back()->with('success', 'Notifikasi telah ditandai sudah dibaca.');
-  }
-  ```
-  * **Analisis Proteksi:**  
-    Pencarian notifikasi tidak dilakukan secara global (`Notification::findOrFail($id)`), melainkan dikunci melalui relasi pengguna yang sedang aktif: `$request->user()->unreadNotifications()`. Laravel secara otomatis menambahkan klausul `WHERE notifiable_id = [auth_user_id]`. Jika Mahasiswa A memasukkan ID notifikasi milik Mahasiswa B, query menghasilkan null dan Laravel melempar respons **`HTTP 404 Not Found`**.
-
----
-
-### 7. Tunjukkan satu bagian yang Anda tulis dengan bantuan AI. Apa yang Anda ubah, dan kenapa?
-* **Jawaban:**  
-  * **Bagian yang Dibuat dengan Bantuan AI:** Pembuatan listener [`SendAssignmentNotification.php`](file:///d:/kampuslms-kelompok-02/app/Listeners/SendAssignmentNotification.php) dan kelas notifikasi [`NewAssignmentNotification.php`](file:///d:/kampuslms-kelompok-02/app/Notifications/NewAssignmentNotification.php).
-  * **Saran Awal dari AI:**  
-    AI awalnya menyarankan loop manual menggunakan `foreach ($students as $student) { $student->notify(...); }` dan tidak menyertakan konfigurasi percobaan ulang jika antrean gagal.
-  * **Apa yang Saya Ubah dan Kenapa:**  
-    1. **Mengubah loop manual menjadi `Notification::send($students, ...)`:** Menggunakan facade `Notification::send` agar Laravel mengoptimalkan pengiriman massal ke seluruh koleksi mahasiswa secara batch dan efisien, menghindari overhead query berulang (*N+1 problem*).
-    2. **Menambahkan Ketahanan Antrean (`$tries = 3` dan `$backoff = 10`):** Menjamin jika terjadi kendala database atau jaringan sesaat, pekerjaan tidak langsung dibuang, melainkan dicoba ulang sebanyak 3 kali dengan jeda 10 detik sebelum masuk ke tabel `failed_jobs`.
-    3. **Menyederhanakan Payload:** Memastikan method `toDatabase()` hanya memuat metadata umum tugas tanpa memasukkan data sensitif.
-
----
-*Dokumen ini disusun oleh Bella Alviana (10241015) sebagai dokumentasi resmi pemenuhan Milestone M3 Praktikum Pemrograman Web.*
