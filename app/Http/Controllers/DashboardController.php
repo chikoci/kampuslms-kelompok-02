@@ -9,6 +9,7 @@ use App\Models\Submission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -39,15 +40,17 @@ class DashboardController extends Controller
      */
     protected function adminDashboard()
     {
-        $metrics = [
-            'users_count' => User::count(),
-            'students_count' => User::where('role', 'mahasiswa')->count(),
-            'lecturers_count' => User::where('role', 'dosen')->count(),
-            'courses_count' => Course::count(),
-            'materials_count' => Material::count(),
-            'assignments_count' => Assignment::count(),
-            'submissions_count' => Submission::count(),
-        ];
+        $metrics = Cache::remember('dashboard.admin.metrics', now()->addMinutes(10), function () {
+            return [
+                'users_count' => User::count(),
+                'students_count' => User::where('role', 'mahasiswa')->count(),
+                'lecturers_count' => User::where('role', 'dosen')->count(),
+                'courses_count' => Course::count(),
+                'materials_count' => Material::count(),
+                'assignments_count' => Assignment::count(),
+                'submissions_count' => Submission::count(),
+            ];
+        });
 
         $recentUsers = User::latest()->take(5)->get();
         $recentCourses = Course::with('lecturer')->latest()->take(5)->get();
@@ -79,12 +82,14 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
-        $metrics = [
-            'courses_count' => $myCourses->count(),
-            'total_students' => $myCourses->sum('students_count'),
-            'total_assignments' => Assignment::whereIn('course_id', $courseIds)->count(),
-            'pending_grading_count' => $pendingSubmissions->count(),
-        ];
+        $metrics = Cache::remember("dashboard.dosen.{$user->id}.metrics", now()->addMinutes(10), function () use ($myCourses, $courseIds, $pendingSubmissions) {
+            return [
+                'courses_count' => $myCourses->count(),
+                'total_students' => $myCourses->sum('students_count'),
+                'total_assignments' => Assignment::whereIn('course_id', $courseIds)->count(),
+                'pending_grading_count' => $pendingSubmissions->count(),
+            ];
+        });
 
         return view('dashboard', [
             'role' => 'dosen',
