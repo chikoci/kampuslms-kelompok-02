@@ -16,7 +16,10 @@ class AssignmentController extends Controller
     {
         Gate::authorize('view', $course);
 
-        $query = $course->assignments()->with('submissions')->latest();
+        $query = $course->assignments()
+            ->with(['course', 'submissions'])
+            ->withCount('submissions')
+            ->latest();
 
         if (auth()->user()?->role === 'mahasiswa') {
             $query->where('status', 'published');
