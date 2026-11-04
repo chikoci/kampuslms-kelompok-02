@@ -31,6 +31,22 @@ class Assignment extends Model
     ];
 
     /**
+     * Cache invalidation otomatis saat data tugas berubah (BUILD Poin 6).
+     */
+    protected static function booted(): void
+    {
+        static::saved(function (Assignment $assignment) {
+            \Illuminate\Support\Facades\Cache::forget("dashboard.dosen.{$assignment->created_by}.metrics");
+            \Illuminate\Support\Facades\Cache::forget('dashboard.admin.metrics');
+        });
+
+        static::deleted(function (Assignment $assignment) {
+            \Illuminate\Support\Facades\Cache::forget("dashboard.dosen.{$assignment->created_by}.metrics");
+            \Illuminate\Support\Facades\Cache::forget('dashboard.admin.metrics');
+        });
+    }
+
+    /**
      * Casting atribut gaya Laravel 12.
      *
      * @return array<string, string>
