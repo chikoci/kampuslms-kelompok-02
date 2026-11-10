@@ -4,101 +4,78 @@
         {{-- ======================================================== --}}
         {{-- DASHBOARD ADMINISTRATOR SISTEM                           --}}
         {{-- ======================================================== --}}
-        <div class="page-header">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                    <h1>Dashboard Administrator</h1>
-                    <p>Ringkasan manajemen sistem, infrastruktur data, dan kontrol pengguna KampusLMS</p>
-                </div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <a href="{{ route('register') }}" class="btn btn-primary">+ Daftarkan Pengguna</a>
-                    <a href="{{ route('courses.create') }}" class="btn btn-secondary">+ Tambah Mata Kuliah</a>
-                </div>
+        <div class="page-banner-card">
+            <div>
+                <h1 class="page-banner-title">Dashboard Administrator</h1>
+                <p class="page-banner-subtitle">Ringkasan manajemen sistem, infrastruktur data, dan kontrol pengguna KampusLMS</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <a href="{{ route('register') }}" class="btn btn-primary btn-sm">+ Daftarkan Pengguna</a>
+                <a href="{{ route('courses.create') }}" class="btn btn-secondary btn-sm">+ Tambah Mata Kuliah</a>
             </div>
         </div>
 
-        <div class="metric-grid">
-            <a href="{{ route('users.index') }}" class="dashboard-card-link">
-                <div class="card card-accent-blue">
+        <div class="metric-grid" style="margin-bottom: 2rem;">
+            <a href="{{ route('users.index') }}" class="dashboard-card-link" style="text-decoration: none;">
+                <div class="card card-accent-blue" style="border-radius: 20px;">
                     <p class="metric-label label-blue">Total Pengguna</p>
                     <p class="metric-value">{{ $metrics['users_count'] }}</p>
                     <p class="metric-sub">{{ $metrics['students_count'] }} Mahasiswa &bull; {{ $metrics['lecturers_count'] }} Dosen</p>
                 </div>
             </a>
 
-            <a href="{{ route('courses.index') }}" class="dashboard-card-link">
-                <div class="card card-accent-green">
+            <a href="{{ route('courses.index') }}" class="dashboard-card-link" style="text-decoration: none;">
+                <div class="card card-accent-green" style="border-radius: 20px;">
                     <p class="metric-label label-green">Mata Kuliah</p>
                     <p class="metric-value">{{ $metrics['courses_count'] }}</p>
                     <p class="metric-sub">{{ $metrics['materials_count'] }} Materi Terpublikasi</p>
                 </div>
             </a>
 
-            <div class="card card-accent-amber">
+            <div class="card card-accent-amber" style="border-radius: 20px;">
                 <p class="metric-label label-amber">Tugas & Evaluasi</p>
                 <p class="metric-value">{{ $metrics['assignments_count'] }}</p>
                 <p class="metric-sub">{{ $metrics['submissions_count'] }} Berkas Pengumpulan</p>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-            {{-- Pengguna Terbaru --}}
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.1rem; font-weight: 700;">Pengguna Terbaru</h3>
-                    <a href="{{ route('users.index') }}" style="font-size: 0.85rem; color: #2563eb; text-decoration: none;">Lihat Semua &rarr;</a>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+            <div class="card-modern">
+                <div class="card-header-row">
+                    <h3 class="card-header-title">Pengguna Terbaru</h3>
+                    <a href="{{ route('users.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Role</th>
-                                <th>Email</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recentUsers as $u)
-                                <tr>
-                                    <td><strong>{{ $u->name }}</strong></td>
-                                    <td>
-                                        <span class="badge {{ $u->role === 'admin' ? 'badge-danger' : ($u->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}">
-                                            {{ ucfirst($u->role) }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $u->email }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    @foreach ($recentUsers as $usr)
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 12px; background: #f8fafc; border: 1px solid #eef2f6;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a;">{{ $usr->name }}</div>
+                                <div style="font-size: 0.75rem; color: #64748b;">{{ $usr->email }}</div>
+                            </div>
+                            <span class="badge {{ $usr->role === 'admin' ? 'badge-danger' : ($usr->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; text-transform: capitalize;">
+                                {{ $usr->role }}
+                            </span>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
-            {{-- Mata Kuliah Terbaru --}}
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.1rem; font-weight: 700;">Mata Kuliah Aktif</h3>
-                    <a href="{{ route('courses.index') }}" style="font-size: 0.85rem; color: #2563eb; text-decoration: none;">Lihat Semua &rarr;</a>
+            <div class="card-modern">
+                <div class="card-header-row">
+                    <h3 class="card-header-title">Mata Kuliah Terbaru</h3>
+                    <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Kode</th>
-                                <th>Mata Kuliah</th>
-                                <th>Dosen Pengampu</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recentCourses as $c)
-                                <tr>
-                                    <td><code>{{ $c->code }}</code></td>
-                                    <td><a href="{{ route('courses.show', $c) }}" style="color: #2563eb; font-weight: 600; text-decoration: none;">{{ $c->name }}</a></td>
-                                    <td>{{ $c->lecturer->name ?? 'Belum Ditentukan' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    @foreach ($recentCourses as $c)
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 12px; background: #f8fafc; border: 1px solid #eef2f6;">
+                            <div>
+                                <span class="badge-code-modern">{{ $c->code }}</span>
+                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a; margin-top: 0.25rem;">{{ $c->name }}</div>
+                                <div style="font-size: 0.75rem; color: #64748b;">Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}</div>
+                            </div>
+                            <a href="{{ route('courses.show', $c) }}" class="btn-open-class">Buka &rarr;</a>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -107,139 +84,311 @@
         {{-- ======================================================== --}}
         {{-- DASHBOARD DOSEN PENGAMPU                                 --}}
         {{-- ======================================================== --}}
-        <div class="page-header">
-            <h1>Dashboard Dosen Pengampu</h1>
-            <p>Selamat datang, <strong>{{ auth()->user()->name }}</strong> (NIP: {{ auth()->user()->nim_nip ?? '-' }})</p>
+        <div class="page-banner-card">
+            <div>
+                <h1 class="page-banner-title">Dashboard Dosen</h1>
+                <p class="page-banner-subtitle">Kelola mata kuliah, materi ajar, dan evaluasi tugas mahasiswa pengampu Anda</p>
+            </div>
         </div>
 
-        <div class="metric-grid">
-            <a href="{{ route('courses.index') }}" class="dashboard-card-link">
-                <div class="card card-accent-blue">
-                    <p class="metric-label label-blue">Mata Kuliah Diampu</p>
-                    <p class="metric-value">{{ $metrics['courses_count'] }}</p>
-                    <p class="metric-sub">{{ $metrics['total_students'] }} Mahasiswa Terdaftar</p>
-                </div>
-            </a>
-
-            <div class="card card-accent-green">
-                <p class="metric-label label-green">Tugas Dibuat</p>
-                <p class="metric-value">{{ $metrics['total_assignments'] }}</p>
-                <p class="metric-sub">Tugas pada seluruh kelas Anda</p>
+        <div class="metric-grid" style="margin-bottom: 2rem;">
+            <div class="card card-accent-blue" style="border-radius: 20px;">
+                <p class="metric-label label-blue">Mata Kuliah Diampu</p>
+                <p class="metric-value">{{ $metrics['courses_count'] }}</p>
+                <p class="metric-sub">{{ $metrics['total_students'] }} Mahasiswa Terdaftar</p>
             </div>
 
-            <div class="card card-accent-amber">
+            <div class="card card-accent-green" style="border-radius: 20px;">
+                <p class="metric-label label-green">Total Tugas</p>
+                <p class="metric-value">{{ $metrics['total_assignments'] }}</p>
+                <p class="metric-sub">Telah Diterbitkan</p>
+            </div>
+
+            <div class="card card-accent-amber" style="border-radius: 20px;">
                 <p class="metric-label label-amber">Menunggu Penilaian</p>
                 <p class="metric-value">{{ $metrics['pending_grading_count'] }}</p>
-                <p class="metric-sub">Submission belum diperiksa</p>
+                <p class="metric-sub">Tugas Mahasiswa</p>
             </div>
         </div>
 
-        <div style="margin-top: 2rem;">
-            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Mata Kuliah yang Anda Ajar</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
-                @forelse ($myCourses as $course)
-                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span class="badge badge-primary">{{ $course->code }}</span>
-                                <span style="font-size: 0.8rem; color: #64748b;">{{ $course->sks }} SKS</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+            <div class="card-modern">
+                <div class="card-header-row">
+                    <h3 class="card-header-title">Mata Kuliah Anda</h3>
+                    <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    @forelse ($myCourses as $course)
+                        <div class="course-card-item">
+                            <div class="course-info-col">
+                                <span class="badge-code-modern">{{ $course->code }}</span>
+                                <h4 class="course-title">{{ $course->name }}</h4>
+                                <div class="course-meta-text">
+                                    <span>{{ $course->students_count }} Mahasiswa</span> &bull;
+                                    <span>{{ $course->sks }} SKS</span>
+                                </div>
                             </div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">
-                                <a href="{{ route('courses.show', $course) }}" style="color: #0f172a; text-decoration: none; font-weight: 700;">{{ $course->name }}</a>
-                            </h4>
-                            <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                                {{ Str::limit($course->description, 100) }}
-                            </p>
+                            <a href="{{ route('courses.show', $course) }}" class="btn-open-class">Buka Kelas &rarr;</a>
                         </div>
-                        <div style="border-top: 1px solid #e2e8f0; padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.825rem; color: #475569;">
-                            <span>{{ $course->students_count }} Mahasiswa</span>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <a href="{{ route('courses.materials.index', $course) }}" class="btn btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">Materi ({{ $course->materials_count }})</a>
-                                <a href="{{ route('courses.assignments.index', $course) }}" class="btn btn-primary" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">Tugas ({{ $course->assignments_count }})</a>
+                    @empty
+                        <p class="text-muted" style="text-align: center; padding: 2rem 0;">Anda belum ditugaskan untuk mengampu mata kuliah.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="card-modern">
+                <div class="card-header-row">
+                    <h3 class="card-header-title">Pengumpulan Belum Dinilai</h3>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    @forelse ($pendingSubmissions as $submission)
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 12px; background: #f8fafc; border: 1px solid #eef2f6;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a;">{{ $submission->student?->name }}</div>
+                                <div style="font-size: 0.75rem; color: #64748b;">{{ $submission->assignment?->title }} ({{ $submission->assignment?->course?->code }})</div>
                             </div>
+                            <a href="{{ route('submissions.show', $submission) }}" class="btn-open-class" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;">Beri Nilai &rarr;</a>
                         </div>
-                    </div>
-                @empty
-                    <div class="card" style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 2rem;">
-                        Anda belum ditugaskan untuk mengampu mata kuliah apapun.
-                    </div>
-                @endforelse
+                    @empty
+                        <p class="text-muted" style="text-align: center; padding: 2rem 0;">Semua pengumpulan sudah selesai dinilai. Kerja bagus!</p>
+                    @endforelse
+                </div>
             </div>
         </div>
 
     @else
         {{-- ======================================================== --}}
-        {{-- DASHBOARD MAHASISWA                                      --}}
+        {{-- DASHBOARD MAHASISWA (REDESIGN SESUAI REFERENSI)         --}}
         {{-- ======================================================== --}}
-        <div class="page-header">
-            <h1>Dashboard Mahasiswa</h1>
-            <p>Selamat datang, <strong>{{ auth()->user()->name }}</strong> (NIM: {{ auth()->user()->nim_nip ?? '-' }})</p>
-        </div>
 
-        <div class="metric-grid">
-            <a href="{{ route('courses.index') }}" class="dashboard-card-link">
-                <div class="card card-accent-blue">
-                    <p class="metric-label label-blue">Mata Kuliah Diikuti</p>
-                    <p class="metric-value">{{ $metrics['courses_count'] }}</p>
-                    <p class="metric-sub">Kelas aktif semester ini</p>
+        {{-- BARIS ATAS: HERO BANNER & NOTIFICATIONS --}}
+        <div style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 1.5rem; margin-bottom: 1.5rem; align-items: stretch;">
+            
+            {{-- A. HERO WELCOME SECTION --}}
+            <div class="hero-welcome-card">
+                <div class="hero-welcome-left">
+                    <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
+                    <p class="hero-welcome-subtitle">Selamat datang di Kampus LMS!</p>
+
+                    <div class="hero-metric-row">
+                        {{-- Mata Kuliah yang Diikuti --}}
+                        <div class="hero-metric-item">
+                            <div class="hero-metric-icon blue">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                                    <path d="M6 6h10"/>
+                                    <path d="M6 10h10"/>
+                                </svg>
+                            </div>
+                            <div class="hero-metric-text">
+                                <span class="label">Mata Kuliah<br>yang Diikuti</span>
+                                <span class="value">{{ $metrics['courses_count'] }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Tugas Mendatang --}}
+                        <div class="hero-metric-item">
+                            <div class="hero-metric-icon yellow">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="hero-metric-text">
+                                <span class="label">Tugas<br>Mendatang</span>
+                                <span class="value">{{ $metrics['upcoming_count'] }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Tugas Terkumpul --}}
+                        <div class="hero-metric-item">
+                            <div class="hero-metric-icon green">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                            </div>
+                            <div class="hero-metric-text">
+                                <span class="label">Tugas<br>Terkumpul</span>
+                                <span class="value">{{ $metrics['submitted_count'] }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </a>
 
-            <div class="card card-accent-amber">
-                <p class="metric-label label-amber">Tugas Mendatang</p>
-                <p class="metric-value">{{ $metrics['upcoming_count'] }}</p>
-                <p class="metric-sub">Tenggat waktu aktif</p>
+                {{-- Integrasi Komposisi Maskot KAVI --}}
+                <div class="hero-welcome-right">
+                    <div class="kavi-hero-composition">
+                        <div class="kavi-hero-blob"></div>
+                        <div class="kavi-sparkle s1">&#10022;</div>
+                        <div class="kavi-sparkle s2">&#10022;</div>
+                        <div class="kavi-sparkle s3">&#10022;</div>
+                        <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Maskot KampusLMS" class="kavi-hero-img">
+                        <div class="kavi-pedestal-shadow"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="card card-accent-green">
-                <p class="metric-label label-green">Tugas Terkumpul</p>
-                <p class="metric-value">{{ $metrics['submitted_count'] }}</p>
-                <p class="metric-sub">{{ $metrics['graded_count'] }} Sudah Dinilai</p>
+            {{-- B. NOTIFICATIONS PANEL --}}
+            <div class="card-modern" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div class="card-header-row" style="margin-bottom: 1rem;">
+                        <h3 class="card-header-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                            </svg>
+                            Notifications
+                        </h3>
+                        <a href="{{ route('notifications.index') }}" class="card-header-link">See all &rarr;</a>
+                    </div>
+
+                    @php
+                        $userNotifications = auth()->user()->notifications()->latest()->take(3)->get();
+                    @endphp
+
+                    @forelse ($userNotifications as $notif)
+                        @php
+                            $notifData = $notif->data;
+                            $notifType = $notifData['type'] ?? '';
+                            $isAssignment = ($notifType === 'assignment_published');
+                            $url = $notifData['url'] ?? route('notifications.index');
+                        @endphp
+                        <a href="{{ $url }}" class="notif-card-item">
+                            <div class="notif-icon-box {{ $isAssignment ? 'yellow' : 'blue' }}">
+                                @if ($isAssignment)
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14 2 14 8 20 8"/>
+                                        <line x1="16" y1="13" x2="8" y2="13"/>
+                                        <line x1="16" y1="17" x2="8" y2="17"/>
+                                    </svg>
+                                @else
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 14 14"/>
+                                    </svg>
+                                @endif
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-size: 0.85rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ $isAssignment ? ($notifData['title'] ?? 'Tugas Perkuliahan Baru') : ($notifData['assignment_title'] ?? 'Nilai Tugas Keluar') }}
+                                </div>
+                                <div style="font-size: 0.75rem; color: #64748b;">
+                                    {{ $notif->created_at->diffForHumans() }}
+                                </div>
+                            </div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+                    @empty
+                        <div style="text-align: center; padding: 2rem 1rem; color: #64748b; font-size: 0.9rem;">
+                            Belum ada notifikasi baru untuk Anda.
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-            {{-- Mata Kuliah yang Diikuti --}}
-            <div class="card">
-                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">Mata Kuliah Anda</h3>
+        {{-- C. BAGIAN BAWAH: HANYA DUA SECTION UTAMA --}}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+            
+            {{-- 1. MATAKULIAH ANDA --}}
+            <div class="card-modern">
+                <div class="card-header-row">
+                    <h3 class="card-header-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                            <path d="M6 6h10"/>
+                            <path d="M6 10h10"/>
+                        </svg>
+                        Matakuliah Anda
+                    </h3>
+                    <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
+                </div>
+
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     @forelse ($enrolledCourses as $course)
-                        <div style="padding: 0.85rem; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <span class="badge badge-primary" style="font-size: 0.75rem;">{{ $course->code }}</span>
-                                <h4 style="margin: 0.35rem 0 0.2rem 0; font-size: 0.95rem;">
-                                    <a href="{{ route('courses.show', $course) }}" style="color: #0f172a; text-decoration: none; font-weight: 600;">{{ $course->name }}</a>
-                                </h4>
-                                <p style="font-size: 0.8rem; color: #64748b;">Dosen: {{ $course->lecturer->name ?? '-' }}</p>
+                        {{-- Sesuai aturan: TIDAK MENGGUNAKAN LOGO/ICON BESAR DI SEBELAH KIRI CARD --}}
+                        <div class="course-card-item">
+                            <div class="course-info-col">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="badge-code-modern">{{ $course->code }}</span>
+                                    <span style="font-size: 0.75rem; color: #64748b;">{{ $course->sks }} SKS</span>
+                                </div>
+                                <h4 class="course-title">{{ $course->name }}</h4>
+                                <div class="course-meta-text">
+                                    <span>Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
+                                </div>
                             </div>
-                            <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">Buka Kelas &rarr;</a>
+                            <div class="course-actions-col">
+                                <a href="{{ route('courses.show', $course) }}" class="btn-open-class">
+                                    Buka Kelas &rarr;
+                                </a>
+                            </div>
                         </div>
                     @empty
-                        <p style="color: #64748b; font-size: 0.9rem;">Anda belum terdaftar pada mata kuliah apapun.</p>
+                        <div class="empty-state-card">
+                            <p class="empty-state-text">Anda belum terdaftar pada mata kuliah apapun.</p>
+                        </div>
                     @endforelse
                 </div>
             </div>
 
-            {{-- Tugas Mendatang --}}
-            <div class="card">
-                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">Tugas Mendatang</h3>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    @forelse ($upcomingAssignments as $assignment)
-                        <div style="padding: 0.85rem; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <h4 style="margin: 0; font-size: 0.95rem;">
-                                    <a href="{{ route('assignments.show', $assignment) }}" style="color: #0f172a; text-decoration: none; font-weight: 600;">{{ $assignment->title }}</a>
-                                </h4>
-                                <span class="badge badge-warning" style="font-size: 0.75rem;">Tenggat: {{ $assignment->due_at->format('d M Y') }}</span>
-                            </div>
-                            <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.35rem;">Mata Kuliah: {{ $assignment->course->name }}</p>
-                        </div>
-                    @empty
-                        <p style="color: #64748b; font-size: 0.9rem;">Tidak ada tugas mendatang saat ini. Kerja bagus!</p>
-                    @endforelse
+            {{-- 2. TUGAS MENDATANG --}}
+            <div class="card-modern">
+                <div class="card-header-row">
+                    <h3 class="card-header-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Tugas Mendatang
+                    </h3>
+                    <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
+
+                @if ($upcomingAssignments->isNotEmpty())
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        @foreach ($upcomingAssignments as $assignment)
+                            <div class="course-card-item">
+                                <div class="course-info-col">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span class="badge badge-warning" style="font-size: 0.7rem;">
+                                            Tenggat: {{ $assignment->due_at->translatedFormat('d M Y, H:i') }}
+                                        </span>
+                                    </div>
+                                    <h4 class="course-title">
+                                        <a href="{{ route('assignments.show', $assignment) }}" style="color: inherit; text-decoration: none;">
+                                            {{ $assignment->title }}
+                                        </a>
+                                    </h4>
+                                    <div class="course-meta-text">
+                                        <span>Mata Kuliah: {{ $assignment->course?->name }}</span>
+                                    </div>
+                                </div>
+                                <div class="course-actions-col">
+                                    <a href="{{ route('assignments.show', $assignment) }}" class="btn-open-class">
+                                        Kumpulkan &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    {{-- Empty State dengan Ilustrasi Kalender Sesuai Referensi Visual --}}
+                    <div class="empty-state-card" style="padding: 2.75rem 1.5rem;">
+                        <img src="{{ asset('images/illustrations/calendar-empty.png') }}" alt="Tidak Ada Tugas Mendatang" class="empty-state-img">
+                        <p class="empty-state-text">Tidak ada tugas mendatang saat ini. Kerja bagus!</p>
+                    </div>
+                @endif
             </div>
+
         </div>
+
     @endif
 
 </x-layout>
