@@ -82,9 +82,24 @@ class Submission extends Model
 
     /**
      * Accessor untuk menampilkan ukuran berkas dalam format yang terbaca manusia (KB, MB).
+     * Dilengkapi fallback defensif agar aman pada lingkungan tanpa ekstensi intl.
      */
     public function getFormattedFileSizeAttribute(): string
     {
-        return $this->file_size ? \Illuminate\Support\Number::fileSize($this->file_size) : '-';
+        if (! $this->file_size) {
+            return '-';
+        }
+
+        if (extension_loaded('intl')) {
+            return \Illuminate\Support\Number::fileSize($this->file_size);
+        }
+
+        $bytes = (float) $this->file_size;
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $power = $bytes > 0 ? (int) floor(log($bytes, 1024)) : 0;
+        $power = min($power, count($units) - 1);
+        $value = round($bytes / pow(1024, $power), 2);
+
+        return "{$value} {$units[$power]}";
     }
 }
