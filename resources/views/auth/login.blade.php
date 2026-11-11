@@ -1,54 +1,125 @@
 <x-layout title="Masuk - KampusLMS">
 
-    <div class="page-header" style="text-align: center; max-width: 480px; margin: 0 auto 2rem auto;">
-        <h1>Masuk ke KampusLMS</h1>
-        <p>Silakan masuk menggunakan akun civitas akademika Anda</p>
-    </div>
+    <div class="login-canvas">
+        {{-- SISI KIRI: FORM LOGIN --}}
+        <div class="login-form-pane">
+            <h1 style="font-size: 2.25rem; font-weight: 800; color: #0f172a; margin: 0 0 0.45rem 0; letter-spacing: -0.025em; line-height: 1.2;">
+                Welcome Back!
+            </h1>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0 0 2.25rem 0;">
+                Let's continue your learning journey together.
+            </p>
 
-    <div class="form-card" style="max-width: 480px; margin: 0 auto;">
-        <form action="{{ route('login.post') }}" method="POST">
-            @csrf
+            <form action="{{ route('login.post') }}" method="POST">
+                @csrf
 
-            <div class="form-group">
-                <label for="email" class="form-label">Alamat Surel (Email)</label>
-                <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="nama@kampuslms.test" required autofocus>
-                @error('email')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                    <label for="password" class="form-label" style="margin-bottom: 0;">Kata Sandi</label>
-                    <a href="{{ route('password.request') }}" style="font-size: 0.8rem; color: #2563eb; text-decoration: none;">Lupa kata sandi?</a>
+                {{-- Input Email --}}
+                <div style="margin-bottom: 1.25rem;">
+                    <label for="email" style="display: block; font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 0.4rem;">
+                        Email
+                    </label>
+                    <input type="email" 
+                           name="email" 
+                           id="email" 
+                           class="filter-search-input @error('email') is-invalid @enderror" 
+                           value="{{ old('email') }}" 
+                           placeholder="Enter your email address" 
+                           required 
+                           autofocus 
+                           style="padding-left: 1.15rem; height: 48px; border-radius: 14px; background: #ffffff; border: 1px solid #e2e8f0; font-size: 0.9rem;">
+                    @error('email')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.35rem; font-weight: 500;">{{ $message }}</p>
+                    @enderror
                 </div>
-                <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="••••••••" required>
-                @error('password')
-                    <p class="form-error">{{ $message }}</p>
-                @enderror
-            </div>
 
-            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;">
-                <input type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
-                <label for="remember" style="font-size: 0.875rem; color: #475569; cursor: pointer;">Ingat sesi masuk saya</label>
-            </div>
+                {{-- Input Password --}}
+                <div style="margin-bottom: 1.15rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                        <label for="password" style="font-size: 0.875rem; font-weight: 600; color: #1e293b; margin: 0;">
+                            Password
+                        </label>
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" style="font-size: 0.8rem; color: #2563eb; text-decoration: none; font-weight: 600;">
+                                Lupa kata sandi?
+                            </a>
+                        @endif
+                    </div>
+                    <input type="password" 
+                           name="password" 
+                           id="password" 
+                           class="filter-search-input @error('password') is-invalid @enderror" 
+                           placeholder="Enter your password" 
+                           required 
+                           style="padding-left: 1.15rem; height: 48px; border-radius: 14px; background: #ffffff; border: 1px solid #e2e8f0; font-size: 0.9rem;">
+                    @error('password')
+                        <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.35rem; font-weight: 500;">{{ $message }}</p>
+                    @enderror
+                </div>
 
-            <div style="margin-top: 1.5rem;">
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem 1rem;">
-                    Masuk Sekarang
+                {{-- Remember Me Sesi --}}
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.75rem;">
+                    <input type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }} style="border-radius: 4px; accent-color: #2563eb; width: 16px; height: 16px; cursor: pointer;">
+                    <label for="remember" style="font-size: 0.85rem; color: #64748b; cursor: pointer; user-select: none;">
+                        Ingat sesi masuk saya
+                    </label>
+                </div>
+
+                {{-- Tombol Masuk --}}
+                <button type="submit" class="login-submit-btn" style="height: 48px;">
+                    Masuk &rarr;
                 </button>
-            </div>
-        </form>
+            </form>
 
-        {{-- Bantuan Akun Demo Praktikum --}}
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed #cbd5e1; font-size: 0.825rem; color: #64748b;">
-            <p style="font-weight: 600; color: #334155; margin-bottom: 0.5rem;">Akun Demo Praktikum (Kata sandi: <code>password</code>):</p>
-            <ul style="list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 0.35rem;">
-                <li><strong>Admin:</strong> <code>admin@kampuslms.test</code></li>
-                <li><strong>Dosen:</strong> <code>dosen@kampuslms.test</code></li>
-                <li><strong>Mahasiswa:</strong> <code>mahasiswa@kampuslms.test</code></li>
-            </ul>
+            {{-- Catatan Akun Mahasiswa Terdaftar Oleh Admin --}}
+            <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px dashed #e2e8f0; text-align: center;">
+                <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem 0; font-weight: 500;">
+                    Akun Demo Praktikum (Kata sandi: <code style="background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 700; color: #0f172a;">password</code>):
+                </p>
+                {{-- Bantuan Cepat Pengujian Akun Praktikum --}}
+                <div style="display: flex; gap: 0.35rem; justify-content: center; flex-wrap: wrap;">
+                    <button type="button" onclick="fillDemo('mahasiswa@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 8px;">
+                        🎓 Akun Mahasiswa
+                    </button>
+                    <button type="button" onclick="fillDemo('dosen@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 8px;">
+                        👨‍🏫 Akun Dosen
+                    </button>
+                    <button type="button" onclick="fillDemo('admin@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 8px;">
+                        ⚙️ Akun Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- SISI KANAN: ILUSTRASI MASKOT KAVI DENGAN KOMPOSISI DEKORATIF --}}
+        <div class="login-mascot-pane">
+            {{-- Elemen Dekorasi Organik & Geometris Sesuai Referensi --}}
+            <div class="login-deco-bubble b1"></div>
+            <div class="login-deco-bubble b2"></div>
+            <div class="login-deco-bubble b3"></div>
+            <div class="login-deco-bubble b4"></div>
+
+            {{-- Sparkle Aksen di Sekitar Karakter --}}
+            <div class="kavi-sparkle s1" style="top: 18%; left: 18%;">&#10022;</div>
+            <div class="kavi-sparkle s2" style="top: 24%; right: 16%;">&#10022;</div>
+            <div class="kavi-sparkle s3" style="bottom: 22%; right: 22%;">&#10022;</div>
+
+            {{-- Wrapper Karakter KAVI --}}
+            <div class="login-mascot-wrapper">
+                <img src="{{ asset('images/illustrations/kavi-login.png') }}" 
+                     alt="KAVI Maskot KampusLMS" 
+                     class="login-mascot-kavi">
+                {{-- Bayangan / Dudukan Kaki Lembut --}}
+                <div class="login-cloud-pedestal"></div>
+            </div>
         </div>
     </div>
+
+    {{-- Script Bantuan Cepat Pengujian Akun Demo --}}
+    <script>
+        function fillDemo(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+        }
+    </script>
 
 </x-layout>
