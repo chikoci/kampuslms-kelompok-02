@@ -20,9 +20,23 @@
 
 @auth
     <div class="app-shell">
-        {{-- SIDEBAR KIRI --}}
-        <aside class="app-sidebar">
+        {{-- BACKDROP OVERLAY UNTUK MOBILE DRAWER --}}
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        {{-- SIDEBAR KIRI (DESKTOP) / DRAWER OFF-CANVAS (MOBILE) --}}
+        <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-top">
+                {{-- Mobile Close Header --}}
+                <div class="sidebar-mobile-header">
+                    <span class="sidebar-mobile-title">Menu Navigasi</span>
+                    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Tutup Menu">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
                 {{-- 1. Logo / Nama Kampus LMS --}}
                 <a href="{{ route('dashboard') }}" class="sidebar-brand" title="Kampus LMS">
                     <div class="sidebar-brand-icon">
@@ -89,89 +103,90 @@
                     @endcan
                 </ul>
             </div>
-
-            {{-- 3. Settings / Tentang Button di Bawah Sidebar --}}
-            <div class="sidebar-bottom">
-                <a href="{{ route('tentang') }}" class="sidebar-gear-btn" title="Pengaturan & Tentang">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </svg>
-                </a>
-            </div>
         </aside>
 
         {{-- AREA UTAMA --}}
         <div class="app-main">
-            {{-- HEADER MINIMAL ATAS --}}
+            {{-- HEADER ATAS RESPONSIVE --}}
             <header class="app-header">
-                {{-- Lonceng Notifikasi --}}
-                <a href="{{ route('notifications.index') }}" class="header-btn-notification" id="notificationBellBtn" title="Pusat Pemberitahuan">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                {{-- Hamburger Toggle Button (Khusus Mobile) --}}
+                <button type="button" class="mobile-hamburger-btn" id="sidebarToggleBtn" aria-label="Buka Menu Navigasi" title="Buka Menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
                     </svg>
-                    <span id="notificationBadge" class="header-notif-badge" style="{{ auth()->user()->unreadNotifications->count() > 0 ? 'display: inline-flex;' : 'display: none;' }}">
-                        {{ auth()->user()->unreadNotifications->count() }}
-                    </span>
-                </a>
+                </button>
 
-                {{-- Profil Mahasiswa Dinamis & Dropdown --}}
-                <div class="header-user-profile" id="userProfileBtn" title="Menu Pengguna">
-                    @php
-                        $userNames = explode(' ', auth()->user()->name);
-                        $initials = strtoupper(substr($userNames[0] ?? 'U', 0, 1) . (isset($userNames[1]) ? substr($userNames[1], 0, 1) : ''));
-                    @endphp
-                    <div class="header-avatar">{{ $initials }}</div>
-                    <span class="header-user-name">{{ auth()->user()->name }}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m6 9 6 6 6-6"/>
-                    </svg>
+                <div class="header-actions-right">
+                    {{-- Lonceng Notifikasi --}}
+                    <a href="{{ route('notifications.index') }}" class="header-btn-notification" id="notificationBellBtn" title="Pusat Pemberitahuan">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                        </svg>
+                        <span id="notificationBadge" class="header-notif-badge" style="{{ auth()->user()->unreadNotifications->count() > 0 ? 'display: inline-flex;' : 'display: none;' }}">
+                            {{ auth()->user()->unreadNotifications->count() }}
+                        </span>
+                    </a>
 
-                    {{-- Dropdown Profile --}}
-                    <div class="header-dropdown-menu" id="userProfileDropdown">
-                        <div class="dropdown-user-info">
-                            <div class="name">{{ auth()->user()->name }}</div>
-                            <div class="role">
-                                <span class="badge {{ auth()->user()->role === 'admin' ? 'badge-danger' : (auth()->user()->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; text-transform: capitalize;">
-                                    {{ auth()->user()->role }}
-                                </span>
-                                @if (auth()->user()->nim_nip)
-                                    <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.35rem;">{{ auth()->user()->nim_nip }}</span>
-                                @endif
+                    {{-- Profil Mahasiswa Dinamis & Dropdown --}}
+                    <div class="header-user-profile" id="userProfileBtn" title="Menu Pengguna">
+                        @php
+                            $userNames = explode(' ', auth()->user()->name);
+                            $initials = strtoupper(substr($userNames[0] ?? 'U', 0, 1) . (isset($userNames[1]) ? substr($userNames[1], 0, 1) : ''));
+                        @endphp
+                        <div class="header-avatar">{{ $initials }}</div>
+                        <span class="header-user-name">{{ auth()->user()->name }}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"/>
+                        </svg>
+
+                        {{-- Dropdown Profile --}}
+                        <div class="header-dropdown-menu" id="userProfileDropdown">
+                            <div class="dropdown-user-info">
+                                <div class="name">{{ auth()->user()->name }}</div>
+                                <div class="role">
+                                    <span class="badge {{ auth()->user()->role === 'admin' ? 'badge-danger' : (auth()->user()->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; text-transform: capitalize;">
+                                        {{ auth()->user()->role }}
+                                    </span>
+                                    @if (auth()->user()->nim_nip)
+                                        <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.35rem;">{{ auth()->user()->nim_nip }}</span>
+                                    @endif
+                                </div>
+                                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{{ auth()->user()->email }}</div>
                             </div>
-                            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{{ auth()->user()->email }}</div>
-                        </div>
 
-                        <a href="{{ route('notifications.index') }}" class="dropdown-item-link">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                            </svg>
-                            Pemberitahuan
-                        </a>
+                            <a href="{{ route('notifications.index') }}" class="dropdown-item-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                                </svg>
+                                Pemberitahuan
+                            </a>
 
-                        <a href="{{ route('tentang') }}" class="dropdown-item-link">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="16" x2="12" y2="12"/>
-                                <line x1="12" y1="8" x2="12.01" y2="8"/>
-                            </svg>
-                            Tentang Aplikasi
-                        </a>
+                            <a href="{{ route('tentang') }}" class="dropdown-item-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="16" x2="12" y2="12"/>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>
+                                Tentang Aplikasi
+                            </a>
 
-                        <div style="border-top: 1px solid #f1f5f9; margin-top: 0.35rem; padding-top: 0.35rem;">
-                            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                                @csrf
-                                <button type="submit" class="dropdown-logout-btn">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                                        <polyline points="16 17 21 12 16 7"/>
-                                        <line x1="21" y1="12" x2="9" y2="12"/>
-                                    </svg>
-                                    Keluar
-                                </button>
-                            </form>
+                            <div style="border-top: 1px solid #f1f5f9; margin-top: 0.35rem; padding-top: 0.35rem;">
+                                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button type="submit" class="dropdown-logout-btn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                            <polyline points="16 17 21 12 16 7"/>
+                                            <line x1="21" y1="12" x2="9" y2="12"/>
+                                        </svg>
+                                        Keluar
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -276,6 +291,44 @@
                 }
             });
         }
+
+        // Mobile Sidebar Drawer Toggle & Interactions
+        const sidebar = document.getElementById('appSidebar');
+        const sidebarToggle = document.getElementById('sidebarToggleBtn');
+        const sidebarClose = document.getElementById('sidebarCloseBtn');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+        function openSidebar() {
+            if (sidebar) sidebar.classList.add('show');
+            if (sidebarBackdrop) sidebarBackdrop.classList.add('show');
+            document.body.classList.add('drawer-open');
+        }
+
+        function closeSidebar() {
+            if (sidebar) sidebar.classList.remove('show');
+            if (sidebarBackdrop) sidebarBackdrop.classList.remove('show');
+            document.body.classList.remove('drawer-open');
+        }
+
+        if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+        if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+        // Tutup drawer saat link diklik (khusus mobile)
+        document.querySelectorAll('.sidebar-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.innerWidth < 768) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Tutup drawer saat menekan tombol Escape di keyboard
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && sidebar && sidebar.classList.contains('show')) {
+                closeSidebar();
+            }
+        });
     });
 </script>
 @endauth

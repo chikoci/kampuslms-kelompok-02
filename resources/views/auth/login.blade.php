@@ -72,18 +72,18 @@
 
             {{-- Catatan Akun Mahasiswa Terdaftar Oleh Admin --}}
             <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px dashed #e2e8f0; text-align: center;">
-                <p style="font-size: 0.8rem; color: #94a3b8; margin: 0 0 0.5rem 0;">
-                    Akun civitas akademika dibuat dan dikelola oleh Administrator KampusLMS.
+                <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem 0; font-weight: 500;">
+                    Akun Demo Praktikum (Kata sandi: <code style="background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 700; color: #0f172a;">password</code>):
                 </p>
                 {{-- Bantuan Cepat Pengujian Akun Praktikum --}}
                 <div style="display: flex; gap: 0.35rem; justify-content: center; flex-wrap: wrap;">
-                    <button type="button" onclick="fillDemo('mahasiswa@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 8px;">
+                    <button type="button" onclick="fillDemo('mahasiswa@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 8px;">
                         🎓 Akun Mahasiswa
                     </button>
-                    <button type="button" onclick="fillDemo('dosen@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 8px;">
+                    <button type="button" onclick="fillDemo('dosen@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 8px;">
                         👨‍🏫 Akun Dosen
                     </button>
-                    <button type="button" onclick="fillDemo('admin@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 8px;">
+                    <button type="button" onclick="fillDemo('admin@kampuslms.test', 'password')" class="btn-open-class" style="font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 8px;">
                         ⚙️ Akun Admin
                     </button>
                 </div>

@@ -7,7 +7,7 @@
             <h1 class="page-banner-title">Mata Kuliah</h1>
             <p class="page-banner-subtitle">Kelola dan lihat seluruh mata kuliah akademik yang Anda ikuti.</p>
         </div>
-        <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
             @can('create', App\Models\Course::class)
                 <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm" style="border-radius: 9999px; padding: 0.5rem 1.25rem;">
                     + Tambah Mata Kuliah
@@ -62,7 +62,7 @@
     {{-- C. DAFTAR MATA KULIAH (CARD LIST MODERN - NO LARGE ICON) --}}
     <div style="display: flex; flex-direction: column; gap: 0.85rem;">
         @forelse ($courses as $course)
-            <div class="course-card-item">
+            <div class="course-card-item" onclick="window.location='{{ route('courses.show', $course) }}'" style="cursor: pointer;">
                 <div class="course-info-col">
                     <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.2rem;">
                         <span class="badge-code-modern">{{ $course->code }}</span>
@@ -94,18 +94,18 @@
                     </span>
 
                     {{-- Tombol Buka Kelas Menuju Detail --}}
-                    <a href="{{ route('courses.show', $course) }}" class="btn-open-class">
+                    <a href="{{ route('courses.show', $course) }}" class="btn-open-class" onclick="event.stopPropagation()">
                         Buka Kelas &rarr;
                     </a>
 
                     @can('update', $course)
-                        <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;">
+                        <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;" onclick="event.stopPropagation()">
                             Edit
                         </a>
                     @endcan
 
                     @can('delete', $course)
-                        <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" style="margin: 0; display: inline;">
+                        <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" style="margin: 0; display: inline;" onclick="event.stopPropagation()">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca; background: #ffffff;">
