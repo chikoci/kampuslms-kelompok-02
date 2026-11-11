@@ -1,4 +1,9 @@
-<x-layout title="Edit Mata Kuliah">
+<x-layout title="Edit Mata Kuliah - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => $course->name, 'url' => route('courses.show', $course)],
+    ['label' => 'Edit Mata Kuliah']
+]">
 
     <div class="page-header">
         <h1>Edit Mata Kuliah: {{ $course->name }}</h1>
@@ -78,8 +83,8 @@
                 @endif
             </div>
 
-            <div class="form-actions">
-                <a href="{{ route('courses.index') }}" class="btn btn-secondary">
+            <div class="form-actions-row">
+                <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary">
                     Batal
                 </a>
                 <button type="submit" class="btn btn-primary">

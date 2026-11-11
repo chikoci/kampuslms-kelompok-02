@@ -1,4 +1,9 @@
-<x-layout title="Tambah Materi: {{ $course->name }}">
+<x-layout title="Tambah Materi: {{ $course->name }} - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => $course->name, 'url' => route('courses.show', $course)],
+    ['label' => 'Tambah Materi']
+]">
     <div style="max-width: 700px; margin: 2rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
         <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f3f4f6;">
             <a href="{{ route('courses.show', $course) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">&larr; Kembali ke {{ $course->name }}</a>
@@ -53,7 +58,7 @@
                 @enderror
             </div>
 
-            <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <div class="form-actions-row">
                 <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary">Batal</a>
                 <button type="submit" class="btn btn-primary">Simpan Materi</button>
             </div>

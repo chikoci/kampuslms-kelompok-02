@@ -1,40 +1,43 @@
 {{-- Halaman Detail Mata Kuliah --}}
-<x-layout title="Detail: {{ $course->name }} - KampusLMS">
-
-    {{-- Navigasi Kembali & Aksi Dosen/Admin --}}
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-        <a href="{{ route('courses.index') }}" class="btn-open-class" style="border-radius: 9999px;">
-            &larr; Kembali ke Daftar Mata Kuliah
-        </a>
-
-        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-            @can('update', $course)
-                <a href="{{ route('courses.grades', $course) }}" class="btn-open-class" style="background: #ecfdf5; color: #047857; border-color: #a7f3d0;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="20" x2="18" y2="10"/>
-                        <line x1="12" y1="20" x2="12" y2="4"/>
-                        <line x1="6" y1="20" x2="6" y2="14"/>
-                    </svg>
-                    Rekap Nilai Kelas
-                </a>
-                <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;">
-                    Edit Mata Kuliah
-                </a>
-            @endcan
-            @can('delete', $course)
-                <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini beserta seluruh materi dan tugasnya?');" style="margin: 0; display: inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca;">
-                        Hapus
-                    </button>
-                </form>
-            @endcan
-        </div>
-    </div>
+<x-layout title="Detail: {{ $course->name }} - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => $course->name]
+]">
 
     {{-- Header Banner Mata Kuliah --}}
     <div class="card-modern" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);">
+        {{-- Toolbar Atas di Dalam Card: Navigasi Kembali & Aksi Dosen/Admin --}}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.75rem;">
+            <a href="{{ route('courses.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
+                &larr; Kembali ke Daftar Mata Kuliah
+            </a>
+
+            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                @can('update', $course)
+                    <a href="{{ route('courses.grades', $course) }}" class="btn-open-class" style="background: #ecfdf5; color: #047857; border-color: #a7f3d0;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Rekap Nilai Kelas
+                    </a>
+                    <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;">
+                        Edit Mata Kuliah
+                    </a>
+                @endcan
+                @can('delete', $course)
+                    <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini beserta seluruh materi dan tugasnya?');" style="margin: 0; display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca;">
+                            Hapus
+                        </button>
+                    </form>
+                @endcan
+            </div>
+        </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">

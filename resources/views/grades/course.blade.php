@@ -1,13 +1,17 @@
-<x-layout>
-    <x-slot:title>Rekap Nilai Kelas - {{ $course->name }}</x-slot:title>
+<x-layout title="Rekap Nilai Kelas - {{ $course->name }} - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => $course->name, 'url' => route('courses.show', $course)],
+    ['label' => 'Rekap Nilai Kelas']
+]">
 
-    <div style="margin-bottom: 1.5rem;">
-        <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.35rem 0.75rem; text-decoration: none;">
-            ← Kembali ke Mata Kuliah
-        </a>
-    </div>
+    <div class="card-modern" style="margin-bottom: 2rem;">
+        <div style="margin-bottom: 1.25rem;">
+            <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
+                &larr; Kembali ke {{ $course->name }}
+            </a>
+        </div>
 
-    <div class="page-header" style="margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <span class="badge badge-primary" style="font-size: 0.8rem; margin-bottom: 0.5rem;">{{ $course->code }}</span>

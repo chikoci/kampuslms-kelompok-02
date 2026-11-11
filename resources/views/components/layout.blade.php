@@ -1,3 +1,7 @@
+@props([
+    'title' => 'KampusLMS',
+    'breadcrumbs' => [],
+])
 @php
     $errors = $errors ?? new \Illuminate\Support\ViewErrorBag();
 @endphp
@@ -191,6 +195,11 @@
                     </div>
                 </div>
             </header>
+
+            {{-- Breadcrumb Navigation Dinamis --}}
+            @if (!empty($breadcrumbs))
+                <x-breadcrumb :items="$breadcrumbs" />
+            @endif
 
             {{-- Flash Messages --}}
             @if (session('success'))

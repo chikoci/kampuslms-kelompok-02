@@ -1,14 +1,13 @@
-<x-layout title="Registrasi Pengguna Baru - Khusus Administrator">
+<x-layout title="Registrasi Pengguna Baru - Khusus Administrator" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Pengguna', 'url' => route('users.index')],
+    ['label' => 'Daftarkan Pengguna']
+]">
 
     <div class="page-header">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <div>
-                <h1>Registrasi Pengguna Baru</h1>
-                <p>Pendaftaran akun civitas akademika (Hanya dapat diakses oleh Administrator)</p>
-            </div>
-            <a href="{{ route('users.index') }}" class="btn btn-secondary">
-                &larr; Kembali ke Daftar Pengguna
-            </a>
+        <div>
+            <h1>Registrasi Pengguna Baru</h1>
+            <p>Pendaftaran akun civitas akademika (Hanya dapat diakses oleh Administrator)</p>
         </div>
     </div>
 
@@ -73,13 +72,13 @@
                 </div>
             </div>
 
-            <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem;">
-                <button type="submit" class="btn btn-primary">
-                    Daftarkan Pengguna
-                </button>
+            <div class="form-actions-row">
                 <a href="{{ route('users.index') }}" class="btn btn-secondary">
                     Batal
                 </a>
+                <button type="submit" class="btn btn-primary">
+                    Daftarkan Pengguna
+                </button>
             </div>
         </form>
     </div>

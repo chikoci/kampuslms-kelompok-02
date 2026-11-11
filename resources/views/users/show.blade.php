@@ -1,4 +1,8 @@
-<x-layout title="Detail: {{ $user->name }}">
+<x-layout title="Detail: {{ $user->name }} - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Pengguna', 'url' => route('users.index')],
+    ['label' => $user->name]
+]">
 
     <div class="header-actions-row">
         <a href="{{ route('users.index') }}" class="btn btn-secondary btn-sm">

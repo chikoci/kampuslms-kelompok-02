@@ -1,4 +1,8 @@
-<x-layout title="Tambah Mata Kuliah">
+<x-layout title="Tambah Mata Kuliah - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => 'Tambah Mata Kuliah']
+]">
 
     <div class="page-header">
         <h1>Tambah Mata Kuliah Baru</h1>
@@ -71,7 +75,7 @@
                 @enderror
             </div>
 
-            <div class="form-actions">
+            <div class="form-actions-row">
                 <a href="{{ route('courses.index') }}" class="btn btn-secondary">
                     Batal
                 </a>

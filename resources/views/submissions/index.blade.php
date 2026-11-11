@@ -1,14 +1,19 @@
-<x-layout title="Daftar Pengumpulan Tugas - KampusLMS">
-
-    {{-- Navigasi Kembali --}}
-    <div style="margin-bottom: 1.5rem;">
-        <a href="{{ route('assignments.show', $assignment) }}" class="btn-open-class" style="border-radius: 9999px;">
-            &larr; Kembali ke Tugas
-        </a>
-    </div>
+<x-layout title="Daftar Pengumpulan: {{ $assignment->title }} - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => $assignment->course->name, 'url' => route('courses.show', $assignment->course)],
+    ['label' => $assignment->title, 'url' => route('assignments.show', $assignment)],
+    ['label' => auth()->user()->role === 'mahasiswa' ? 'Pengumpulan' : 'Penilaian']
+]">
 
     {{-- Header Banner Pengumpulan --}}
     <div class="card-modern" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);">
+        {{-- Navigasi Kembali di Dalam Container Card Sesuai Permintaan UI/UX --}}
+        <div style="margin-bottom: 1rem;">
+            <a href="{{ route('assignments.show', $assignment) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
+                &larr; Kembali ke Detail Tugas
+            </a>
+        </div>
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
             <span class="badge-code-modern">{{ $assignment->course->code ?? 'TUGAS' }}</span>
             <span class="badge-status-dot {{ $assignment->status }}">

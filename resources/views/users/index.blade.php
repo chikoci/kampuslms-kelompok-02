@@ -1,5 +1,8 @@
 {{-- Halaman Daftar Pengguna --}}
-<x-layout title="Daftar Pengguna">
+<x-layout title="Daftar Pengguna - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Pengguna']
+]">
 
     <div class="header-actions-row">
         <div>

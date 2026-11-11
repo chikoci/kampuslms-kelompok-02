@@ -1,4 +1,9 @@
-<x-layout title="Edit Pengguna">
+<x-layout title="Edit Pengguna - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Pengguna', 'url' => route('users.index')],
+    ['label' => $user->name, 'url' => route('users.show', $user)],
+    ['label' => 'Edit']
+]">
 
     <div class="page-header">
         <h1>Edit Pengguna: {{ $user->name }}</h1>
@@ -57,7 +62,7 @@
                 @enderror
             </div>
 
-            <div class="form-actions">
+            <div class="form-actions-row">
                 <a href="{{ route('users.index') }}" class="btn btn-secondary">
                     Batal
                 </a>

@@ -1,5 +1,8 @@
 {{-- Halaman Daftar Mata Kuliah Mahasiswa --}}
-<x-layout title="Mata Kuliah - KampusLMS">
+<x-layout title="Mata Kuliah - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah']
+]">
 
     {{-- A. PAGE BANNER HEADER DENGAN ILUSTRASI BERUANG BELAJAR --}}
     <div class="page-banner-card">

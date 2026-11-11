@@ -3282,3 +3282,259 @@ img {
     }
 }
 
+/* ==========================================================================
+   KampusLMS 2026 - Breadcrumb, Form Actions & Submission Navigation
+   ========================================================================== */
+
+/* Breadcrumb Navigation */
+.breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+    padding: 0.15rem 0;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.85rem;
+}
+
+.breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #64748b;
+}
+
+.breadcrumb-link {
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.breadcrumb-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.breadcrumb-home-icon {
+    flex-shrink: 0;
+    color: #3b82f6;
+}
+
+.breadcrumb-separator {
+    color: #cbd5e1;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    font-size: 0.75rem;
+}
+
+.breadcrumb-current {
+    color: #0f172a;
+    font-weight: 700;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Form Actions Row (Batal & Simpan di Kanan Bawah) */
+.form-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* Submission & Grading Detail Page */
+.submission-detail-container {
+    width: 100%;
+    max-width: 1020px;
+    margin: 0 auto;
+}
+
+.submission-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.25rem;
+    background: #f8faff;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.submission-nav-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.submission-nav-badge {
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.submission-nav-counter {
+    font-size: 0.9rem;
+    color: #334155;
+}
+
+.submission-nav-counter strong {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.submission-nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.submission-card-bottom-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.submission-bottom-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.submission-bottom-back {
+    margin-left: auto;
+}
+
+/* Integrated Admin Dashboard */
+.admin-hero-card {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.admin-actions-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.admin-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+}
+
+/* Responsive Overrides */
+@media (max-width: 900px) {
+    .admin-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .breadcrumb-nav {
+        font-size: 0.75rem;
+        margin-bottom: 0.85rem;
+    }
+    
+    .breadcrumb-list {
+        gap: 0.3rem;
+    }
+    
+    .form-actions-row {
+        flex-direction: column-reverse;
+        gap: 0.65rem;
+    }
+    
+    .form-actions-row .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .submission-nav-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 0.85rem;
+    }
+    
+    .submission-nav-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .submission-nav-buttons .btn {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .submission-card-bottom-bar {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .submission-bottom-back {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .submission-bottom-back .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .submission-bottom-nav {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .submission-bottom-nav .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .admin-actions-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .admin-actions-group .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .admin-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

@@ -1,4 +1,7 @@
-<x-layout title="Nilai Saya - KampusLMS">
+<x-layout title="Nilai Saya - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Nilai Saya']
+]">
 
     {{-- A. PAGE HEADER DENGAN ILUSTRASI BERUANG NILAI A+ --}}
     <div class="page-banner-card">

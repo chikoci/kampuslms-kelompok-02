@@ -1,5 +1,7 @@
-<x-layout>
-    <x-slot:title>Daftar Notifikasi - KampusLMS</x-slot:title>
+<x-layout title="Daftar Notifikasi - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Pusat Pemberitahuan']
+]">
 
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
         <div>
