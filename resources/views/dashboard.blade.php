@@ -5,7 +5,7 @@
         {{-- DASHBOARD ADMINISTRATOR SISTEM                           --}}
         {{-- ======================================================== --}}
 
-        {{-- HERO WELCOME CARD FULL WIDTH DENGAN AKSI UTAMA & MASKOT KAVI --}}
+        {{-- 1. HERO WELCOME CARD ADMINISTRATOR (DENGAN AKSI UTAMA & MASKOT KAVI) --}}
         <div class="hero-welcome-card admin-hero-card">
             <div class="hero-welcome-left">
                 <div class="hero-welcome-text">
@@ -14,56 +14,7 @@
                     <p class="hero-welcome-subtitle">Ringkasan manajemen sistem, infrastruktur data, dan kontrol pengguna KampusLMS.</p>
                 </div>
 
-                <div class="hero-metric-row">
-                    {{-- Total Pengguna --}}
-                    <div class="hero-metric-item">
-                        <div class="hero-metric-icon blue">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                            </svg>
-                        </div>
-                        <div class="hero-metric-text">
-                            <span class="label">Total<br>Pengguna</span>
-                            <span class="value">{{ $metrics['users_count'] }}</span>
-                        </div>
-                    </div>
-
-                    {{-- Total Mata Kuliah --}}
-                    <div class="hero-metric-item">
-                        <div class="hero-metric-icon green">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                <path d="M6 6h10"/>
-                                <path d="M6 10h10"/>
-                            </svg>
-                        </div>
-                        <div class="hero-metric-text">
-                            <span class="label">Mata Kuliah<br>Terdaftar</span>
-                            <span class="value">{{ $metrics['courses_count'] }}</span>
-                        </div>
-                    </div>
-
-                    {{-- Tugas & Evaluasi --}}
-                    <div class="hero-metric-item">
-                        <div class="hero-metric-icon yellow">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                            </svg>
-                        </div>
-                        <div class="hero-metric-text">
-                            <span class="label">Tugas &<br>Evaluasi</span>
-                            <span class="value">{{ $metrics['assignments_count'] }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Tombol Aksi Utama Administrator yang Lebih Menonjol --}}
+                {{-- Tombol Aksi Utama Administrator --}}
                 <div class="admin-actions-group">
                     <a href="{{ route('register') }}" class="btn btn-primary" style="padding: 0.65rem 1.35rem; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -96,7 +47,78 @@
             </div>
         </div>
 
-        {{-- BAGIAN BAWAH TERINTEGRASI: 3 KARTU KONTEN SEIMBANG (Pengguna, Mata Kuliah, Pemberitahuan) --}}
+        {{-- 2. GRID 3 KARTU STATISTIK SISTEM (INTERAKTIF & SEIMBANG) --}}
+        <div class="stats-overview-grid">
+            {{-- Card 1: Total Pengguna --}}
+            <a href="{{ route('users.index') }}" class="stat-card-modern">
+                <div class="stat-card-top">
+                    <div class="stat-icon-wrapper blue">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <span class="stat-tag blue">Civitas</span>
+                </div>
+                <div class="stat-main">
+                    <div class="stat-number">{{ $metrics['users_count'] }}</div>
+                    <div class="stat-label">Total Pengguna Terdaftar</div>
+                </div>
+                <div class="stat-footer">
+                    <span class="stat-detail">{{ $metrics['students_count'] }} Mahasiswa &bull; {{ $metrics['lecturers_count'] }} Dosen</span>
+                    <span class="stat-arrow">&rarr;</span>
+                </div>
+            </a>
+
+            {{-- Card 2: Total Mata Kuliah --}}
+            <a href="{{ route('courses.index') }}" class="stat-card-modern">
+                <div class="stat-card-top">
+                    <div class="stat-icon-wrapper green">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                            <path d="M6 6h10"/>
+                            <path d="M6 10h10"/>
+                        </svg>
+                    </div>
+                    <span class="stat-tag green">Kurikulum</span>
+                </div>
+                <div class="stat-main">
+                    <div class="stat-number">{{ $metrics['courses_count'] }}</div>
+                    <div class="stat-label">Mata Kuliah Terdaftar</div>
+                </div>
+                <div class="stat-footer">
+                    <span class="stat-detail">{{ $metrics['materials_count'] }} Materi Pembelajaran</span>
+                    <span class="stat-arrow">&rarr;</span>
+                </div>
+            </a>
+
+            {{-- Card 3: Tugas & Evaluasi --}}
+            <a href="{{ route('courses.index') }}" class="stat-card-modern">
+                <div class="stat-card-top">
+                    <div class="stat-icon-wrapper yellow">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                    </div>
+                    <span class="stat-tag yellow">Evaluasi</span>
+                </div>
+                <div class="stat-main">
+                    <div class="stat-number">{{ $metrics['assignments_count'] }}</div>
+                    <div class="stat-label">Tugas & Evaluasi</div>
+                </div>
+                <div class="stat-footer">
+                    <span class="stat-detail">{{ $metrics['submissions_count'] }} Total Pengumpulan</span>
+                    <span class="stat-arrow">&rarr;</span>
+                </div>
+            </a>
+        </div>
+
+        {{-- 3. BARIS BAWAH: PENGGUNA TERBARU & MATA KULIAH TERBARU (2 KOLOM SEIMBANG) --}}
         <div class="admin-dashboard-grid">
             {{-- Kartu 1: Pengguna Terbaru --}}
             <div class="card-modern">
