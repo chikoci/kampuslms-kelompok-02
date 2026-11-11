@@ -273,7 +273,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 10. Pastikan submission mahasiswa demo memiliki nilai & buat notifikasi sampel (Milestone M3)
+        // 10. Pastikan submission mahasiswa demo memiliki nilai (Milestone M3)
         $demoSubmission = $allSubmissions->firstWhere('user_id', $demoStudent->id);
         if ($demoSubmission && ! $demoSubmission->grade()->exists()) {
             Grade::create([
@@ -283,17 +283,6 @@ class DatabaseSeeder extends Seeder
                 'feedback'      => 'Pengerjaan sangat baik dan rapi. Seluruh kriteria spesifikasi terpenuhi.',
                 'graded_at'     => now()->subDays(2),
             ]);
-            $demoSubmission->refresh();
-        }
-
-        // Kirim 2 notifikasi awal agar lonceng di navbar langsung menyala aktif untuk akun demo mahasiswa
-        $demoAssignment = $courses->first()->assignments()->where('status', 'published')->first();
-        if ($demoAssignment) {
-            $demoStudent->notify(new \App\Notifications\NewAssignmentNotification($demoAssignment));
-        }
-
-        if ($demoSubmission && $demoSubmission->grade) {
-            $demoStudent->notify(new \App\Notifications\SubmissionGradedNotification($demoSubmission));
         }
     }
 }

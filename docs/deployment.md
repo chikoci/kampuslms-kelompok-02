@@ -187,3 +187,4 @@ Aplikasi diuji langsung menggunakan browser ponsel oleh seluruh 4 anggota kelomp
 | 4 | **Dawwas Eryansyah Pratama** (10241019) | Frontend & Mobile Testing | Android / Google Chrome | 360 x 800 px | Responsif, Grid metrik 1 kolom otomatis rapi |
 
 *(Screenshot mobile dari masing-masing anggota diarsipkan pada repositori dan siap dipresentasikan saat checkpoint evaluasi dosen).*
+
