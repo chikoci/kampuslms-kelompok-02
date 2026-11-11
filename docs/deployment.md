@@ -179,12 +179,28 @@ Berkas `deploy.sh` telah dibuat dengan hak akses executable (`100755`) dan dilen
 ## 7. Pengujian Responsivitas Mobile Smartphone (BUILD Poin 8)
 Aplikasi diuji langsung menggunakan browser ponsel oleh seluruh 4 anggota kelompok untuk memvalidasi tata letak responsif, navigasi hamburger/drawer, dan keterbacaan tabel di layar sentuh kecil:
 
-| No | Penguji | Peran Tim | Perangkat & Browser | Resolusi Layar | Hasil Tampilan |
-|---|---|---|---|---|---|
-| 1 | **Chiko Dhiva Pramana** (10241017) | Project Lead & System Architect | Android / Google Chrome | 393 x 873 px | Responsif, Navbar rapi, Tabel dapat discroll horizontal |
-| 2 | **Armansyah** (10241013) | DevOps Executor & Security Auditor | Android / Google Chrome | 412 x 915 px | Responsif, Lonceng notifikasi tampil tepat, Form input proporsional |
-| 3 | **Bella Alviana** (10241015) | Frontend & Mobile Testing | iOS / Mobile Safari | 390 x 844 px | Responsif, Font proporsional, Tombol aksi mudah ditekan |
-| 4 | **Dawwas Eryansyah Pratama** (10241019) | Frontend & Mobile Testing | Android / Google Chrome | 360 x 800 px | Responsif, Grid metrik 1 kolom otomatis rapi |
+| No | Penguji | Peran Tim | Perangkat & Browser | Halaman yang Diuji | Hasil Tampilan | Berkas Bukti |
+|---|---|---|---|---|---|---|
+| 1 | **Chiko Dhiva Pramana** (10241017) | Project Lead & System Architect | Android / Google Chrome | Dashboard Mahasiswa | Responsif, Navbar rapi, Card metrik 1 kolom | `docs/img/mobile-mahasiswa-dashboard.jpg` |
+| 2 | **Armansyah** (10241013) | DevOps Executor & Security Auditor | Android / Google Chrome | Dashboard Administrator | Responsif, Tombol aksi mudah ditekan, Statistik rapi | `docs/img/mobile-admin-dashboard.jpg` |
+| 3 | **Bella Alviana** (10241015) | Frontend & Mobile Testing | Android / Google Chrome | Halaman Login & Alert | Responsif, Maskot ilustrasi proporsional, Alert rapi | `docs/img/mobile-login-screen.jpg` |
+| 4 | **Dawwas Eryansyah Pratama** (10241019) | Frontend & Mobile Testing | iOS (iPhone) / Mobile Safari | Dashboard Dosen | Responsif di WebKit iOS, Menu grid rapi, Status bar pas | `docs/img/mobile-dosen-ios-safari.jpg` |
 
-*(Screenshot mobile dari masing-masing anggota diarsipkan pada repositori dan siap dipresentasikan saat checkpoint evaluasi dosen).*
+### Galeri Tangkapan Layar Pengujian Smartphone
+
+<p align="center">
+  <img src="img/mobile-mahasiswa-dashboard.jpg" width="22%" alt="Dashboard Mahasiswa - Android Chrome" />
+  &nbsp;
+  <img src="img/mobile-admin-dashboard.jpg" width="22%" alt="Dashboard Admin - Android Chrome" />
+  &nbsp;
+  <img src="img/mobile-login-screen.jpg" width="22%" alt="Halaman Login - Android Chrome" />
+  &nbsp;
+  <img src="img/mobile-dosen-ios-safari.jpg" width="22%" alt="Dashboard Dosen - iOS Safari" />
+</p>
+
+*Keterangan Gambar (Kiri ke Kanan):*
+1. **Pengujian 1 (Chiko):** Tampilan Dashboard Mahasiswa pada Android Google Chrome. Menampilkan 3 kartu metrik tugas, navigasi profil, dan daftar mata kuliah aktif tanpa overflow horizontal.
+2. **Pengujian 2 (Arman):** Tampilan Dashboard Administrator pada Android Google Chrome. Tombol registrasi pengguna dan metrik civitas kampus tertata rapi.
+3. **Pengujian 3 (Bella):** Tampilan Halaman Login dan Alert Notifikasi Keluar pada Android Google Chrome. Form login dan ilustrasi maskot proporsional di layar sentuh.
+4. **Pengujian 4 (Dawwas):** Tampilan Dashboard Dosen pada iPhone (iOS Mobile Safari). Membuktikan kompatibilitas lintas mesin peramban (Blink dan WebKit).
 
