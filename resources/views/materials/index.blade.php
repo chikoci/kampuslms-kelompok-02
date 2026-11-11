@@ -1,7 +1,14 @@
-<x-layout title="Materi Perkuliahan: {{ $course->name }}">
+<x-layout title="Materi Perkuliahan: {{ $course->name }}" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => $course->name, 'url' => route('courses.show', $course)],
+    ['label' => 'Daftar Materi']
+]">
     <div class="header-actions-row">
         <div>
-            <a href="{{ route('courses.show', $course) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">&larr; Kembali ke {{ $course->name }}</a>
+            <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; margin-bottom: 0.5rem;">
+                &larr; Kembali ke {{ $course->name }}
+            </a>
             <h1 class="page-title" style="margin-top: 0.5rem;">Daftar Materi: {{ $course->name }}</h1>
         </div>
         @can('create', [\App\Models\Material::class, $course])

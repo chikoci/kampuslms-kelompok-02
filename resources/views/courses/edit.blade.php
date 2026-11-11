@@ -1,11 +1,28 @@
-<x-layout title="Edit Mata Kuliah">
+<x-layout title="Edit Mata Kuliah - KampusLMS" :breadcrumbs="[
+    ['label' => 'Dashboard', 'url' => route('dashboard')],
+    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+    ['label' => $course->name, 'url' => route('courses.show', $course)],
+    ['label' => 'Edit Mata Kuliah']
+]">
 
-    <div class="page-header">
-        <h1>Edit Mata Kuliah: {{ $course->name }}</h1>
-        <p>Perbarui informasi data mata kuliah di bawah ini</p>
-    </div>
+    <div class="form-card" style="margin-top: 1rem;">
+        {{-- Card Header Terpadu di Dalam 1 Card --}}
+        <div style="margin-bottom: 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span class="badge-code-modern">{{ $course->code }}</span>
+                <span class="badge-status-dot {{ $course->status }}">
+                    <span class="dot"></span>
+                    {{ ucfirst($course->status) }}
+                </span>
+            </div>
+            <h1 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; letter-spacing: -0.02em;">
+                Edit Mata Kuliah: {{ $course->name }}
+            </h1>
+            <p style="font-size: 0.925rem; color: #64748b; margin: 0; line-height: 1.4;">
+                Perbarui informasi data dan pengaturan mata kuliah di KampusLMS
+            </p>
+        </div>
 
-    <div class="form-card">
         <form action="{{ route('courses.update', $course) }}" method="POST">
             @csrf
             @method('PUT')
@@ -78,8 +95,8 @@
                 @endif
             </div>
 
-            <div class="form-actions">
-                <a href="{{ route('courses.index') }}" class="btn btn-secondary">
+            <div class="form-actions-row">
+                <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary">
                     Batal
                 </a>
                 <button type="submit" class="btn btn-primary">

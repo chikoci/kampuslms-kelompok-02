@@ -140,21 +140,27 @@ class SubmissionController extends Controller
         $submission->load(['assignment.course', 'student', 'grade.grader']);
 
         // Navigasi cepat untuk Dosen/Admin saat memeriksa berkas secara berurutan (looping penilaian)
+        $totalSubmissions = 0;
+        $currentIndex = 0;
         $prevSubmission = null;
         $nextSubmission = null;
 
         if (auth()->user()?->role === 'dosen' || auth()->user()?->role === 'admin') {
-            $prevSubmission = $submission->assignment->submissions()
-                ->where('id', '<', $submission->id)
-                ->orderBy('id', 'desc')
-                ->first();
-            $nextSubmission = $submission->assignment->submissions()
-                ->where('id', '>', $submission->id)
+            $allSubmissions = $submission->assignment->submissions()
+                ->with('student')
                 ->orderBy('id', 'asc')
-                ->first();
+                ->get();
+
+            $totalSubmissions = $allSubmissions->count();
+            $pos = $allSubmissions->search(fn($item) => $item->id === $submission->id);
+            if ($pos !== false) {
+                $currentIndex = $pos + 1;
+                $prevSubmission = $allSubmissions->get($pos - 1);
+                $nextSubmission = $allSubmissions->get($pos + 1);
+            }
         }
 
-        return view('submissions.show', compact('submission', 'prevSubmission', 'nextSubmission'));
+        return view('submissions.show', compact('submission', 'prevSubmission', 'nextSubmission', 'totalSubmissions', 'currentIndex'));
     }
 
     /**
