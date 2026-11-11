@@ -18,17 +18,19 @@
         <form action="{{ route('users.index') }}" method="GET" class="filter-form">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, email, atau NIM/NIP..." class="form-control filter-input">
             
-            <select name="role" class="form-select filter-select">
-                <option value="">-- Semua Role --</option>
-                <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="dosen" {{ request('role') === 'dosen' ? 'selected' : '' }}>Dosen</option>
-                <option value="mahasiswa" {{ request('role') === 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
-            </select>
+            <div class="filter-controls-group">
+                <select name="role" class="form-select filter-select">
+                    <option value="">-- Semua Role --</option>
+                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="dosen" {{ request('role') === 'dosen' ? 'selected' : '' }}>Dosen</option>
+                    <option value="mahasiswa" {{ request('role') === 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+                </select>
 
-            <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-            @if(request()->hasAny(['q', 'role']))
-                <a href="{{ route('users.index') }}" class="btn btn-secondary btn-sm">Reset</a>
-            @endif
+                <button type="submit" class="btn btn-primary btn-sm filter-btn-primary">Filter</button>
+                @if(request()->hasAny(['q', 'role']))
+                    <a href="{{ route('users.index') }}" class="btn btn-secondary btn-sm filter-btn-reset">Reset</a>
+                @endif
+            </div>
         </form>
     </div>
 

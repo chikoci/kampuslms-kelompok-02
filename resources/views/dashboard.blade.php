@@ -11,8 +11,10 @@
             {{-- A. HERO WELCOME SECTION --}}
             <div class="hero-welcome-card">
                 <div class="hero-welcome-left">
-                    <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
-                    <p class="hero-welcome-subtitle">Ringkasan manajemen sistem, infrastruktur data, dan kontrol pengguna KampusLMS.</p>
+                    <div class="hero-welcome-text">
+                        <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
+                        <p class="hero-welcome-subtitle">Ringkasan manajemen sistem, infrastruktur data, dan kontrol pengguna KampusLMS.</p>
+                    </div>
 
                     <div class="hero-metric-row">
                         {{-- Total Pengguna --}}
@@ -63,7 +65,7 @@
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <div class="hero-welcome-actions" style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
                         <a href="{{ route('register') }}" class="btn btn-primary btn-sm" style="border-radius: 9999px; padding: 0.4rem 1.15rem; font-size: 0.8rem;">+ Daftarkan Pengguna</a>
                         <a href="{{ route('courses.create') }}" class="btn btn-secondary btn-sm" style="border-radius: 9999px; padding: 0.4rem 1.15rem; font-size: 0.8rem;">+ Tambah Mata Kuliah</a>
                     </div>
@@ -76,14 +78,14 @@
                         <div class="kavi-sparkle s1">&#10022;</div>
                         <div class="kavi-sparkle s2">&#10022;</div>
                         <div class="kavi-sparkle s3">&#10022;</div>
-                        <img src="{{ asset('images/illustrations/kavi-laptop.png') }}" alt="Kavi Administrator" class="kavi-hero-img">
+                        <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Administrator" class="kavi-hero-img">
                         <div class="kavi-pedestal-shadow"></div>
                     </div>
                 </div>
             </div>
 
             {{-- B. NOTIFICATIONS PANEL ADMIN --}}
-            <div class="card-modern" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="card-modern dashboard-notif-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div class="card-header-row" style="margin-bottom: 1rem;">
                         <h3 class="card-header-title">
@@ -201,8 +203,10 @@
             {{-- A. HERO WELCOME SECTION --}}
             <div class="hero-welcome-card">
                 <div class="hero-welcome-left">
-                    <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
-                    <p class="hero-welcome-subtitle">Kelola mata kuliah, materi ajar, dan evaluasi tugas mahasiswa pengampu Anda.</p>
+                    <div class="hero-welcome-text">
+                        <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
+                        <p class="hero-welcome-subtitle">Kelola mata kuliah, materi ajar, dan evaluasi tugas mahasiswa pengampu Anda.</p>
+                    </div>
 
                     <div class="hero-metric-row">
                         {{-- Mata Kuliah Diampu --}}
@@ -266,7 +270,7 @@
             </div>
 
             {{-- B. NOTIFICATIONS PANEL DOSEN --}}
-            <div class="card-modern" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="card-modern dashboard-notif-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div class="card-header-row" style="margin-bottom: 1rem;">
                         <h3 class="card-header-title">
@@ -388,8 +392,10 @@
             {{-- A. HERO WELCOME SECTION --}}
             <div class="hero-welcome-card">
                 <div class="hero-welcome-left">
-                    <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
-                    <p class="hero-welcome-subtitle">Selamat datang di Kampus LMS!</p>
+                    <div class="hero-welcome-text">
+                        <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
+                        <p class="hero-welcome-subtitle">Selamat datang di Kampus LMS!</p>
+                    </div>
 
                     <div class="hero-metric-row">
                         {{-- Mata Kuliah yang Diikuti --}}
@@ -451,7 +457,7 @@
             </div>
 
             {{-- B. NOTIFICATIONS PANEL --}}
-            <div class="card-modern" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="card-modern dashboard-notif-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div class="card-header-row" style="margin-bottom: 1rem;">
                         <h3 class="card-header-title">

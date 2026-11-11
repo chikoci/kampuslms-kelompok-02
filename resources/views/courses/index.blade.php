@@ -7,9 +7,9 @@
             <h1 class="page-banner-title">Mata Kuliah</h1>
             <p class="page-banner-subtitle">Kelola dan lihat seluruh mata kuliah akademik yang Anda ikuti.</p>
         </div>
-        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+        <div class="page-banner-actions-wrap" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
             @can('create', App\Models\Course::class)
-                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm" style="border-radius: 9999px; padding: 0.5rem 1.25rem;">
+                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm page-banner-btn" style="border-radius: 9999px; padding: 0.5rem 1.25rem;">
                     + Tambah Mata Kuliah
                 </a>
             @endcan
@@ -35,27 +35,28 @@
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau kode mata kuliah..." class="filter-search-input">
             </div>
 
-            {{-- Status Filter --}}
-            <select name="status" class="filter-select-modern">
-                <option value="">Semua Status</option>
-                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
-                <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
-            </select>
+            {{-- Status Filter & Filter Button (Berdampingan Kanan Kiri di Mobile) --}}
+            <div class="filter-controls-group">
+                <select name="status" class="filter-select-modern">
+                    <option value="">Semua Status</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
+                </select>
 
-            {{-- Filter Button --}}
-            <button type="submit" class="filter-btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-                </svg>
-                Filter
-            </button>
+                <button type="submit" class="filter-btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                    </svg>
+                    <span>Filter</span>
+                </button>
 
-            @if(request()->hasAny(['q', 'status']))
-                <a href="{{ route('courses.index') }}" class="btn-open-class" style="border-radius: 12px; padding: 0.65rem 1rem;">
-                    Reset
-                </a>
-            @endif
+                @if(request()->hasAny(['q', 'status']))
+                    <a href="{{ route('courses.index') }}" class="btn-open-class filter-btn-reset">
+                        Reset
+                    </a>
+                @endif
+            </div>
         </form>
     </div>
 

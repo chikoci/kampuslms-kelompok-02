@@ -982,20 +982,25 @@ body.lms-modern {
 .app-sidebar {
     width: 96px;
     background: #ffffff;
-    margin: 1.25rem 0 1.25rem 1.25rem;
     border-radius: 28px;
     border: 1px solid rgba(226, 232, 240, 0.8);
     box-shadow: 0 4px 24px -2px rgba(148, 163, 184, 0.12);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
     padding: 1.5rem 0.5rem;
-    position: sticky;
+    position: fixed;
     top: 1.25rem;
+    left: 1.25rem;
     height: calc(100vh - 2.5rem);
     z-index: 50;
     flex-shrink: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.app-sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 .sidebar-top {
@@ -1075,10 +1080,6 @@ body.lms-modern {
     color: #0f172a;
 }
 
-.sidebar-link:hover .sidebar-icon {
-    transform: translateY(-1px);
-}
-
 .sidebar-link.active {
     background-color: #eff6ff;
     color: #2563eb;
@@ -1131,6 +1132,7 @@ body.lms-modern {
     flex-direction: column;
     min-width: 0;
     padding: 1.25rem 2rem 2.5rem 2rem;
+    margin-left: calc(96px + 1.25rem);
 }
 
 .app-header {
@@ -1950,6 +1952,12 @@ body.lms-modern {
     background: #1d4ed8;
 }
 
+.filter-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
 /* Detail Course Sections */
 .detail-meta-grid {
     display: grid;
@@ -1997,9 +2005,8 @@ body.lms-modern {
 
 /* 1. Global Reset & Overflow Protection */
 html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-    width: 100% !important;
+    max-width: 100vw;
+    width: 100%;
 }
 
 *, *::before, *::after {
@@ -2081,12 +2088,16 @@ img {
 @media (min-width: 768px) and (max-width: 1023px) {
     .app-sidebar {
         width: 80px;
-        margin: 1rem 0 1rem 1rem;
+        top: 1rem;
+        left: 1rem;
+        height: calc(100vh - 2rem);
+        margin: 0;
         padding: 1.25rem 0.35rem;
     }
 
     .app-main {
         padding: 1rem 1.25rem 2rem 1.25rem;
+        margin-left: calc(80px + 1rem);
     }
 
     .sidebar-link {
@@ -2108,6 +2119,12 @@ img {
    ========================================================================== */
 @media (max-width: 767px) {
     /* Layout & App Shell */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+    }
+
     .app-shell {
         display: block !important;
         width: 100% !important;
@@ -2121,6 +2138,7 @@ img {
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
+        margin-left: 0 !important;
     }
 
     /* Header */
@@ -2325,121 +2343,262 @@ img {
     /* Grids on Mobile */
     .dashboard-top-grid {
         grid-template-columns: 1fr !important;
-        gap: 1.25rem !important;
+        gap: 0.85rem !important;
     }
 
     .dashboard-bottom-grid {
         grid-template-columns: 1fr !important;
-        gap: 1.25rem !important;
+        gap: 0.85rem !important;
     }
 
-    /* Hero Banner on Mobile */
+    /* Hilangkan panel notifikasi di dashboard mobile sesuai instruksi user (sudah ada di lonceng navbar) */
+    .dashboard-notif-panel {
+        display: none !important;
+    }
+
+    /* Hero Banner on Mobile - Sangat Kompak & Minimalis (Maskot di Kanan Atas Sejajar Teks) */
     .hero-welcome-card {
-        flex-direction: column !important;
-        padding: 1.5rem 1.25rem !important;
-        text-align: center !important;
-        gap: 1.25rem !important;
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        align-items: center !important;
+        padding: 0.85rem 0.95rem !important;
+        border-radius: 18px !important;
+        gap: 0.65rem 0.6rem !important;
+        text-align: left !important;
+    }
+
+    .hero-welcome-left {
+        display: contents !important;
+    }
+
+    .hero-welcome-text {
+        grid-column: 1 / 2 !important;
+        grid-row: 1 / 2 !important;
+        min-width: 0 !important;
     }
 
     .hero-welcome-title {
-        font-size: 1.55rem !important;
+        font-size: 1.15rem !important;
+        margin-bottom: 0.15rem !important;
+        line-height: 1.25 !important;
+        text-align: left !important;
     }
 
     .hero-welcome-subtitle {
-        font-size: 0.875rem !important;
-        margin-bottom: 1.25rem !important;
+        font-size: 0.75rem !important;
+        margin-bottom: 0 !important;
+        line-height: 1.3 !important;
+        text-align: left !important;
+        color: #64748b !important;
     }
 
-    .hero-metric-row {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
-        gap: 0.65rem !important;
-        width: 100% !important;
-    }
-
-    .hero-metric-item {
-        padding: 0.65rem 0.75rem !important;
-        gap: 0.6rem !important;
-    }
-
-    .hero-metric-text .label {
-        font-size: 0.7rem !important;
-    }
-
-    .hero-metric-text .value {
-        font-size: 1.15rem !important;
+    /* Maskot Kavi di Mobile: Ditempatkan di sisi kanan teks header, tidak lagi di bawah */
+    .hero-welcome-right {
+        grid-column: 2 / 3 !important;
+        grid-row: 1 / 2 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
     }
 
     .kavi-hero-composition {
-        width: 100% !important;
-        max-width: 200px !important;
-        min-height: 160px !important;
-        margin: 0 auto !important;
+        width: 58px !important;
+        max-width: 58px !important;
+        height: 56px !important;
+        min-height: 56px !important;
+        margin: 0 !important;
     }
 
     .kavi-hero-img {
-        max-height: 160px !important;
+        max-height: 54px !important;
+        width: auto !important;
     }
 
     .kavi-hero-blob {
-        width: 160px !important;
-        height: 160px !important;
+        width: 50px !important;
+        height: 50px !important;
     }
 
-    /* Page Banner Cards */
-    .page-banner-card {
+    .kavi-pedestal-shadow {
+        display: none !important;
+    }
+
+    .kavi-sparkle {
+        display: none !important;
+    }
+
+    /* 3 Card Utama (Hero metric items): Menempati baris bawah secara penuh */
+    .hero-metric-row {
+        grid-column: 1 / -1 !important;
+        grid-row: 2 / 3 !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.35rem !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+    }
+
+    .hero-welcome-actions {
+        grid-column: 1 / -1 !important;
+        grid-row: 3 / 4 !important;
+        width: 100% !important;
+        margin-top: 0.35rem !important;
+    }
+
+    .hero-metric-item {
+        padding: 0.45rem 0.25rem !important;
+        gap: 0.25rem !important;
         flex-direction: column !important;
-        padding: 1.35rem 1.15rem !important;
-        text-align: center !important;
-        gap: 1rem !important;
         align-items: center !important;
+        text-align: center !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
+        min-width: 0 !important;
+        transition: transform 0.15s ease, background 0.15s ease !important;
     }
 
-    .page-banner-title {
-        font-size: 1.5rem !important;
+    .hero-metric-item:active {
+        transform: scale(0.97) !important;
+        background: #f1f5f9 !important;
     }
 
-    .page-banner-subtitle {
+    .hero-metric-icon {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 8px !important;
         font-size: 0.85rem !important;
     }
 
+    .hero-metric-icon svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+
+    .hero-metric-text {
+        align-items: center !important;
+        text-align: center !important;
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .hero-metric-text .label {
+        font-size: 0.62rem !important;
+        line-height: 1.15 !important;
+        color: #64748b !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        word-break: break-word !important;
+    }
+
+    .hero-metric-text .value {
+        font-size: 1.05rem !important;
+        font-weight: 800 !important;
+        line-height: 1.1 !important;
+        margin-top: 0.15rem !important;
+    }
+
+    /* Page Banner Cards (Mata Kuliah & Nilai Saya): Sleek horizontal row, judul & maskot proporsional */
+    .page-banner-card {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        text-align: left !important;
+        padding: 0.85rem 1rem !important;
+        border-radius: 16px !important;
+        margin-bottom: 0.85rem !important;
+        gap: 0.65rem !important;
+    }
+
+    .page-banner-card > div:first-child {
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+
+    .page-banner-title {
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
+        margin: 0 0 0.15rem 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    .page-banner-subtitle {
+        font-size: 0.72rem !important;
+        line-height: 1.3 !important;
+        margin: 0 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    .page-banner-actions-wrap {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        flex-shrink: 0 !important;
+    }
+
+    .page-banner-btn {
+        padding: 0.35rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap !important;
+    }
+
     .kavi-banner-composition {
-        margin: 0 auto !important;
-        height: 110px !important;
-        width: 130px !important;
+        margin: 0 !important;
+        height: 58px !important;
+        min-height: 58px !important;
+        width: 58px !important;
+        flex-shrink: 0 !important;
     }
 
     .kavi-banner-img {
-        max-height: 110px !important;
+        max-height: 55px !important;
     }
 
     .kavi-banner-blob {
-        width: 100px !important;
-        height: 100px !important;
+        width: 50px !important;
+        height: 50px !important;
     }
 
-    /* Cards */
+    /* Cards compacting & touch interactivity */
     .card-modern {
-        padding: 1.25rem 1.15rem !important;
-        border-radius: 20px !important;
+        padding: 1rem 0.95rem !important;
+        border-radius: 16px !important;
     }
 
     .card-header-row {
         flex-wrap: wrap !important;
         gap: 0.5rem !important;
-        margin-bottom: 1rem !important;
+        margin-bottom: 0.75rem !important;
     }
 
     .card-header-title {
-        font-size: 1.05rem !important;
+        font-size: 1rem !important;
     }
 
-    /* Course Cards */
+    /* Course Cards compacting & touch */
     .course-card-item {
         flex-direction: column !important;
         align-items: flex-start !important;
-        padding: 1.15rem !important;
-        gap: 0.85rem !important;
+        padding: 0.85rem 0.95rem !important;
+        border-radius: 14px !important;
+        gap: 0.65rem !important;
+        transition: transform 0.15s ease, background 0.15s ease !important;
+    }
+
+    .course-card-item:active {
+        transform: scale(0.985) !important;
+        background: #f1f5f9 !important;
+    }
+
+    .course-title {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.15rem !important;
     }
 
     .course-info-col {
@@ -2451,45 +2610,58 @@ img {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        padding-top: 0.65rem !important;
+        padding-top: 0.5rem !important;
         border-top: 1px dashed #eef2f6 !important;
     }
 
     .btn-open-class {
-        padding: 0.45rem 0.95rem !important;
-        font-size: 0.825rem !important;
+        padding: 0.35rem 0.85rem !important;
+        font-size: 0.78rem !important;
     }
 
-    /* Filter Form */
+    .btn-open-class:active {
+        transform: scale(0.96) !important;
+    }
+
+    /* Nilai Saya Accordion Cards */
+    .grade-accordion-card {
+        border-radius: 16px !important;
+        margin-bottom: 0.65rem !important;
+    }
+
+    .grade-accordion-header {
+        padding: 0.85rem 0.95rem !important;
+    }
+
+    .grade-accordion-title {
+        font-size: 0.95rem !important;
+    }
+
+    .grade-accordion-body {
+        padding: 0.85rem 0.95rem !important;
+    }
+
+    /* Buttons mobile touch feedback */
+    .btn:active,
+    .sidebar-link:active {
+        transform: scale(0.97) !important;
+    }
+
+    /* Filter Form: Minimalis & Berdampingan Kanan-Kiri */
     .filter-container-card,
     .filter-card {
-        padding: 0.85rem 1rem !important;
+        padding: 0.75rem 0.85rem !important;
+        border-radius: 16px !important;
+        margin-bottom: 0.85rem !important;
     }
 
     .filter-flex-form,
     .filter-form {
+        display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
         width: 100% !important;
-        gap: 0.65rem !important;
-    }
-
-    .filter-form .filter-input,
-    .filter-form .filter-select,
-    .filter-form .btn {
-        width: 100% !important;
-        justify-content: center !important;
-    }
-
-    .header-actions-row {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 1rem !important;
-    }
-
-    .header-actions-row .btn {
-        width: 100% !important;
-        justify-content: center !important;
+        gap: 0.5rem !important;
     }
 
     .filter-search-box {
@@ -2497,11 +2669,67 @@ img {
         min-width: 100% !important;
     }
 
-    .filter-select-modern {
+    .filter-search-input,
+    .filter-input {
+        width: 100% !important;
+        height: 40px !important;
+        font-size: 0.825rem !important;
+        border-radius: 12px !important;
+        padding-left: 2.35rem !important;
+    }
+
+    .filter-controls-group {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
         width: 100% !important;
     }
 
+    .filter-select-modern,
+    .filter-select {
+        flex: 1 !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        height: 40px !important;
+        padding: 0.45rem 0.75rem !important;
+        font-size: 0.825rem !important;
+        border-radius: 12px !important;
+        background-color: #f8fafc !important;
+    }
+
     .filter-btn-primary {
+        flex: 1 !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        height: 40px !important;
+        padding: 0.45rem 0.75rem !important;
+        font-size: 0.825rem !important;
+        border-radius: 12px !important;
+        justify-content: center !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        white-space: nowrap !important;
+    }
+
+    .filter-btn-reset {
+        flex-shrink: 0 !important;
+        height: 40px !important;
+        padding: 0.45rem 0.75rem !important;
+        border-radius: 12px !important;
+        font-size: 0.8rem !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+    }
+
+    .header-actions-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+
+    .header-actions-row .btn {
         width: 100% !important;
         justify-content: center !important;
     }
@@ -2569,15 +2797,63 @@ img {
     }
 
     .hero-welcome-title {
-        font-size: 1.35rem !important;
+        font-size: 1.15rem !important;
     }
 
     .hero-metric-row {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.3rem !important;
     }
 
     .hero-metric-item {
-        justify-content: flex-start !important;
+        padding: 0.4rem 0.2rem !important;
+    }
+
+    .hero-metric-text .label {
+        font-size: 0.58rem !important;
+    }
+
+    .hero-metric-text .value {
+        font-size: 0.95rem !important;
+    }
+
+    .kavi-hero-composition {
+        width: 52px !important;
+        max-width: 52px !important;
+        height: 52px !important;
+        min-height: 52px !important;
+    }
+
+    .kavi-hero-img {
+        max-height: 48px !important;
+    }
+
+    .kavi-hero-blob {
+        width: 46px !important;
+        height: 46px !important;
+    }
+
+    .page-banner-title {
+        font-size: 1.05rem !important;
+    }
+
+    .page-banner-subtitle {
+        font-size: 0.68rem !important;
+    }
+
+    .kavi-banner-composition {
+        width: 50px !important;
+        height: 50px !important;
+        min-height: 50px !important;
+    }
+
+    .kavi-banner-img {
+        max-height: 48px !important;
+    }
+
+    .kavi-banner-blob {
+        width: 44px !important;
+        height: 44px !important;
     }
 
     .guest-layout-wrapper {
