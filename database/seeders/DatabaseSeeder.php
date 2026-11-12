@@ -272,5 +272,17 @@ class DatabaseSeeder extends Seeder
                 'graded_at' => (clone $submission->submitted_at)->addHours(rand(6, 48)),
             ]);
         }
+
+        // 10. Pastikan submission mahasiswa demo memiliki nilai (Milestone M3)
+        $demoSubmission = $allSubmissions->firstWhere('user_id', $demoStudent->id);
+        if ($demoSubmission && ! $demoSubmission->grade()->exists()) {
+            Grade::create([
+                'submission_id' => $demoSubmission->id,
+                'graded_by'     => $demoSubmission->assignment->course->lecturer_id,
+                'score'         => 92.5,
+                'feedback'      => 'Pengerjaan sangat baik dan rapi. Seluruh kriteria spesifikasi terpenuhi.',
+                'graded_at'     => now()->subDays(2),
+            ]);
+        }
     }
 }

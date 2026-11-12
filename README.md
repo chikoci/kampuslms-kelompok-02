@@ -1,5 +1,9 @@
 # KampusLMS - Kelompok 02
 
+> **Tautan Live Deployment Produksi (Milestone M4 - Materi 12):**  
+> **URL Produksi:** [https://kampuslms-kelompok-02.up.railway.app](https://kampuslms-kelompok-02.up.railway.app)  
+> *Infrastruktur: Railway Cloud Platform (PaaS) | Containerized Docker PHP 8.4 Apache | MySQL 8.0 Managed Database*
+
 ## Anggota Kelompok
 1. Armansyah (10241013)
 2. Chiko Dhiva Pramana (10241017)
