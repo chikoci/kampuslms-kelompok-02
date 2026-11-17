@@ -63,60 +63,69 @@
         </form>
     </div>
 
-    {{-- C. DAFTAR MATA KULIAH (CARD LIST MODERN - NO LARGE ICON) --}}
-    <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+    {{-- C. DAFTAR MATA KULIAH (CARD MINIMALIS - HANYA NAMA MATA KULIAH SAAT TERTUTUP) --}}
+    <div style="display: flex; flex-direction: column; gap: 0.65rem;">
         @forelse ($courses as $course)
-            <div class="course-card-item" onclick="window.location='{{ route('courses.show', $course) }}'" style="cursor: pointer;">
-                <div class="course-info-col">
-                    <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.2rem;">
-                        <span class="badge-code-modern">{{ $course->code }}</span>
-                        <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">SKS: {{ $course->sks }}</span>
-                    </div>
-
-                    <h2 class="course-title" style="margin-bottom: 0.25rem;">
-                        <a href="{{ route('courses.show', $course) }}" style="color: inherit; text-decoration: none;">
-                            {{ $course->name }}
-                        </a>
+            <div class="clean-course-card" id="course-card-{{ $course->id }}">
+                {{-- Header: Hanya Nama Mata Kuliah + Chevron --}}
+                <div class="clean-course-header" onclick="toggleCourseCard('course-card-{{ $course->id }}')">
+                    <h2 class="clean-course-title" style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                        {{ $course->name }}
                     </h2>
-
-                    <div class="course-meta-text">
-                        <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                            Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}
-                        </span>
+                    <div class="clean-course-chevron">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
                     </div>
                 </div>
 
-                <div class="course-actions-col">
-                    {{-- Status Badge Dinamis --}}
-                    <span class="badge-status-dot {{ $course->status }}">
-                        <span class="dot"></span>
-                        {{ ucfirst($course->status) }}
-                    </span>
+                {{-- Detail Informasi Tersembunyi (Muncul Saat Kartu Diklik) --}}
+                <div class="clean-course-body">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+                                <span class="badge-code-modern">{{ $course->code }}</span>
+                                <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px;">
+                                    {{ $course->sks }} SKS
+                                </span>
+                                <span class="badge-status-dot {{ $course->status }}">
+                                    <span class="dot"></span>
+                                    {{ ucfirst($course->status) }}
+                                </span>
+                            </div>
 
-                    {{-- Tombol Buka Kelas Menuju Detail --}}
-                    <a href="{{ route('courses.show', $course) }}" class="btn-open-class" onclick="event.stopPropagation()">
-                        Buka Kelas &rarr;
-                    </a>
+                            <div style="color: #64748b; font-size: 0.825rem; display: flex; align-items: center; gap: 0.35rem;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                <span>Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
+                            </div>
+                        </div>
 
-                    @can('update', $course)
-                        <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;" onclick="event.stopPropagation()">
-                            Edit
-                        </a>
-                    @endcan
+                        {{-- Tombol Aksi --}}
+                        <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                            <a href="{{ route('courses.show', $course) }}" class="btn-open-class">
+                                Buka Kelas &rarr;
+                            </a>
 
-                    @can('delete', $course)
-                        <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" style="margin: 0; display: inline;" onclick="event.stopPropagation()">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca; background: #ffffff;">
-                                Hapus
-                            </button>
-                        </form>
-                    @endcan
+                            @can('update', $course)
+                                <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;">
+                                    Edit
+                                </a>
+                            @endcan
+
+                            @can('delete', $course)
+                                <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" style="margin: 0; display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca; background: #ffffff;">
+                                        Hapus
+                                    </button>
+                                </form>
+                            @endcan
+                        </div>
+                    </div>
                 </div>
             </div>
         @empty
@@ -133,5 +142,14 @@
             {{ $courses->links() }}
         </div>
     @endif
+
+    <script>
+        function toggleCourseCard(id) {
+            const card = document.getElementById(id);
+            if (card) {
+                card.classList.toggle('expanded');
+            }
+        }
+    </script>
 
 </x-layout>

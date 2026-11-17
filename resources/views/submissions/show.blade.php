@@ -74,7 +74,7 @@
             </div>
 
             {{-- 3. Grid Rapi: Informasi Mahasiswa & Waktu Pengumpulan --}}
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="submission-info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                 {{-- Data Mahasiswa --}}
                 <div style="padding: 1.25rem; background: #f8fafc; border-radius: 16px; border: 1px solid #eef2f6;">
                     <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Identitas Mahasiswa</div>

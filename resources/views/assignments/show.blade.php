@@ -87,7 +87,7 @@
                 </h3>
 
                 @if($mySubmission)
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="submission-status-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                         <div style="padding: 1rem; background: #f8fafc; border-radius: 14px; border: 1px solid #eef2f6;">
                             <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Waktu Pengumpulan</span>
                             <p style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-top: 0.25rem;">

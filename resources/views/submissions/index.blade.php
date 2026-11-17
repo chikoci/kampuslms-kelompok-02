@@ -100,7 +100,7 @@
             $canGradeAssignment = auth()->user()?->role === 'dosen' && $assignment->course->lecturer_id === auth()->id();
         @endphp
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="submission-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
             <div class="grade-metric-box blue">
                 <div>
                     <div class="lbl">Total Terdaftar</div>

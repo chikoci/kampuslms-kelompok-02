@@ -4,25 +4,17 @@
     ['label' => 'Daftarkan Pengguna']
 ]">
 
-    <div class="form-card" style="margin-top: 1rem;">
-        {{-- Card Header Terpadu di Dalam 1 Card --}}
-        <div style="margin-bottom: 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                <span class="badge" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
-                    </svg>
-                    Khusus Administrator
-                </span>
-            </div>
-            <h1 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; letter-spacing: -0.02em;">
-                Registrasi Pengguna Baru
-            </h1>
-            <p style="font-size: 0.925rem; color: #64748b; margin: 0; line-height: 1.4;">
-                Pendaftaran akun civitas akademika (Mahasiswa, Dosen, atau Administrator) ke sistem KampusLMS
-            </p>
-        </div>
+    {{-- Header Judul di Luar Form Card (Sesuai Referensi Gambar 2) --}}
+    <div style="margin-top: 1.25rem; margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; letter-spacing: -0.02em;">
+            Registrasi Pengguna Baru
+        </h1>
+        <p style="font-size: 0.95rem; color: #64748b; margin: 0; line-height: 1.4;">
+            Pendaftaran akun civitas akademika (Hanya dapat diakses oleh Administrator)
+        </p>
+    </div>
 
+    <div class="form-card" style="margin-top: 0;">
         <form action="{{ route('register.store') }}" method="POST">
             @csrf
 

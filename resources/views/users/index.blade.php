@@ -83,9 +83,11 @@
         </form>
     </div>
 
-    {{-- C. TABEL DAFTAR PENGGUNA --}}
-    <div class="card-modern" style="padding: 0; overflow: hidden; margin-top: 1.5rem;">
-        <div style="overflow-x: auto;">
+    {{-- C. TABEL DAFTAR PENGGUNA (DESKTOP & MOBILE RESPONSIVE) --}}
+    <div class="card-modern" style="padding: 0; overflow: hidden; margin-top: 1.25rem;">
+        
+        {{-- 1. Desktop Table View (> 767px) --}}
+        <div class="users-desktop-table" style="overflow-x: auto;">
             <table class="data-table" style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
@@ -164,6 +166,63 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- 2. Mobile Cards View (<= 767px) --}}
+        <div class="users-mobile-cards" style="display: none; flex-direction: column;">
+            @forelse ($users as $user)
+                @php
+                    $uNames = explode(' ', $user->name);
+                    $uInitials = count($uNames) >= 2 
+                        ? strtoupper(substr($uNames[0], 0, 1) . substr($uNames[1], 0, 1))
+                        : strtoupper(substr($user->name, 0, 2));
+                    $uBg = $user->role === 'admin' ? '#fee2e2' : ($user->role === 'dosen' ? '#dbeafe' : '#d1fae5');
+                    $uColor = $user->role === 'admin' ? '#ef4444' : ($user->role === 'dosen' ? '#2563eb' : '#10b981');
+                @endphp
+                <div class="user-card-item" style="padding: 0.75rem 0.85rem; border-bottom: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 0.45rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.6rem; min-width: 0; flex: 1;">
+                            <div style="width: 34px; height: 34px; border-radius: 10px; background: {{ $uBg }}; color: {{ $uColor }}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; flex-shrink: 0;">
+                                {{ $uInitials }}
+                            </div>
+                            <div style="min-width: 0; flex: 1;">
+                                <a href="{{ route('users.show', $user) }}" style="font-weight: 700; color: #0f172a; text-decoration: none; font-size: 0.9rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2;">
+                                    {{ $user->name }}
+                                </a>
+                                <div style="font-size: 0.72rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    {{ $user->email }}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge {{ $user->role === 'admin' ? 'badge-danger' : ($user->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.68rem; text-transform: capitalize; padding: 0.15rem 0.45rem; border-radius: 6px; flex-shrink: 0;">
+                            {{ $user->role }}
+                        </span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #64748b; padding-top: 0.35rem; border-top: 1px dashed #f1f5f9;">
+                        <span>NIM/NIP: <strong style="color: #334155; font-family: monospace;">{{ $user->nim_nip ?? '-' }}</strong></span>
+                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                            <a href="{{ route('users.show', $user) }}" class="btn-open-class" style="padding: 0.25rem 0.6rem; font-size: 0.72rem;">Detail</a>
+                            @can('update', $user)
+                                <a href="{{ route('users.edit', $user) }}" class="btn-open-class" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; color: #2563eb; border-color: #bfdbfe; background: #eff6ff;">Edit</a>
+                            @endcan
+                            @can('delete', $user)
+                                <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $user->name }}?');" style="margin: 0; display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-open-class" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; color: #dc2626; border-color: #fecaca; background: #fef2f2;">Hapus</button>
+                                </form>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="empty-state-card" style="padding: 2.5rem 1.5rem; text-align: center;">
+                    <img src="{{ asset('images/illustrations/calendar-empty.png') }}" alt="Pengguna Tidak Ditemukan" class="empty-state-img">
+                    <p class="empty-state-text">Belum ada data pengguna yang sesuai dengan filter pencarian Anda.</p>
+                </div>
+            @endforelse
+        </div>
+
     </div>
 
     {{-- Link Pagination --}}
