@@ -69,43 +69,43 @@
 
                 <div class="grade-accordion-card card-modern clean-course-card" 
                      id="grade-card-{{ $c->id }}"
-                     style="padding: 0; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); transition: all 0.2s ease;">
+                     style="padding: 0; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); transition: all 0.2s ease;">
                     
                     {{-- 1. HEADER KARTU: HANYA MENAMPILKAN NAMA MATA KULIAH (RINGKAS & HEMAT TEMPAT) --}}
                     <div class="grade-card-header clean-course-header" 
                          onclick="toggleCourseGrade('{{ $c->id }}')" 
-                         style="cursor: pointer; padding: 0.85rem 1.15rem; background: #ffffff; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; user-select: none;">
+                         style="cursor: pointer; padding: 0.75rem 1rem; background: #ffffff; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; user-select: none;">
                         
                         {{-- HANYA NAMA MATA KULIAH --}}
-                        <h3 class="clean-course-title" style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0f172a; line-height: 1.3; flex: 1; min-width: 0;">
+                        <h3 class="clean-course-title" style="margin: 0; font-size: 0.925rem; font-weight: 700; color: #0f172a; line-height: 1.25; flex: 1; min-width: 0;">
                             {{ $c->name }}
                         </h3>
 
                         {{-- Chevron Icon Indicator --}}
-                        <div class="clean-course-chevron" id="chevron-box-{{ $c->id }}" style="width: 28px; height: 28px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b; flex-shrink: 0; transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;">
-                            <svg id="icon-toggle-{{ $c->id }}" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.25s ease;">
+                        <div class="clean-course-chevron" id="chevron-box-{{ $c->id }}" style="width: 26px; height: 26px; border-radius: 7px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b; flex-shrink: 0; transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;">
+                            <svg id="icon-toggle-{{ $c->id }}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.25s ease;">
                                 <polyline points="6 9 12 15 18 9"/>
                             </svg>
                         </div>
                     </div>
 
                     {{-- 2. DETAIL NILAI TERSEMBUNYI (MUNCUL SAAT DIKLIK) --}}
-                    <div id="grade-body-{{ $c->id }}" class="grade-accordion-content clean-course-body" style="display: none; border-top: 1px solid #f1f5f9; background: #fafbfc; padding: 1rem 1.15rem;">
+                    <div id="grade-body-{{ $c->id }}" class="grade-accordion-content clean-course-body" style="display: none; border-top: 1px solid #f1f5f9; background: #fafbfc; padding: 0.75rem 1rem;">
                         
                         {{-- Ringkasan Informasi Mata Kuliah & Nilai Akhir (Muncul setelah di-klik) --}}
-                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem 0.85rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                             <div>
-                                <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
-                                    <span class="badge-code-modern" style="font-size: 0.72rem; padding: 0.15rem 0.5rem;">{{ $c->code }}</span>
-                                    <span class="badge" style="background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 6px;">
+                                <div style="display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $c->code }}</span>
+                                    <span class="badge" style="background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-size: 0.65rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 6px;">
                                         {{ $c->sks }} SKS
                                     </span>
-                                    <span class="badge" style="background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 6px;">
+                                    <span class="badge" style="background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; font-size: 0.65rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 6px;">
                                         {{ number_format($attendanceRate, 0) }}% Kumpul
                                     </span>
                                 </div>
-                                <div style="color: #64748b; font-size: 0.8rem; display: flex; align-items: center; gap: 0.35rem;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <div style="color: #64748b; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                         <circle cx="12" cy="7" r="4"/>
                                     </svg>
@@ -113,14 +113,14 @@
                                 </div>
                             </div>
 
-                            <div style="text-align: right; display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="text-align: right; display: flex; align-items: center; gap: 0.45rem;">
                                 <div>
-                                    <div style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Nilai Akhir</div>
-                                    <div style="font-size: 1.25rem; font-weight: 800; color: #0f172a; line-height: 1.1;">
+                                    <div style="font-size: 0.62rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Nilai Akhir</div>
+                                    <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a; line-height: 1.1;">
                                         {{ $finalScore !== null ? number_format($finalScore, 1) : '-' }}
                                     </div>
                                 </div>
-                                <span class="badge" style="background: {{ $finalScore !== null ? '#dcfce7' : '#f1f5f9' }}; color: {{ $finalScore !== null ? '#15803d' : '#64748b' }}; font-size: 0.85rem; font-weight: 800; padding: 0.3rem 0.6rem; border-radius: 8px;">
+                                <span class="badge" style="background: {{ $finalScore !== null ? '#dcfce7' : '#f1f5f9' }}; color: {{ $finalScore !== null ? '#15803d' : '#64748b' }}; font-size: 0.8rem; font-weight: 800; padding: 0.25rem 0.5rem; border-radius: 7px;">
                                     {{ $gradeLetter }}
                                 </span>
                             </div>

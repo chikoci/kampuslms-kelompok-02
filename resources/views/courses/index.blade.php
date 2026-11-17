@@ -63,73 +63,73 @@
         </form>
     </div>
 
-    {{-- C. DAFTAR MATA KULIAH (CARD MINIMALIS - HANYA NAMA MATA KULIAH SAAT TERTUTUP) --}}
-    <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+    {{-- C. DAFTAR MATA KULIAH (COMPACT & 1-KLIK LANGSUNG MENUJU DETAIL) --}}
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
         @forelse ($courses as $course)
-            <div class="clean-course-card" id="course-card-{{ $course->id }}">
-                {{-- Header: Hanya Nama Mata Kuliah + Chevron --}}
-                <div class="clean-course-header" onclick="toggleCourseCard('course-card-{{ $course->id }}')">
-                    <h2 class="clean-course-title" style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0f172a; line-height: 1.3;">
+            <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'">
+                <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                    {{-- Nama Mata Kuliah --}}
+                    <h2 class="course-compact-title">
                         {{ $course->name }}
                     </h2>
-                    <div class="clean-course-chevron">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
+
+                    {{-- Baris Metadata Ringkas & Rapi --}}
+                    <div class="course-compact-meta">
+                        <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $course->code }}</span>
+                        <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px;">
+                            {{ $course->sks }} SKS
+                        </span>
+                        <span class="badge-status-dot {{ $course->status }}" style="font-size: 0.68rem; padding: 0.12rem 0.45rem;">
+                            <span class="dot"></span>
+                            {{ ucfirst($course->status) }}
+                        </span>
+                        <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}
+                        </span>
                     </div>
                 </div>
 
-                {{-- Detail Informasi Tersembunyi (Muncul Saat Kartu Diklik) --}}
-                <div class="clean-course-body">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem;">
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
-                                <span class="badge-code-modern">{{ $course->code }}</span>
-                                <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px;">
-                                    {{ $course->sks }} SKS
-                                </span>
-                                <span class="badge-status-dot {{ $course->status }}">
-                                    <span class="dot"></span>
-                                    {{ ucfirst($course->status) }}
-                                </span>
-                            </div>
+                {{-- Sisi Kanan: Aksi Cepat (Edit/Hapus bagi Admin/Dosen) & Indikator Chevron --}}
+                <div style="display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
+                    @can('update', $course)
+                        <a href="{{ route('courses.edit', $course) }}" 
+                           class="btn-icon-action edit" 
+                           title="Edit Mata Kuliah"
+                           onclick="event.stopPropagation()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </a>
+                    @endcan
 
-                            <div style="color: #64748b; font-size: 0.825rem; display: flex; align-items: center; gap: 0.35rem;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
+                    @can('delete', $course)
+                        <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" style="margin: 0; display: inline;" onclick="event.stopPropagation()">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-icon-action delete" title="Hapus Mata Kuliah">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                                 </svg>
-                                <span>Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
-                            </div>
-                        </div>
+                            </button>
+                        </form>
+                    @endcan
 
-                        {{-- Tombol Aksi --}}
-                        <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-                            <a href="{{ route('courses.show', $course) }}" class="btn-open-class">
-                                Buka Kelas &rarr;
-                            </a>
-
-                            @can('update', $course)
-                                <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;">
-                                    Edit
-                                </a>
-                            @endcan
-
-                            @can('delete', $course)
-                                <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah {{ $course->name }}?');" style="margin: 0; display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca; background: #ffffff;">
-                                        Hapus
-                                    </button>
-                                </form>
-                            @endcan
-                        </div>
+                    {{-- Chevron 1-Klik Buka Kelas --}}
+                    <div class="course-chevron">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
                     </div>
                 </div>
             </div>
         @empty
-            <div class="card-modern empty-state-card">
+            <div class="card-modern empty-state-card" style="padding: 2rem 1rem;">
                 <img src="{{ asset('images/illustrations/calendar-empty.png') }}" alt="Mata Kuliah Tidak Ditemukan" class="empty-state-img">
                 <p class="empty-state-text">Belum ada mata kuliah yang sesuai dengan pencarian atau filter Anda.</p>
             </div>
@@ -138,18 +138,9 @@
 
     {{-- Pagination Wrapper --}}
     @if ($courses->hasPages())
-        <div class="pagination-wrapper" style="margin-top: 2rem;">
+        <div class="pagination-wrapper" style="margin-top: 1.5rem;">
             {{ $courses->links() }}
         </div>
     @endif
-
-    <script>
-        function toggleCourseCard(id) {
-            const card = document.getElementById(id);
-            if (card) {
-                card.classList.toggle('expanded');
-            }
-        }
-    </script>
 
 </x-layout>

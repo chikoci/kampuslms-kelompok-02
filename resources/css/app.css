@@ -4239,3 +4239,160 @@ img {
         justify-content: center;
     }
 }
+
+
+/* ========================================================
+   COMPACT & 1-CLICK INTERACTIVE COURSE & ITEM CARDS
+   ======================================================== */
+.course-card-compact {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.course-card-compact:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
+    transform: translateY(-1px);
+}
+
+.course-card-compact:active {
+    transform: scale(0.985);
+    background: #f1f5f9;
+}
+
+.course-compact-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+}
+
+.course-compact-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.course-chevron {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+}
+
+.course-card-compact:hover .course-chevron {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #2563eb;
+    transform: translateX(2px);
+}
+
+.btn-icon-action {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-icon-action.edit:hover {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #d97706;
+}
+
+.btn-icon-action.delete:hover {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+/* Global Compact Spacing Tweaks */
+.card-modern {
+    padding: 1.15rem 1.25rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+}
+
+.card-header-row {
+    margin-bottom: 0.75rem;
+}
+
+.card-header-title {
+    font-size: 1rem;
+}
+
+.section-block {
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+    .card-modern {
+        padding: 0.85rem 0.95rem;
+        border-radius: 14px;
+        margin-bottom: 0.75rem;
+    }
+    .course-card-compact {
+        padding: 0.65rem 0.85rem;
+        border-radius: 10px;
+    }
+    .course-compact-title {
+        font-size: 0.875rem;
+    }
+    .course-compact-meta {
+        font-size: 0.7rem;
+        gap: 0.35rem;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .assignments-mobile-cards {
+        display: flex !important;
+    }
+    .assignments-desktop-table {
+        display: none !important;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .materials-mobile-cards {
+        display: flex !important;
+    }
+    .materials-desktop-table {
+        display: none !important;
+    }
+}

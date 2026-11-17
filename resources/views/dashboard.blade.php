@@ -112,16 +112,25 @@
                     </h3>
                     <a href="{{ route('users.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     @foreach ($recentUsers as $usr)
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 12px; background: #f8fafc; border: 1px solid #eef2f6; cursor: pointer; transition: all 0.15s ease;" onclick="window.location='{{ route('users.show', $usr) }}'">
-                            <div>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a;">{{ $usr->name }}</div>
-                                <div style="font-size: 0.75rem; color: #64748b;">{{ $usr->email }}</div>
+                        <div class="course-card-compact" onclick="window.location='{{ route('users.show', $usr) }}'">
+                            <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                    <h4 class="course-compact-title" style="margin: 0;">{{ $usr->name }}</h4>
+                                    <span class="badge {{ $usr->role === 'admin' ? 'badge-danger' : ($usr->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem; text-transform: capitalize;">
+                                        {{ $usr->role }}
+                                    </span>
+                                </div>
+                                <div class="course-compact-meta" style="margin-top: 0.2rem;">
+                                    <span style="font-size: 0.72rem; color: #64748b;">{{ $usr->email }}</span>
+                                </div>
                             </div>
-                            <span class="badge {{ $usr->role === 'admin' ? 'badge-danger' : ($usr->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; text-transform: capitalize;">
-                                {{ $usr->role }}
-                            </span>
+                            <div class="course-chevron">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -140,27 +149,20 @@
                     </h3>
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     @foreach ($recentCourses as $c)
-                        <div class="clean-course-card" id="admin-course-{{ $c->id }}">
-                            <div class="clean-course-header" onclick="toggleCourseCard('admin-course-{{ $c->id }}')">
-                                <h4 class="clean-course-title">{{ $c->name }}</h4>
-                                <div class="clean-course-chevron">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="6 9 12 15 18 9"/>
-                                    </svg>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $c) }}'">
+                            <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                                <h4 class="course-compact-title">{{ $c->name }}</h4>
+                                <div class="course-compact-meta">
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $c->code }}</span>
+                                    <span style="font-size: 0.72rem; color: #64748b;">&bull; Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
                                 </div>
                             </div>
-                            <div class="clean-course-body">
-                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                                    <div>
-                                        <span class="badge-code-modern">{{ $c->code }}</span>
-                                        <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.35rem;">
-                                            Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('courses.show', $c) }}" class="btn-open-class">Buka Kelas &rarr;</a>
-                                </div>
+                            <div class="course-chevron">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
                             </div>
                         </div>
                     @endforeach
@@ -311,30 +313,21 @@
                     </h3>
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     @forelse ($myCourses as $course)
-                        <div class="clean-course-card" id="dosen-course-{{ $course->id }}">
-                            <div class="clean-course-header" onclick="toggleCourseCard('dosen-course-{{ $course->id }}')">
-                                <h4 class="clean-course-title">{{ $course->name }}</h4>
-                                <div class="clean-course-chevron">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="6 9 12 15 18 9"/>
-                                    </svg>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'">
+                            <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                                <h4 class="course-compact-title">{{ $course->name }}</h4>
+                                <div class="course-compact-meta">
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $course->code }}</span>
+                                    <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">{{ $course->sks }} SKS</span>
+                                    <span style="font-size: 0.72rem; color: #64748b;">&bull; {{ $course->students_count }} Mahasiswa</span>
                                 </div>
                             </div>
-                            <div class="clean-course-body">
-                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                                    <div>
-                                        <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
-                                            <span class="badge-code-modern">{{ $course->code }}</span>
-                                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">{{ $course->sks }} SKS</span>
-                                        </div>
-                                        <div style="font-size: 0.78rem; color: #64748b;">
-                                            <span>{{ $course->students_count }} Mahasiswa Terdaftar</span>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('courses.show', $course) }}" class="btn-open-class">Buka Kelas &rarr;</a>
-                                </div>
+                            <div class="course-chevron">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
                             </div>
                         </div>
                     @empty
@@ -355,14 +348,21 @@
                         Pengumpulan Belum Dinilai
                     </h3>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     @forelse ($pendingSubmissions as $submission)
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 12px; background: #f8fafc; border: 1px solid #eef2f6; cursor: pointer; transition: all 0.15s ease;" onclick="window.location='{{ route('submissions.show', $submission) }}'">
-                            <div>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a;">{{ $submission->student?->name }}</div>
-                                <div style="font-size: 0.75rem; color: #64748b;">{{ $submission->assignment?->title }} ({{ $submission->assignment?->course?->code }})</div>
+                        <div class="course-card-compact" onclick="window.location='{{ route('submissions.show', $submission) }}'">
+                            <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                                <h4 class="course-compact-title">{{ $submission->student?->name }}</h4>
+                                <div class="course-compact-meta">
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $submission->assignment?->course?->code }}</span>
+                                    <span style="font-size: 0.72rem; color: #64748b;">{{ $submission->assignment?->title }}</span>
+                                </div>
                             </div>
-                            <a href="{{ route('submissions.show', $submission) }}" class="btn-open-class" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="event.stopPropagation()">Beri Nilai &rarr;</a>
+                            <div class="course-chevron">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
+                            </div>
                         </div>
                     @empty
                         <p class="text-muted" style="text-align: center; padding: 2rem 0;">Semua pengumpulan sudah selesai dinilai. Kerja bagus!</p>
@@ -526,34 +526,25 @@
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     @forelse ($enrolledCourses as $course)
-                        <div class="clean-course-card" id="mhs-course-{{ $course->id }}">
-                            <div class="clean-course-header" onclick="toggleCourseCard('mhs-course-{{ $course->id }}')">
-                                <h4 class="clean-course-title">{{ $course->name }}</h4>
-                                <div class="clean-course-chevron">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="6 9 12 15 18 9"/>
-                                    </svg>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'">
+                            <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                                <h4 class="course-compact-title">{{ $course->name }}</h4>
+                                <div class="course-compact-meta">
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $course->code }}</span>
+                                    <span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">{{ $course->sks }} SKS</span>
+                                    <span style="font-size: 0.72rem; color: #64748b;">&bull; Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
                                 </div>
                             </div>
-                            <div class="clean-course-body">
-                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                                    <div>
-                                        <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
-                                            <span class="badge-code-modern">{{ $course->code }}</span>
-                                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">{{ $course->sks }} SKS</span>
-                                        </div>
-                                        <div style="font-size: 0.78rem; color: #64748b;">
-                                            <span>Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('courses.show', $course) }}" class="btn-open-class">Buka Kelas &rarr;</a>
-                                </div>
+                            <div class="course-chevron">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
                             </div>
                         </div>
                     @empty
-                        <div class="empty-state-card">
+                        <div class="empty-state-card" style="padding: 1.5rem 1rem;">
                             <p class="empty-state-text">Anda belum terdaftar pada mata kuliah apapun.</p>
                         </div>
                     @endforelse
@@ -576,35 +567,29 @@
                 </div>
 
                 @if ($upcomingAssignments->isNotEmpty())
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                         @foreach ($upcomingAssignments as $assignment)
-                            <div class="course-card-item" onclick="window.location='{{ route('assignments.show', $assignment) }}'" style="cursor: pointer;">
-                                <div class="course-info-col">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <span class="badge badge-warning" style="font-size: 0.7rem;">
+                            <div class="course-card-compact" onclick="window.location='{{ route('assignments.show', $assignment) }}'">
+                                <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                                    <h4 class="course-compact-title">{{ $assignment->title }}</h4>
+                                    <div class="course-compact-meta">
+                                        <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $assignment->course?->code }}</span>
+                                        <span class="badge" style="background: #fef3c7; color: #b45309; font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px;">
                                             Tenggat: {{ $assignment->due_at->translatedFormat('d M Y, H:i') }}
                                         </span>
                                     </div>
-                                    <h4 class="course-title">
-                                        <a href="{{ route('assignments.show', $assignment) }}" style="color: inherit; text-decoration: none;">
-                                            {{ $assignment->title }}
-                                        </a>
-                                    </h4>
-                                    <div class="course-meta-text">
-                                        <span>Mata Kuliah: {{ $assignment->course?->name }}</span>
-                                    </div>
                                 </div>
-                                <div class="course-actions-col">
-                                    <a href="{{ route('assignments.show', $assignment) }}" class="btn-open-class" onclick="event.stopPropagation()">
-                                        Kumpulkan &rarr;
-                                    </a>
+                                <div class="course-chevron">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @else
                     {{-- Empty State dengan Ilustrasi Kalender Sesuai Referensi Visual --}}
-                    <div class="empty-state-card" style="padding: 2.75rem 1.5rem;">
+                    <div class="empty-state-card" style="padding: 2rem 1.5rem;">
                         <img src="{{ asset('images/illustrations/calendar-empty.png') }}" alt="Tidak Ada Tugas Mendatang" class="empty-state-img">
                         <p class="empty-state-text">Tidak ada tugas mendatang saat ini. Kerja bagus!</p>
                     </div>
@@ -614,14 +599,5 @@
         </div>
 
     @endif
-
-    <script>
-        function toggleCourseCard(id) {
-            const card = document.getElementById(id);
-            if (card) {
-                card.classList.toggle('expanded');
-            }
-        }
-    </script>
 
 </x-layout>

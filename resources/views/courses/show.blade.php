@@ -79,7 +79,7 @@
     </div>
 
     {{-- SECTION 1: MATERI PERKULIAHAN --}}
-    <div class="card-modern" style="margin-bottom: 1.5rem;">
+    <div class="card-modern" style="margin-bottom: 1rem;">
         <div class="card-header-row">
             <h3 class="card-header-title">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -88,70 +88,84 @@
                     <path d="M6 10h10"/>
                 </svg>
                 Materi Perkuliahan
-                <span style="font-size: 0.75rem; font-weight: 600; background: #eff6ff; color: #2563eb; padding: 0.2rem 0.55rem; border-radius: 9999px;">
+                <span style="font-size: 0.72rem; font-weight: 700; background: #eff6ff; color: #2563eb; padding: 0.15rem 0.5rem; border-radius: 9999px;">
                     {{ $course->materials->count() }} Berkas
                 </span>
             </h3>
 
             @can('create', [\App\Models\Material::class, $course])
-                <a href="{{ route('courses.materials.create', $course) }}" class="btn-open-class" style="background: #2563eb; color: #ffffff; border-color: #2563eb;">
+                <a href="{{ route('courses.materials.create', $course) }}" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
                     + Tambah Materi
                 </a>
             @endcan
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
             @forelse ($course->materials as $material)
-                <div class="course-card-item" style="padding: 1rem 1.25rem;">
-                    <div class="course-info-col">
-                        <h4 class="course-title" style="font-size: 1rem;">
-                            <a href="{{ route('materials.show', $material) }}" style="color: inherit; text-decoration: none;">
-                                {{ $material->title }}
-                            </a>
+                <div class="course-card-compact" onclick="window.location='{{ route('materials.show', $material) }}'">
+                    <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                        <h4 class="course-compact-title">
+                            {{ $material->title }}
                         </h4>
-                        <div class="course-meta-text">
-                            <span>{{ $material->description ?: 'Tanpa keterangan tambahan.' }}</span>
-                            <span>&bull;</span>
-                            <span>{{ $material->created_at?->format('d M Y') }}</span>
+                        <div class="course-compact-meta">
+                            <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px;">
+                                {{ ucfirst($material->type) }}
+                            </span>
+                            @if($material->formatted_file_size)
+                                <span style="font-size: 0.72rem; color: #64748b;">{{ $material->formatted_file_size }}</span>
+                            @endif
+                            <span style="font-size: 0.72rem; color: #64748b;">&bull; {{ $material->created_at?->format('d M Y') }}</span>
                         </div>
                     </div>
 
-                    <div class="course-actions-col">
+                    <div style="display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
                         @if($material->type === 'link' && $material->external_url)
-                            <a href="{{ $material->external_url }}" target="_blank" rel="noopener noreferrer" class="btn-open-class" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe;">
+                            <a href="{{ $material->external_url }}" target="_blank" rel="noopener noreferrer" class="btn-icon-action" title="Buka Tautan Luar" onclick="event.stopPropagation()">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
                                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
                                 </svg>
-                                Buka Tautan &rarr;
                             </a>
                         @elseif($material->file_path)
-                            <a href="{{ route('materials.download', $material) }}" class="btn-open-class" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe;">
+                            <a href="{{ route('materials.download', $material) }}" class="btn-icon-action" title="Unduh Berkas" onclick="event.stopPropagation()">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                     <polyline points="7 10 12 15 17 10"/>
                                     <line x1="12" y1="15" x2="12" y2="3"/>
                                 </svg>
-                                Unduh ({{ $material->formatted_file_size }})
                             </a>
-                        @else
-                            <span class="badge" style="background: #f1f5f9; color: #64748b;">Catatan Teks</span>
                         @endif
 
                         @can('update', $material)
-                            <a href="{{ route('materials.edit', $material) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;">Edit</a>
+                            <a href="{{ route('materials.edit', $material) }}" class="btn-icon-action edit" title="Edit Materi" onclick="event.stopPropagation()">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </a>
                         @endcan
                         @can('delete', $material)
-                            <form action="{{ route('materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Hapus materi ini?');" style="margin: 0; display: inline;">
+                            <form action="{{ route('materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Hapus materi ini?');" style="margin: 0; display: inline;" onclick="event.stopPropagation()">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca;">Hapus</button>
+                                <button type="submit" class="btn-icon-action delete" title="Hapus Materi">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
                             </form>
                         @endcan
+
+                        <div class="course-chevron">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             @empty
-                <div class="empty-state-card" style="padding: 2rem 1rem;">
+                <div class="empty-state-card" style="padding: 1.5rem 1rem;">
                     <p class="empty-state-text">Belum ada materi perkuliahan untuk mata kuliah ini.</p>
                 </div>
             @endforelse
@@ -159,7 +173,7 @@
     </div>
 
     {{-- SECTION 2: TUGAS AKADEMIK --}}
-    <div class="card-modern" style="margin-bottom: 1.5rem;">
+    <div class="card-modern" style="margin-bottom: 1rem;">
         <div class="card-header-row">
             <h3 class="card-header-title">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -169,73 +183,75 @@
                     <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
                 Tugas Akademik
-                <span style="font-size: 0.75rem; font-weight: 600; background: #eff6ff; color: #2563eb; padding: 0.2rem 0.55rem; border-radius: 9999px;">
+                <span style="font-size: 0.72rem; font-weight: 700; background: #eff6ff; color: #2563eb; padding: 0.15rem 0.5rem; border-radius: 9999px;">
                     {{ $course->assignments->count() }} Tugas
                 </span>
             </h3>
 
             @can('create', [\App\Models\Assignment::class, $course])
-                <a href="{{ route('courses.assignments.create', $course) }}" class="btn-open-class" style="background: #2563eb; color: #ffffff; border-color: #2563eb;">
+                <a href="{{ route('courses.assignments.create', $course) }}" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
                     + Tambah Tugas
                 </a>
             @endcan
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
             @forelse ($course->assignments as $assignment)
-                <div class="course-card-item" style="padding: 1.15rem 1.25rem;">
-                    <div class="course-info-col">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
+                <div class="course-card-compact" onclick="window.location='{{ route('assignments.show', $assignment) }}'">
+                    <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                        <h4 class="course-compact-title">
+                            {{ $assignment->title }}
+                        </h4>
+
+                        <div class="course-compact-meta">
                             @if ($assignment->due_at?->isPast())
-                                <span class="badge" style="background: #fee2e2; color: #b91c1c; font-size: 0.7rem; font-weight: 700; border-radius: 6px; padding: 0.15rem 0.5rem;">
+                                <span class="badge" style="background: #fee2e2; color: #b91c1c; font-size: 0.68rem; font-weight: 700; border-radius: 6px; padding: 0.12rem 0.45rem;">
                                     Lewat Tenggat
                                 </span>
                             @else
-                                <span class="badge" style="background: #fef3c7; color: #b45309; font-size: 0.7rem; font-weight: 700; border-radius: 6px; padding: 0.15rem 0.5rem;">
+                                <span class="badge" style="background: #fef3c7; color: #b45309; font-size: 0.68rem; font-weight: 700; border-radius: 6px; padding: 0.12rem 0.45rem;">
                                     Aktif
                                 </span>
                             @endif
-                            <span class="badge-status-dot {{ $assignment->status }}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;">
+                            <span class="badge-status-dot {{ $assignment->status }}" style="font-size: 0.68rem; padding: 0.12rem 0.45rem;">
+                                <span class="dot"></span>
                                 {{ ucfirst($assignment->status) }}
                             </span>
-                        </div>
-
-                        <h4 class="course-title" style="font-size: 1rem;">
-                            <a href="{{ route('assignments.show', $assignment) }}" style="color: inherit; text-decoration: none;">
-                                {{ $assignment->title }}
-                            </a>
-                        </h4>
-
-                        <div class="course-meta-text">
-                            <span>Batas Waktu: {{ $assignment->due_at?->translatedFormat('d M Y, H:i') ?? '-' }}</span>
-                            <span>&bull;</span>
-                            <span>Maks Nilai: {{ $assignment->max_score }}</span>
+                            <span style="font-size: 0.72rem; color: #64748b;">
+                                Tenggat: {{ $assignment->due_at?->translatedFormat('d M Y, H:i') ?? '-' }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="course-actions-col">
+                    <div style="display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0;">
                         @if (auth()->user()?->role === 'mahasiswa')
                             @php
                                 $mySub = $assignment->submissions->firstWhere('user_id', auth()->id());
                             @endphp
                             @if ($mySub)
-                                <a href="{{ route('submissions.show', $mySub) }}" class="btn-open-class" style="background: #ecfdf5; color: #047857; border-color: #a7f3d0;">
-                                    &#10003; Sudah Dikumpulkan
-                                </a>
+                                <span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.72rem; font-weight: 700;">
+                                    &#10003; Dikumpulkan
+                                </span>
                             @else
-                                <a href="{{ route('assignments.show', $assignment) }}" class="btn-open-class" style="background: #fffbeb; color: #b45309; border-color: #fde68a;">
-                                    Kumpulkan Tugas &rarr;
-                                </a>
+                                <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-size: 0.72rem; font-weight: 700;">
+                                    Belum Kumpul
+                                </span>
                             @endif
                         @else
-                            <a href="{{ route('assignments.submissions.index', $assignment) }}" class="btn-open-class">
-                                {{ $assignment->submissions()->count() }} Pengumpulan &rarr;
-                            </a>
+                            <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.72rem; font-weight: 700;">
+                                {{ $assignment->submissions()->count() }} Kumpul
+                            </span>
                         @endif
+
+                        <div class="course-chevron">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             @empty
-                <div class="empty-state-card" style="padding: 2rem 1rem;">
+                <div class="empty-state-card" style="padding: 1.5rem 1rem;">
                     <p class="empty-state-text">Belum ada tugas perkuliahan untuk mata kuliah ini.</p>
                 </div>
             @endforelse
