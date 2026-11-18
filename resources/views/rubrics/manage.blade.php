@@ -6,11 +6,14 @@
     ['label' => 'Kelola Rubrik']
 ]">
 
-    <div class="card-modern" style="max-width: 950px; margin: 0 auto;">
+    <div class="card-modern rubric-manage-card">
         {{-- Tombol Navigasi Kembali --}}
         <div style="margin-bottom: 1.25rem;">
-            <a href="{{ route('assignments.show', $assignment) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-                &larr; Kembali ke Tugas
+            <a href="{{ route('assignments.show', $assignment) }}" class="btn-back-action" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+                <span>Kembali ke Tugas</span>
             </a>
         </div>
 
@@ -18,28 +21,38 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <span class="badge-code-modern" style="margin-bottom: 0.4rem; display: inline-block;">FITUR DIFERENSIASI</span>
-                <h1 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0;">
+                <h1 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; letter-spacing: -0.02em;">
                     Rubrik Penilaian Bertingkat
                 </h1>
                 <p style="color: #64748b; font-size: 0.875rem; margin: 0;">
-                    Tugas: <strong>{{ $assignment->title }}</strong> &bull; Nilai Maksimal: <strong>{{ $assignment->max_score }}</strong> poin
+                    Tugas: <strong>{{ $assignment->title }}</strong> &bull; Nilai Maksimal: <strong style="color: #2563eb;">{{ $assignment->max_score }}</strong> poin
                 </p>
             </div>
 
             @if($rubric)
-                <form action="{{ route('assignments.rubric.destroy', $assignment) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus rubrik ini?');">
+                <form action="{{ route('assignments.rubric.destroy', $assignment) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus rubrik ini?');" style="margin: 0;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 0.45rem 0.9rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                        Hapus Rubrik
+                    <button type="submit" class="btn btn-secondary btn-sm" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 0.5rem 0.95rem; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                        </svg>
+                        <span>Hapus Rubrik</span>
                     </button>
                 </form>
             @endif
         </div>
 
         @if($isAssessed)
-            <div style="padding: 1rem 1.25rem; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.875rem; color: #b45309;">
-                ⚠️ <strong>Perhatian:</strong> Rubrik ini sudah digunakan untuk menilai satu atau lebih pengumpulan mahasiswa. Mengubah kriteria atau bobot dapat memengaruhi konsistensi nilai.
+            <div style="padding: 1rem 1.25rem; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.875rem; color: #b45309; display: flex; align-items: center; gap: 0.65rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <div><strong>Perhatian:</strong> Rubrik ini sudah digunakan untuk menilai satu atau lebih pengumpulan mahasiswa. Mengubah kriteria atau bobot dapat memengaruhi konsistensi nilai.</div>
             </div>
         @endif
 
@@ -72,18 +85,18 @@
                         Deskripsi / Panduan Umum (Opsional)
                     </label>
                     <textarea id="rubric_description" name="description" rows="2"
-                              class="filter-search-input" style="width: 100%; height: auto; border-radius: 10px; padding: 0.65rem 0.85rem;"
+                              class="filter-search-input" style="width: 100%; height: auto; border-radius: 10px; padding: 0.65rem 0.85rem; line-height: 1.5;"
                               placeholder="Panduan umum bagi mahasiswa dan dosen terkait kriteria rubrik ini...">{{ old('description', $rubric->description ?? '') }}</textarea>
                 </div>
             </div>
 
             {{-- 2. Ringkasan Status Total Bobot --}}
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
-                <div>
+            <div class="rubric-weight-banner">
+                <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                     <span style="font-size: 0.85rem; color: #1e40af; font-weight: 600;">Status Total Bobot Kriteria:</span>
-                    <span id="weightSummary" style="font-size: 1.15rem; font-weight: 800; color: #1d4ed8; margin-left: 0.5rem;">0% / 100%</span>
+                    <span id="weightSummary" style="font-size: 1.2rem; font-weight: 800; color: #1d4ed8;">0% / 100%</span>
                 </div>
-                <div id="weightBadge" style="font-size: 0.8rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 6px; background: #fee2e2; color: #dc2626;">
+                <div id="weightBadge" class="rubric-weight-badge" style="background: #fee2e2; color: #dc2626;">
                     Wajib Tepat 100%
                 </div>
             </div>
@@ -95,18 +108,27 @@
 
             {{-- Tombol Tambah Kriteria --}}
             <div style="margin-bottom: 2rem;">
-                <button type="button" id="btnAddCriterion" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem; font-weight: 700; border-radius: 10px; cursor: pointer;">
-                    ➕ Tambah Kriteria Baru
+                <button type="button" id="btnAddCriterion" class="btn-add-criterion-dashed">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span>Tambah Kriteria Penilaian Baru</span>
                 </button>
             </div>
 
             {{-- Action Submit --}}
-            <div style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem; flex-wrap: wrap;">
                 <a href="{{ route('assignments.show', $assignment) }}" class="btn btn-secondary" style="padding: 0.65rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none;">
                     Batal
                 </a>
-                <button type="submit" id="btnSubmitRubric" class="btn btn-primary" style="padding: 0.65rem 1.75rem; border-radius: 10px; font-weight: 700; cursor: pointer;">
-                    💾 Simpan Rubrik Penilaian
+                <button type="submit" id="btnSubmitRubric" class="btn btn-primary" style="padding: 0.65rem 1.75rem; border-radius: 10px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    <span>Simpan Rubrik Penilaian</span>
                 </button>
             </div>
         </form>
@@ -141,6 +163,7 @@
                 weightBadge.style.color = '#15803d';
                 btnSubmitRubric.disabled = false;
                 btnSubmitRubric.style.opacity = '1';
+                btnSubmitRubric.style.cursor = 'pointer';
             } else {
                 weightBadge.textContent = `Total bobot ${total}% (Harus 100% ⚠️)`;
                 weightBadge.style.background = '#fee2e2';
@@ -150,28 +173,27 @@
 
         function createLevelRow(cIdx, lIdx, level = {}) {
             const row = document.createElement('div');
-            row.className = 'level-row';
-            row.style.cssText = 'display: grid; grid-template-columns: 180px 1fr 100px 36px; gap: 0.65rem; align-items: center; margin-bottom: 0.5rem; background: #ffffff; padding: 0.65rem; border-radius: 8px; border: 1px solid #e2e8f0;';
+            row.className = 'level-row-item';
 
             row.innerHTML = `
                 <input type="hidden" name="criteria[${cIdx}][levels][${lIdx}][id]" value="${level.id || ''}">
-                <div>
+                <div class="level-title-col">
                     <input type="text" name="criteria[${cIdx}][levels][${lIdx}][title]" value="${level.title || ''}" required
-                           placeholder="Nama Tingkat (e.g. Baik)" class="filter-search-input" style="width: 100%; height: 36px; font-size: 0.825rem; font-weight: 600; padding: 0 0.6rem; border-radius: 6px;">
+                           placeholder="Nama Tingkat (e.g. Sangat Baik)" class="filter-search-input" style="width: 100%; height: 38px; font-size: 0.85rem; font-weight: 600; padding: 0 0.65rem; border-radius: 8px;">
                 </div>
-                <div>
+                <div class="level-desc-col">
                     <input type="text" name="criteria[${cIdx}][levels][${lIdx}][description]" value="${level.description || ''}"
-                           placeholder="Indikator capaian mahasiswa..." class="filter-search-input" style="width: 100%; height: 36px; font-size: 0.825rem; padding: 0 0.6rem; border-radius: 6px;">
+                           placeholder="Indikator capaian mahasiswa..." class="filter-search-input" style="width: 100%; height: 38px; font-size: 0.825rem; padding: 0 0.65rem; border-radius: 8px;">
                 </div>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                <div class="level-score-col">
+                    <div style="display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
                         <input type="number" step="0.01" min="0" max="100" name="criteria[${cIdx}][levels][${lIdx}][score_percentage]" value="${level.score_percentage !== undefined ? level.score_percentage : 100}" required
-                               class="filter-search-input" style="width: 70px; height: 36px; font-size: 0.825rem; font-weight: 700; text-align: right; padding: 0 0.4rem; border-radius: 6px;">
-                        <span style="font-size: 0.8rem; font-weight: 700; color: #64748b;">%</span>
+                               class="filter-search-input" style="width: 65px; height: 38px; font-size: 0.85rem; font-weight: 800; text-align: right; padding: 0 0.4rem; border-radius: 8px;">
+                        <span style="font-size: 0.8rem; font-weight: 800; color: #64748b;">%</span>
                     </div>
                 </div>
-                <div>
-                    <button type="button" class="btn-remove-level" title="Hapus Level" style="background: transparent; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer; padding: 0.2rem;">
+                <div class="level-action-col" style="text-align: right;">
+                    <button type="button" class="btn-remove-level" title="Hapus Level" style="background: #fef2f2; border: 1px solid #fee2e2; color: #ef4444; border-radius: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.15rem; cursor: pointer; transition: all 0.15s ease;">
                         &times;
                     </button>
                 </div>
@@ -179,7 +201,7 @@
 
             row.querySelector('.btn-remove-level').addEventListener('click', () => {
                 const parent = row.parentElement;
-                if (parent.querySelectorAll('.level-row').length <= 1) {
+                if (parent.querySelectorAll('.level-row-item').length <= 1) {
                     alert('Setiap kriteria harus memiliki minimal 1 tingkatan (level).');
                     return;
                 }
@@ -191,38 +213,42 @@
 
         function createCriterionCard(cIdx, data = {}) {
             const card = document.createElement('div');
-            card.className = 'criterion-card';
-            card.style.cssText = 'background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.03);';
+            card.className = 'criterion-card-modern';
 
             card.innerHTML = `
                 <input type="hidden" name="criteria[${cIdx}][id]" value="${data.id || ''}">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="badge" style="background: #2563eb; color: #ffffff; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 800; font-size: 0.75rem;">
+                        <span class="badge" style="background: #2563eb; color: #ffffff; padding: 0.25rem 0.65rem; border-radius: 6px; font-weight: 800; font-size: 0.75rem;">
                             Kriteria #${cIdx + 1}
                         </span>
-                        <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Pengaturan Aspek Penilaian</h4>
+                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">Pengaturan Aspek Penilaian</h4>
                     </div>
-                    <button type="button" class="btn-remove-criterion" style="background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; border-radius: 6px; padding: 0.25rem 0.65rem; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
-                        🗑️ Hapus Kriteria
+                    <button type="button" class="btn-remove-criterion" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 8px; padding: 0.35rem 0.75rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                        </svg>
+                        <span>Hapus Kriteria</span>
                     </button>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 140px; gap: 1rem; margin-bottom: 1rem;">
+                <div class="criterion-header-grid">
                     <div>
                         <label style="display: block; font-weight: 700; color: #334155; font-size: 0.825rem; margin-bottom: 0.35rem;">
                             Judul Kriteria <span style="color: #dc2626;">*</span>
                         </label>
                         <input type="text" name="criteria[${cIdx}][title]" value="${data.title || ''}" required
-                               class="filter-search-input" style="width: 100%; height: 38px; border-radius: 8px; padding: 0 0.75rem;" placeholder="Contoh: Kualitas Kode & Arsitektur">
+                               class="filter-search-input" style="width: 100%; height: 40px; border-radius: 8px; padding: 0 0.75rem;" placeholder="Contoh: Kualitas Kode & Arsitektur">
                     </div>
                     <div>
                         <label style="display: block; font-weight: 700; color: #334155; font-size: 0.825rem; margin-bottom: 0.35rem;">
                             Bobot Kriteria (%) <span style="color: #dc2626;">*</span>
                         </label>
-                        <div style="display: flex; align-items: center; gap: 0.3rem;">
+                        <div style="display: flex; align-items: center; gap: 0.35rem;">
                             <input type="number" step="0.01" min="1" max="100" name="criteria[${cIdx}][weight]" value="${data.weight !== undefined ? data.weight : 50}" required
-                                   class="filter-search-input criterion-weight-input" style="width: 100%; height: 38px; border-radius: 8px; padding: 0 0.5rem; font-weight: 800; text-align: right;">
+                                   class="filter-search-input criterion-weight-input" style="width: 100%; height: 40px; border-radius: 8px; padding: 0 0.5rem; font-weight: 800; text-align: right; color: #2563eb;">
                             <span style="font-weight: 800; color: #64748b;">%</span>
                         </div>
                     </div>
@@ -233,24 +259,31 @@
                         Deskripsi Penilaian (Opsional)
                     </label>
                     <input type="text" name="criteria[${cIdx}][description]" value="${data.description || ''}"
-                           class="filter-search-input" style="width: 100%; height: 36px; border-radius: 8px; padding: 0 0.75rem;" placeholder="Penjelasan apa yang dinilai pada kriteria ini...">
+                           class="filter-search-input" style="width: 100%; height: 38px; border-radius: 8px; padding: 0 0.75rem;" placeholder="Penjelasan apa yang dinilai pada kriteria ini...">
                 </div>
 
                 {{-- Bagian Tingkatan / Levels --}}
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <h5 style="margin: 0; font-size: 0.85rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.02em;">
-                            Tingkatan Capaian (Levels / Tiers)
+                <div class="levels-container-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h5 style="margin: 0; font-size: 0.825rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.03em; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20v-6M6 20V10M18 20V4"/>
+                            </svg>
+                            <span>Tingkatan Capaian (Levels / Tiers)</span>
                         </h5>
-                        <button type="button" class="btn-add-level" style="background: #e0e7ff; border: 1px solid #c7d2fe; color: #4338ca; border-radius: 6px; padding: 0.25rem 0.6rem; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
-                            + Tambah Tingkat
+                        <button type="button" class="btn-add-level-pill">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            <span>Tambah Tingkat</span>
                         </button>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 180px 1fr 100px 36px; gap: 0.65rem; margin-bottom: 0.35rem; font-size: 0.75rem; font-weight: 700; color: #64748b;">
+                    <div class="levels-header-grid">
                         <span>Nama Tingkatan</span>
                         <span>Deskripsi Capaian</span>
-                        <span style="text-align: right; padding-right: 1.25rem;">Skor (%)</span>
+                        <span style="text-align: right; padding-right: 0.5rem;">Skor (%)</span>
                         <span></span>
                     </div>
 
@@ -268,13 +301,13 @@
                 levelsContainer.appendChild(createLevelRow(cIdx, lIdx, lvl));
             });
 
-            card.querySelector('.btn-add-level').addEventListener('click', () => {
-                const nextLIdx = levelsContainer.querySelectorAll('.level-row').length;
+            card.querySelector('.btn-add-level-pill').addEventListener('click', () => {
+                const nextLIdx = levelsContainer.querySelectorAll('.level-row-item').length;
                 levelsContainer.appendChild(createLevelRow(cIdx, nextLIdx, { title: 'Baru', score_percentage: 50 }));
             });
 
             card.querySelector('.btn-remove-criterion').addEventListener('click', () => {
-                if (document.querySelectorAll('.criterion-card').length <= 1) {
+                if (document.querySelectorAll('.criterion-card-modern').length <= 1) {
                     alert('Rubrik harus memiliki minimal 1 kriteria.');
                     return;
                 }
@@ -315,4 +348,5 @@
         updateWeightSummary();
     </script>
 </x-layout>
+
 

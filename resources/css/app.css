@@ -4696,3 +4696,289 @@ nav[role="navigation"] svg,
     box-sizing: border-box;
 }
 
+/* ========================================================
+   FITUR DIFERENSIASI: RUBRIK PENILAIAN BERTINGKAT
+   ======================================================== */
+
+/* 1. Halaman Kelola Rubrik (Manage Rubric) */
+.rubric-manage-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    padding: 1.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.rubric-weight-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0f7ff;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 0.95rem 1.25rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.05);
+}
+
+.rubric-weight-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+}
+
+.criterion-card-modern {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    box-sizing: border-box;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.criterion-card-modern:hover {
+    border-color: #94a3b8;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
+}
+
+.criterion-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+
+.levels-container-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.levels-header-grid {
+    display: grid;
+    grid-template-columns: 170px 1fr 95px 36px;
+    gap: 0.65rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+}
+
+.level-row-item {
+    display: grid;
+    grid-template-columns: 170px 1fr 95px 36px;
+    gap: 0.65rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    background: #ffffff;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.level-row-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.btn-add-criterion-dashed {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px dashed #93c5fd;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.btn-add-criterion-dashed:hover {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-add-level-pill {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #2563eb;
+    border-radius: 8px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.15s ease;
+}
+
+.btn-add-level-pill:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+/* 2. Detail Tugas Rubric Showcase */
+.rubric-showcase-card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+    margin-bottom: 2rem;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+}
+
+.rubric-level-pill-card {
+    padding: 0.65rem 0.85rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    min-width: 140px;
+    flex: 1;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.rubric-level-pill-card:hover {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    transform: translateY(-1px);
+}
+
+/* 3. Interactive Grading Radio Cards */
+.rubric-radio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.rubric-level-radio-card {
+    display: block;
+    cursor: pointer;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.85rem 0.95rem;
+    background: #f8fafc;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+.rubric-level-radio-card:hover {
+    border-color: #93c5fd;
+    background: #f0f7ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06);
+}
+
+.rubric-level-radio-card:has(.rubric-radio:checked),
+.rubric-level-radio-card.active {
+    border-color: #2563eb !important;
+    background: #eff6ff !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12) !important;
+}
+
+.rubric-level-radio-card:has(.rubric-radio:checked) .level-title,
+.rubric-level-radio-card.active .level-title {
+    color: #1d4ed8 !important;
+}
+
+.rubric-score-preview-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1.5px solid #86efac;
+    border-radius: 14px;
+    padding: 1.15rem 1.35rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+    box-sizing: border-box;
+}
+
+@media (max-width: 680px) {
+    .criterion-header-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .levels-header-grid {
+        display: none !important;
+    }
+
+    .level-row-item {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        padding: 0.75rem !important;
+        background: #f8fafc !important;
+        border-radius: 12px !important;
+    }
+
+    .level-row-mobile-top {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.45rem !important;
+        width: 100% !important;
+    }
+
+    .level-row-mobile-top .level-title-input {
+        flex: 1 !important;
+    }
+
+    .rubric-radio-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+
+    .rubric-showcase-card {
+        padding: 1rem 0.85rem !important;
+    }
+
+    .rubric-level-pill-card {
+        min-width: 100% !important;
+    }
+}
+
+

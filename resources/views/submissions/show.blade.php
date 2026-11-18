@@ -170,41 +170,43 @@
                         @if($submission->rubricAssessments->isNotEmpty())
                             <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #86efac;">
                                 <strong style="color: #166534; font-size: 0.85rem; display: block; margin-bottom: 0.5rem;">Rincian Rubrik Penilaian:</strong>
-                                <div style="overflow-x: auto;">
-                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.825rem; background: #ffffff; border-radius: 10px; overflow: hidden; border: 1px solid #bbf7d0;">
+                                <div class="table-container" style="margin-bottom: 0.5rem; border-radius: 12px; border: 1px solid #bbf7d0; box-shadow: none;">
+                                    <table class="data-table" style="font-size: 0.825rem; width: 100%;">
                                         <thead>
-                                            <tr style="background: #dcfce7; text-align: left; color: #166534;">
-                                                <th style="padding: 0.5rem 0.75rem;">Kriteria</th>
-                                                <th style="padding: 0.5rem 0.75rem; text-align: center;">Bobot</th>
-                                                <th style="padding: 0.5rem 0.75rem;">Capaian Level</th>
-                                                <th style="padding: 0.5rem 0.75rem; text-align: right;">Skor Diperoleh</th>
+                                            <tr style="background: #dcfce7; color: #166534;">
+                                                <th style="padding: 0.65rem 0.85rem; color: #166534; font-weight: 700;">Kriteria</th>
+                                                <th style="padding: 0.65rem 0.85rem; text-align: center; color: #166534; font-weight: 700;">Bobot</th>
+                                                <th style="padding: 0.65rem 0.85rem; color: #166534; font-weight: 700;">Capaian Level</th>
+                                                <th style="padding: 0.65rem 0.85rem; text-align: right; color: #166534; font-weight: 700;">Skor Diperoleh</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($submission->rubricAssessments as $assessment)
                                                 <tr style="border-bottom: 1px solid #f0fdf4;">
-                                                    <td style="padding: 0.6rem 0.75rem; vertical-align: top;">
-                                                        <strong style="color: #0f172a;">{{ $assessment->criterion->title ?? 'Kriteria' }}</strong>
+                                                    <td style="padding: 0.75rem 0.85rem; vertical-align: top;">
+                                                        <strong style="color: #0f172a; font-size: 0.875rem;">{{ $assessment->criterion->title ?? 'Kriteria' }}</strong>
                                                         @if($assessment->feedback)
-                                                            <div style="font-size: 0.75rem; color: #15803d; margin-top: 0.2rem;">
-                                                                Catatan: {{ $assessment->feedback }}
+                                                            <div style="font-size: 0.78rem; color: #15803d; margin-top: 0.35rem; background: #f0fdf4; padding: 0.4rem 0.65rem; border-radius: 6px; border-left: 3px solid #16a34a;">
+                                                                <strong>Catatan Dosen:</strong> {{ $assessment->feedback }}
                                                             </div>
                                                         @endif
                                                     </td>
-                                                    <td style="padding: 0.6rem 0.75rem; vertical-align: top; text-align: center; color: #166534; font-weight: 700;">
-                                                        {{ (float)($assessment->criterion->weight ?? 0) }}%
+                                                    <td style="padding: 0.75rem 0.85rem; vertical-align: top; text-align: center; color: #166534; font-weight: 800;">
+                                                        <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; border: 1px solid #bfdbfe; font-size: 0.78rem;">
+                                                            {{ (float)($assessment->criterion->weight ?? 0) }}%
+                                                        </span>
                                                     </td>
-                                                    <td style="padding: 0.6rem 0.75rem; vertical-align: top;">
-                                                        <span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 700; border: 1px solid #a7f3d0; padding: 0.15rem 0.45rem; border-radius: 5px;">
+                                                    <td style="padding: 0.75rem 0.85rem; vertical-align: top;">
+                                                        <span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 700; border: 1px solid #a7f3d0; padding: 0.2rem 0.55rem; border-radius: 6px;">
                                                             {{ $assessment->level->title ?? '-' }} ({{ (float)($assessment->level->score_percentage ?? 0) }}%)
                                                         </span>
                                                         @if($assessment->level?->description)
-                                                            <div style="font-size: 0.725rem; color: #64748b; margin-top: 0.2rem;">
+                                                            <div style="font-size: 0.725rem; color: #64748b; margin-top: 0.25rem; line-height: 1.4;">
                                                                 {{ $assessment->level->description }}
                                                             </div>
                                                         @endif
                                                     </td>
-                                                    <td style="padding: 0.6rem 0.75rem; vertical-align: top; text-align: right; font-weight: 800; color: #15803d;">
+                                                    <td style="padding: 0.75rem 0.85rem; vertical-align: top; text-align: right; font-weight: 800; color: #15803d; font-size: 0.95rem;">
                                                         {{ number_format($assessment->score_awarded, 2) }}
                                                     </td>
                                                 </tr>
@@ -259,8 +261,8 @@
                             @if($rubric && $rubric->criteria->isNotEmpty())
                                 {{-- 1. Penilaian Interaktif Berbasis Rubrik Bertingkat --}}
                                 <div style="margin-bottom: 1.5rem;">
-                                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">
-                                        Pilihlah salah satu capaian level untuk setiap kriteria. Sistem akan mengkalkulasi skor akhir secara otomatis sesuai bobot masing-masing aspek.
+                                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem; line-height: 1.5;">
+                                        Pilihlah salah satu capaian level untuk setiap kriteria. Sistem akan mengkalkulasi skor akhir secara otomatis dan instan sesuai bobot masing-masing aspek.
                                     </p>
 
                                     @foreach($rubric->criteria as $criterion)
@@ -268,24 +270,24 @@
                                             $selectedLevelId = old("rubric_levels.{$criterion->id}", $existingAssessments[$criterion->id]->rubric_level_id ?? null);
                                             $criterionFeedback = old("rubric_criterion_feedback.{$criterion->id}", $existingAssessments[$criterion->id]->feedback ?? '');
                                         @endphp
-                                        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.15rem; margin-bottom: 1rem;">
-                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.65rem; flex-wrap: wrap; gap: 0.5rem;">
-                                                <div>
-                                                    <div style="font-weight: 800; font-size: 0.95rem; color: #0f172a;">{{ $criterion->title }}</div>
+                                        <div class="criterion-rubric-box" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.15rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);">
+                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                                                <div style="flex: 1; min-width: 200px;">
+                                                    <div style="font-weight: 800; font-size: 0.975rem; color: #0f172a;">{{ $criterion->title }}</div>
                                                     @if($criterion->description)
-                                                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.15rem;">{{ $criterion->description }}</div>
+                                                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem; line-height: 1.4;">{{ $criterion->description }}</div>
                                                     @endif
                                                 </div>
-                                                <span class="badge" style="background: #dbeafe; color: #1e40af; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem;">
+                                                <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 8px; font-size: 0.8rem; flex-shrink: 0;">
                                                     Bobot: {{ (float)$criterion->weight }}%
                                                 </span>
                                             </div>
 
-                                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.65rem; margin-top: 0.75rem;">
+                                            <div class="rubric-radio-grid">
                                                 @foreach($criterion->levels as $level)
-                                                    <label style="display: block; cursor: pointer; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 0.75rem; background: #f8fafc; transition: all 0.2s;" class="rubric-level-label">
-                                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.35rem;">
-                                                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                                    <label class="rubric-level-radio-card {{ $selectedLevelId == $level->id ? 'active' : '' }}">
+                                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                                            <div style="display: flex; align-items: center; gap: 0.45rem;">
                                                                 <input type="radio" 
                                                                        name="rubric_levels[{{ $criterion->id }}]" 
                                                                        value="{{ $level->id }}" 
@@ -294,13 +296,15 @@
                                                                        class="rubric-radio" 
                                                                        {{ $selectedLevelId == $level->id ? 'checked' : '' }} 
                                                                        required 
-                                                                       onchange="calculateRubricScore()">
-                                                                <strong style="font-size: 0.85rem; color: #0f172a;">{{ $level->title }}</strong>
+                                                                       onchange="calculateRubricScore(); updateRadioCards(this);">
+                                                                <strong class="level-title" style="font-size: 0.85rem; color: #0f172a;">{{ $level->title }}</strong>
                                                             </div>
-                                                            <span style="font-size: 0.75rem; font-weight: 800; color: #2563eb;">{{ (float)$level->score_percentage }}%</span>
+                                                            <span class="badge" style="font-size: 0.72rem; font-weight: 800; color: #2563eb; background: #ffffff; border: 1px solid #bfdbfe; padding: 0.12rem 0.45rem; border-radius: 6px;">
+                                                                {{ (float)$level->score_percentage }}%
+                                                            </span>
                                                         </div>
                                                         @if($level->description)
-                                                            <div style="font-size: 0.75rem; color: #64748b; line-height: 1.35; padding-left: 1.4rem;">
+                                                            <div style="font-size: 0.75rem; color: #64748b; line-height: 1.35; padding-left: 1.55rem;">
                                                                 {{ $level->description }}
                                                             </div>
                                                         @endif
@@ -308,26 +312,32 @@
                                                 @endforeach
                                             </div>
 
-                                            <div style="margin-top: 0.75rem;">
+                                            <div style="margin-top: 0.85rem;">
                                                 <input type="text" 
                                                        name="rubric_criterion_feedback[{{ $criterion->id }}]" 
                                                        value="{{ $criterionFeedback }}" 
                                                        placeholder="Catatan spesifik untuk kriteria ini (opsional)..."
                                                        class="filter-search-input" 
-                                                       style="width: 100%; height: 34px; font-size: 0.8rem; border-radius: 6px; padding: 0 0.65rem;">
+                                                       style="width: 100%; height: 38px; font-size: 0.825rem; border-radius: 8px; padding: 0 0.75rem;">
                                             </div>
                                         </div>
                                     @endforeach
 
                                     {{-- Banner Hasil Kalkulasi Otomatis --}}
-                                    <div style="display: flex; justify-content: space-between; align-items: center; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 1rem 1.25rem; margin-top: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                                    <div class="rubric-score-preview-box">
                                         <div>
-                                            <span style="font-size: 0.85rem; font-weight: 700; color: #166534; display: block;">Nilai Otomatis Terhitung dari Rubrik:</span>
-                                            <small style="color: #15803d; font-size: 0.78rem;">Dihitung dari kombinasi bobot dan skor tingkatan yang dipilih.</small>
+                                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                                </svg>
+                                                <span style="font-size: 0.95rem; font-weight: 800; color: #166534;">Nilai Otomatis Terhitung dari Rubrik:</span>
+                                            </div>
+                                            <small style="color: #15803d; font-size: 0.78rem; display: block; margin-top: 0.25rem;">Dihitung dari kombinasi bobot dan skor tingkatan yang dipilih secara live.</small>
                                         </div>
-                                        <div>
-                                            <span id="calculatedScoreDisplay" style="font-size: 2rem; font-weight: 800; color: #15803d;">0.00</span>
-                                            <span style="font-size: 1.1rem; font-weight: 700; color: #166534;">/ {{ $submission->assignment->max_score ?? 100 }}</span>
+                                        <div style="display: flex; align-items: baseline; gap: 0.35rem;">
+                                            <span id="calculatedScoreDisplay" style="font-size: 2.25rem; font-weight: 800; color: #15803d; letter-spacing: -0.02em;">0.00</span>
+                                            <span style="font-size: 1.15rem; font-weight: 700; color: #166534;">/ {{ $submission->assignment->max_score ?? 100 }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -395,6 +405,22 @@
 
                     @if($rubric && $rubric->criteria->isNotEmpty())
                         <script>
+                            function updateRadioCards(changedRadio) {
+                                if (!changedRadio) return;
+                                const criterionBox = changedRadio.closest('.criterion-rubric-box') || changedRadio.parentElement.parentElement.parentElement;
+                                if (criterionBox) {
+                                    const labels = criterionBox.querySelectorAll('.rubric-level-radio-card');
+                                    labels.forEach(lbl => {
+                                        const radio = lbl.querySelector('.rubric-radio');
+                                        if (radio && radio.checked) {
+                                            lbl.classList.add('active');
+                                        } else {
+                                            lbl.classList.remove('active');
+                                        }
+                                    });
+                                }
+                            }
+
                             function calculateRubricScore() {
                                 const maxScore = {{ (float)($submission->assignment->max_score ?? 100) }};
                                 let totalScore = 0.0;
@@ -413,8 +439,11 @@
                                 }
                             }
 
-                            // Jalankan perhitungan saat halaman pertama kali termuat
-                            document.addEventListener('DOMContentLoaded', calculateRubricScore);
+                            // Jalankan perhitungan dan sinkronisasi tampilan kartu saat halaman pertama kali termuat
+                            document.addEventListener('DOMContentLoaded', function() {
+                                calculateRubricScore();
+                                document.querySelectorAll('.rubric-radio:checked').forEach(radio => updateRadioCards(radio));
+                            });
                         </script>
                     @endif
                 @endcan

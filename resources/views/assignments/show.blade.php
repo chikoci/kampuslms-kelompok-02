@@ -30,8 +30,15 @@
 
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 @can('manage', [\App\Models\Rubric::class, $assignment])
-                    <a href="{{ route('assignments.rubric.manage', $assignment) }}" class="btn-open-class" style="color: #2563eb; border-color: #bfdbfe; text-decoration: none;">
-                        ⚖️ {{ $assignment->rubric ? 'Kelola Rubrik' : '+ Buat Rubrik' }}
+                    <a href="{{ route('assignments.rubric.manage', $assignment) }}" class="btn-open-class" style="color: #2563eb; border-color: #bfdbfe; text-decoration: none; font-weight: 700; background: #eff6ff; display: inline-flex; align-items: center; gap: 0.4rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                            <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+                            <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+                            <path d="M7 21h10"/>
+                            <path d="M12 3v18"/>
+                            <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+                        </svg>
+                        <span>{{ $assignment->rubric ? 'Kelola Rubrik' : '+ Buat Rubrik' }}</span>
                     </a>
                 @endcan
                 @can('update', $assignment)
@@ -61,69 +68,67 @@
 
         {{-- Rubrik Penilaian Bertingkat (Transparansi Kriteria bagi Dosen & Mahasiswa) --}}
         @if($assignment->rubric && $assignment->rubric->criteria->isNotEmpty())
-            <div style="margin-bottom: 2rem; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.02);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div class="rubric-showcase-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
                     <div>
-                        <span class="badge" style="background: #eff6ff; color: #2563eb; font-weight: 800; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 6px;">
-                            RUBRIK PENILAIAN
-                        </span>
-                        <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0.35rem 0 0 0;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                            <span class="badge" style="background: #eff6ff; color: #2563eb; font-weight: 800; font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 6px; letter-spacing: 0.03em;">
+                                PANDUAN RUBRIK PENILAIAN
+                            </span>
+                        </div>
+                        <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">
                             {{ $assignment->rubric->title }}
                         </h3>
                     </div>
-                    <span style="font-size: 0.85rem; font-weight: 700; color: #166534; background: #dcfce7; padding: 0.3rem 0.75rem; border-radius: 8px;">
-                        Total Bobot: 100%
+                    <span class="badge" style="font-size: 0.8rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.35rem 0.75rem; border-radius: 8px;">
+                        ✓ Total Bobot: 100%
                     </span>
                 </div>
 
                 @if($assignment->rubric->description)
-                    <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1rem; line-height: 1.6;">
+                    <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1.25rem; line-height: 1.6;">
                         {{ $assignment->rubric->description }}
                     </p>
                 @endif
 
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-                        <thead>
-                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
-                                <th style="padding: 0.75rem 1rem; font-weight: 700; color: #334155;">Kriteria Penilaian</th>
-                                <th style="padding: 0.75rem 1rem; font-weight: 700; color: #334155; width: 110px; text-align: center;">Bobot (%)</th>
-                                <th style="padding: 0.75rem 1rem; font-weight: 700; color: #334155;">Tingkatan Capaian (Levels)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($assignment->rubric->criteria as $criterion)
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 1rem; vertical-align: top;">
-                                        <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">{{ $criterion->title }}</div>
-                                        @if($criterion->description)
-                                            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">{{ $criterion->description }}</div>
-                                        @endif
-                                    </td>
-                                    <td style="padding: 1rem; vertical-align: top; text-align: center;">
-                                        <span class="badge" style="background: #dbeafe; color: #1e40af; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.85rem;">
-                                            {{ (float)$criterion->weight }}%
-                                        </span>
-                                    </td>
-                                    <td style="padding: 1rem; vertical-align: top;">
-                                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                                            @foreach($criterion->levels as $level)
-                                                <div style="padding: 0.5rem 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; min-width: 140px; flex: 1;">
-                                                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
-                                                        <strong style="color: #1e293b; font-size: 0.8rem;">{{ $level->title }}</strong>
-                                                        <span style="font-size: 0.75rem; font-weight: 700; color: #2563eb;">{{ (float)$level->score_percentage }}%</span>
-                                                    </div>
-                                                    @if($level->description)
-                                                        <div style="font-size: 0.75rem; color: #64748b; line-height: 1.4;">{{ $level->description }}</div>
-                                                    @endif
-                                                </div>
-                                            @endforeach
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    @foreach($assignment->rubric->criteria as $criterion)
+                        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.15rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+                                <div style="flex: 1; min-width: 200px;">
+                                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">
+                                        {{ $criterion->title }}
+                                    </h4>
+                                    @if($criterion->description)
+                                        <p style="font-size: 0.8rem; color: #64748b; margin: 0.25rem 0 0 0; line-height: 1.45;">
+                                            {{ $criterion->description }}
+                                        </p>
+                                    @endif
+                                </div>
+                                <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 8px; font-size: 0.8rem; flex-shrink: 0;">
+                                    Bobot: {{ (float)$criterion->weight }}%
+                                </span>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.65rem;">
+                                @foreach($criterion->levels as $level)
+                                    <div class="rubric-level-pill-card">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                            <strong style="color: #0f172a; font-size: 0.825rem;">{{ $level->title }}</strong>
+                                            <span style="font-size: 0.75rem; font-weight: 800; color: #2563eb; background: #ffffff; padding: 0.1rem 0.4rem; border-radius: 6px; border: 1px solid #dbeafe;">
+                                                {{ (float)$level->score_percentage }}%
+                                            </span>
                                         </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                        @if($level->description)
+                                            <div style="font-size: 0.75rem; color: #64748b; line-height: 1.4;">
+                                                {{ $level->description }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         @endif
