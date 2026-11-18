@@ -1,294 +1,219 @@
-# Catatan Praktikum Minggu 11: Optimisasi Performa & Deployment
+# Minggu 11
+**NAMA:** Bella Alviana
+**NIM:** 10241015
 
-**Nama:** Bella Alviana  
-**NIM:** 10241015  
-**Kelas:** B (Sistem Informasi)  
-**Kelompok:** Kelompok 02  
-**Fokus Kontribusi:** Analisis Pengukuran Kinerja (READ), Tujuh Eksperimen Optimisasi (BREAK), UI/UX & Mobile Responsiveness, Penjelasan Dockerfile & Evaluasi Checkpoint Deployment.
+## READ
 
----
-
-## READ — Ukur Aplikasi Anda Sendiri (40 Menit)
-
-Aturan pertama optimisasi adalah: **Ukur dulu, jangan menebak**. Seluruh data pengukuran di bawah ini diambil langsung menggunakan **Laravel Debugbar** di peramban web pada lingkungan lokal dengan seeder penuh (30 mahasiswa, 5 mata kuliah, 15 tugas, dan ratusan pengumpulan tugas) sebelum optimisasi diterapkan.
-
-### 1. Tabel Pengukuran Kinerja Baseline (Sebelum Optimisasi)
-
-Berikut adalah tabel hasil pengukuran riil untuk seluruh 7 halaman utama aplikasi KampusLMS:
+**1. Pastikan seeder penuh sudah dijalankan (`migrate:fresh --seed`). Lalu tanpa AI, isi tabel ini di `docs/performa.md`:**
+Jawab: Pengukuran dilakukan langsung pada peramban web menggunakan bantuan **Laravel Debugbar** dengan seeder penuh (30 mahasiswa, 5 mata kuliah, 15 tugas, dan ratusan data pengumpulan tugas):
 
 | No | Halaman yang Diukur | Route / URL | Role Akun | Jumlah Query | Waktu Render (ms) | Waktu Database SQL (ms) | Memori Terpakai (MB) | Catatan Debugbar |
 |:---:|---|---|:---:|:---:|:---:|:---:|:---:|---|
-| 1 | **Detail Mata Kuliah** | `/courses/1` | Dosen | **18 query** | **196.0 ms** | 45.27 ms | 4.0 MB | **Terburuk 1** (Ada 3 duplicate queries) |
-| 2 | **Dashboard Mahasiswa** | `/dashboard` | Mahasiswa | **14 query** | **104.0 ms** | 21.16 ms | 3.0 MB | **Terburuk 2** (Metrik agregasi relasi) |
-| 3 | **Rekap Nilai (Transkrip Nilai Saya)** | `/my-grades` | Mahasiswa | **12 query** | **165.0 ms** | 43.71 ms | 3.0 MB | **Terburuk 3** (Ada 2 duplicate queries dosen) |
-| 4 | **Daftar Tugas** | `/courses/1/assignments` | Dosen | **11 query** | **224.0 ms** | 33.58 ms | 3.0 MB | Waktu render terpanjang (3 duplikat) |
-| 5 | **Rekap Nilai Kelas** | `/courses/1/grades` | Dosen | **10 query** | **183.0 ms** | 19.77 ms | 4.0 MB | Komputasi loop submission nilai |
-| 6 | **Daftar Pengumpulan (Dosen)** | `/assignments/1/submissions` | Dosen | **10 query** | **100.0 ms** | 16.96 ms | 4.0 MB | Beban mapping data mahasiswa |
-| 7 | **Dashboard Dosen** | `/dashboard` | Dosen | **10 query** | **92.6 ms** | 19.50 ms | 3.0 MB | Cukup cepat (Metrik kelas diampu) |
-| 8 | **Daftar Mata Kuliah** | `/courses` | Dosen / Mahasiswa | **7 query** | **103.0 ms** | 15.29 ms | 3.0 MB | Jumlah query paling sedikit |
+| 1 | **Detail Mata Kuliah** | `/courses/1` | Dosen | 18 query | 196.0 ms | 45.27 ms | 4.0 MB | Terburuk #1 (ada 3 query duplikat) |
+| 2 | **Dashboard Mahasiswa** | `/dashboard` | Mahasiswa | 14 query | 104.0 ms | 21.16 ms | 3.0 MB | Terburuk #2 (agregasi relasi terpisah) |
+| 3 | **Rekap Nilai (Transkrip Nilai Saya)** | `/my-grades` | Mahasiswa | 12 query | 165.0 ms | 43.71 ms | 3.0 MB | Terburuk #3 (ada 2 query duplikat dosen) |
+| 4 | **Daftar Tugas** | `/courses/1/assignments` | Dosen | 11 query | 224.0 ms | 33.58 ms | 3.0 MB | Waktu render terpanjang (3 duplikat) |
+| 5 | **Rekap Nilai Kelas** | `/courses/1/grades` | Dosen | 10 query | 183.0 ms | 19.77 ms | 4.0 MB | Komputasi loop submission nilai |
+| 6 | **Daftar Pengumpulan (Dosen)** | `/assignments/1/submissions` | Dosen | 10 query | 100.0 ms | 16.96 ms | 4.0 MB | Beban mapping data mahasiswa |
+| 7 | **Dashboard Dosen** | `/dashboard` | Dosen | 10 query | 92.6 ms | 19.50 ms | 3.0 MB | Cukup cepat (ringkasan kelas diampu) |
+| 8 | **Daftar Mata Kuliah** | `/courses` | Dosen / Mahasiswa | 7 query | 103.0 ms | 15.29 ms | 3.0 MB | Query paling sedikit |
 
----
+**2. Urutkan dari yang terburuk.**
+Jawab: Berdasarkan kombinasi jumlah query, waktu eksekusi database, dan waktu render halaman, berikut adalah urutan performa dari yang paling buruk ke terbaik:
+1. **Detail Mata Kuliah (`/courses/1`) — Terburuk #1:** Menjalankan total 18 query (paling banyak) dengan 3 query duplikat, waktu render 196.0 ms, dan waktu database 45.27 ms.
+2. **Dashboard Mahasiswa (`/dashboard`) — Terburuk #2:** Menjalankan total 14 query, waktu render 104.0 ms, karena memuat banyak data relasi secara terpisah (mata kuliah terdaftar, tugas mendatang, pengumuman, dan notifikasi).
+3. **Rekap Nilai / Transkrip Mahasiswa (`/my-grades`) — Terburuk #3:** Menjalankan 12 query dengan 2 query duplikat untuk relasi dosen pengampu, waktu render 165.0 ms, dan waktu database 43.71 ms.
+4. **Daftar Tugas (`/courses/1/assignments`):** Menjalankan 11 query dengan 3 duplikat, dan memiliki waktu render terpanjang yaitu 224.0 ms.
+5. **Rekap Nilai Kelas Dosen (`/courses/1/grades`):** Menjalankan 10 query, waktu render 183.0 ms karena melakukan iterasi komputasi nilai tugas untuk seluruh mahasiswa di kelas.
+6. **Daftar Pengumpulan Dosen (`/assignments/1/submissions`):** Menjalankan 10 query, waktu render 100.0 ms, dan memori 4.0 MB.
+7. **Dashboard Dosen (`/dashboard`):** Menjalankan 10 query, waktu render 92.6 ms, dan waktu database 19.50 ms.
+8. **Daftar Mata Kuliah (`/courses`) — Terbaik:** Menjalankan 7 query (paling sedikit), waktu render 103.0 ms, dan waktu database 15.29 ms.
 
-### 2. Urutan Halaman dari yang Terburuk ke Terbaik
-
-Berdasarkan kombinasi **Jumlah Query**, **Waktu Eksekusi SQL**, dan **Waktu Render**, berikut urutan performa halaman dari yang paling buruk:
-
-1. **Detail Mata Kuliah (`/courses/1`) — TERBURUK #1**
-   - *Total: 18 Query, SQL: 45.27 ms, Render: 196.0 ms.*
-   - Debugbar secara spesifik memberi peringatan: *"18 statements were executed, 3 of which were duplicates, 15 unique."*
-2. **Dashboard Mahasiswa (`/dashboard`) — TERBURUK #2**
-   - *Total: 14 Query, SQL: 21.16 ms, Render: 104.0 ms.*
-   - Memuat banyak relasi terpisah untuk mata kuliah terdaftar, tugas mendatang, pengumuman, dan notifikasi unread.
-3. **Rekap Nilai / Transkrip Mahasiswa (`/my-grades`) — TERBURUK #3**
-   - *Total: 12 Query, SQL: 43.71 ms, Render: 165.0 ms.*
-   - Memiliki 2 query duplikat relasi dosen dan pemanggilan sub-relasi evaluasi nilai tugas.
-4. **Daftar Tugas (`/courses/1/assignments`)**
-   - *Total: 11 Query, SQL: 33.58 ms, Render: 224.0 ms.*
-5. **Rekap Nilai Kelas Dosen (`/courses/1/grades`)**
-   - *Total: 10 Query, SQL: 19.77 ms, Render: 183.0 ms.*
-6. **Daftar Pengumpulan Dosen (`/assignments/1/submissions`)**
-   - *Total: 10 Query, SQL: 16.96 ms, Render: 100.0 ms.*
-7. **Dashboard Dosen (`/dashboard`)**
-   - *Total: 10 Query, SQL: 19.50 ms, Render: 92.6 ms.*
-8. **Daftar Mata Kuliah (`/courses`) — TERBAIK**
-   - *Total: 7 Query, SQL: 15.29 ms, Render: 103.0 ms.*
-
----
-
-### 3. Diagnosis & Temuan Query N+1 pada Halaman Terburuk
-
-Ketika membuka tab **Queries** pada Laravel Debugbar di halaman **Detail Mata Kuliah (`/courses/1`)**, ditemukan pola query yang berulang berkali-kali:
-
+**3. Untuk halaman terburuk, buka Debugbar tab Queries. Temukan query yang berulang dengan pola sama. Itu N+1 Anda.**
+Jawab: Pada halaman terburuk yaitu **Detail Mata Kuliah (`/courses/1`)**, saat tab Queries pada Debugbar dibuka, ditemukan query yang dieksekusi berulang-ulang dengan pola yang sama persis sebanyak jumlah tugas yang ada:
 ```sql
 SELECT count(*) AS aggregate FROM `submissions` WHERE `submissions`.`assignment_id` = 1;
 SELECT count(*) AS aggregate FROM `submissions` WHERE `submissions`.`assignment_id` = 2;
 SELECT count(*) AS aggregate FROM `submissions` WHERE `submissions`.`assignment_id` = 3;
-... (berulang sebanyak jumlah tugas)
 ```
-
-* **Penyebab:**  
-  Di dalam file view `resources/views/courses/show.blade.php`, di dalam perulangan `@foreach ($course->assignments as $assignment)` terdapat pemanggilan:
+- **Penyebab:** Pada file `resources/views/courses/show.blade.php`, di dalam perulangan `@foreach ($course->assignments as $assignment)` terdapat pemanggilan:
   ```blade
   {{ $assignment->submissions()->count() }} Pengumpulan
   ```
-  Karena menggunakan tanda kurung fungsi `submissions()->count()`, kode ini mengeksekusi query database baru secara terpisah untuk setiap baris tugas di layar (N kueri baru).
-* **Solusi Perbaikan:**  
-  Di controller, relasi tugas dipanggil dengan `withCount('submissions')`. Di view Blade, pemanggilan diganti menjadi `$assignment->submissions_count` (0 query tambahan).
+  Karena pemanggilan menggunakan tanda kurung fungsi `submissions()->count()`, Laravel membuat kueri SQL baru ke database pada setiap iterasi baris tugas. Jika ada 15 tugas, maka muncul 15 query tambahan secara terpisah (masalah N+1).
+- **Solusi:** Di controller dipasang eager loading count `->withCount('submissions')`, lalu pada view Blade cukup dipanggil propertinya `{{ $assignment->submissions_count }}` tanpa tanda kurung, sehingga tidak ada query tambahan yang dijalankan.
 
----
-
-### 4. Analisis `EXPLAIN` pada Query Terlambat
-
-Query terlambat yang dieksekusi adalah pencarian tugas berdasarkan `course_id` yang diurutkan berdasarkan `due_at`:
-
+**4. Salin satu query terlambat, jalankan EXPLAIN di database. Catat kolom type dan rows.**
+Jawab: Query terlambat yang diuji adalah pencarian data tugas berdasarkan `course_id` yang diurutkan berdasarkan `due_at`:
 ```sql
 EXPLAIN SELECT * FROM `assignments` WHERE `course_id` = 1 ORDER BY `due_at` ASC;
 ```
-
-**Hasil Keluaran `EXPLAIN` di Database:**
-
-| id | select_type | table | partitions | type | possible_keys | key | key_len | ref | rows | filtered | Extra |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
-| 1 | SIMPLE | assignments | NULL | **ref** | assignments_course_id_foreign | assignments_course_id_foreign | 8 | const | **15** | 100.00 | Using filesort |
-
-* **Penjelasan Kolom `type` dan `rows`:**
-  * **`type = ref`:** Database memanfaatkan index foreign key `assignments_course_id_foreign` yang otomatis dibuat oleh InnoDB MySQL. Ini jauh lebih cepat daripada `type = ALL` (*Full Table Scan*).
-  * **`rows = 15`:** Database secara presisi hanya memeriksa 15 baris data yang memiliki `course_id = 1` tanpa memindai ratusan baris tugas dari mata kuliah lain.
-  * **`Extra = Using filesort`:** MySQL masih harus mengurutkan hasil di memori sementara berdasarkan kolom `due_at`. Oleh karena itu, penambahan index komposit `$table->index(['course_id', 'due_at'])` sangat disarankan untuk menghilangkan proses *filesort*.
-
----
-
-## BREAK — Tujuh Percobaan (45 Menit)
-
-Berikut adalah dokumentasi lengkap dari **Tujuh Percobaan Eksperimen Kinerja** sesuai ketentuan praktikum:
+Hasil keluaran perintah `EXPLAIN`:
+```
++----+-------------+-------------+------------+------+-------------------------------+-------------------------------+---------+-------+------+----------+----------------+
+| id | select_type | table       | partitions | type | possible_keys                 | key                           | key_len | ref   | rows | filtered | Extra          |
++----+-------------+-------------+------------+------+-------------------------------+-------------------------------+---------+-------+------+----------+----------------+
+|  1 | SIMPLE      | assignments | NULL       | ref  | assignments_course_id_foreign | assignments_course_id_foreign | 8       | const |   15 |   100.00 | Using filesort |
++----+-------------+-------------+------------+------+-------------------------------+-------------------------------+---------+-------+------+----------+----------------+
+```
+- **Kolom `type` bernilai `ref`:** Menunjukkan bahwa database MySQL menggunakan indeks foreign key `assignments_course_id_foreign`. Tipe `ref` ini efisien dan jauh lebih cepat dibandingkan `ALL` (*Full Table Scan*).
+- **Kolom `rows` bernilai `15`:** Menunjukkan bahwa MySQL secara presisi hanya memeriksa 15 baris data yang cocok dengan `course_id = 1` tanpa memindai seluruh isi tabel tugas lainnya.
+- **Kolom `Extra` berisi `Using filesort`:** Karena indeks yang tersedia hanya mencakup `course_id`, MySQL masih perlu mengurutkan data berdasarkan kolom `due_at` di memori sementara. Hal ini dapat dioptimasi lebih lanjut dengan membuat indeks komposit `$table->index(['course_id', 'due_at'])`.
 
 ---
 
-### Percobaan 1: Pasang `Model::preventLazyLoading()`, Jalankan Seluruh Halaman
-* **Yang Harus Diamati:** Berapa N+1 tersembunyi yang muncul?
-* **Prediksi:**  
-  Jika ada pemanggilan relasi di Blade atau Controller yang lupa menggunakan `with()` (eager loading), Laravel di mode lokal tidak akan menjalankannya diam-diam, melainkan langsung melemparkan exception error (*fail fast*).
-* **Langkah Percobaan:**
+## BREAK
+
+**1. Pasang `Model::preventLazyLoading()`, jalankan seluruh halaman**
+Jawab:  
+- **Prediksi:** Jika ada pemanggilan relasi di Blade atau Controller yang tidak menggunakan eager loading (`with()`), Laravel di mode development akan langsung melempar error exception (*fail fast*), sehingga halaman tidak dapat dibuka.
+- **Cara Uji:**
   1. Buka file `app/Providers/AppServiceProvider.php`.
-  2. Tambahkan proteksi di dalam method `boot()`:
+  2. Tambahkan baris kode proteksi pada method `boot()`:
      ```php
      public function boot(): void
      {
          Model::preventLazyLoading(! app()->isProduction());
      }
      ```
-  3. Buka seluruh halaman aplikasi di peramban web (Dashboard, Daftar Mata Kuliah, Detail Mata Kuliah, Daftar Tugas, Nilai Saya).
-* **Hasil Sebenarnya / Pengamatan:**  
-  Muncul **2 error N+1 tersembunyi** (*LazyLoadingViolationException*):
-  1. Pada halaman `/courses/1`: Exception muncul saat mengevaluasi relasi parent course pada Policy otorisasi tombol edit materi (`Attempted to lazy load [course] on model [App\Models\Material]`).
-  2. Pada halaman `/my-grades`: Exception muncul saat view Blade mencoba mengakses `{{ $course->lecturer->name }}` karena controller hanya mengambil data course tanpa `with('lecturer')`.
-* **Penjelasan / Analisis:**  
-  `Model::preventLazyLoading()` adalah rem penyelamat terbaik pengembang. Ia mencegah kebiasaan buruk lazy loading lolos ke server produksi, memaksa developer menambahkan `with()` sejak awal.
+  3. Buka seluruh halaman aplikasi melalui peramban web (Detail Mata Kuliah, Rekap Nilai Mahasiswa, Daftar Tugas, Dashboard).
+- **Sebenarnya:** Muncul pesan error `Illuminate\Database\LazyLoadingViolationException` pada dua halaman:
+  1. Pada halaman `/courses/1`: Muncul error `Attempted to lazy load [course] on model [App\Models\Material]` saat sistem memeriksa otorisasi policy tombol edit materi.
+  2. Pada halaman `/my-grades`: Muncul error saat view mencoba mengakses relasi dosen `{{ $course->lecturer->name }}` karena controller hanya memuat data course tanpa `with('lecturer')`.
+  Dengan mengaktifkan `preventLazyLoading()`, celah N+1 yang sebelumnya tidak terlihat langsung terdeteksi sehingga developer dipaksa memperbaikinya dengan eager loading sejak tahap awal pengembangan.
 
----
-
-### Percobaan 2: Hapus Semua `with()` dari Satu Controller, Ukur Ulang
-* **Yang Harus Diamati:** Bandingkan angkanya (jumlah query dan waktu eksekusi).
-* **Prediksi:**  
-  Jumlah query akan melonjak drastis secara linear sebanding dengan jumlah baris data ($1 + N$).
-* **Langkah Percobaan:**
-  1. Buka `app/Http/Controllers/SubmissionController.php` method `index()`.
-  2. Ubah kode eager loading asal:
+**2. Hapus semua `with()` dari satu controller, ukur ulang**
+Jawab:  
+- **Prediksi:** Jumlah query database akan melonjak drastis sebanding dengan jumlah baris data yang ditampilkan ($1 + N$), dan waktu render halaman akan meningkat secara signifikan.
+- **Cara Uji:**
+  1. Buka file `app/Http/Controllers/SubmissionController.php` pada method `index()`.
+  2. Ubah kode dari kondisi awal yang menggunakan eager loading:
      ```php
-     // Kondisi Asal:
      $submissions = $assignment->submissions()->with(['student', 'grade'])->get()->keyBy('user_id');
      ```
-     menjadi:
+     menjadi tanpa `with()`:
      ```php
-     // Kondisi Tanpa with():
      $submissions = $assignment->submissions()->get()->keyBy('user_id');
      ```
-  3. Matikan sementara `preventLazyLoading()`, lalu muat ulang halaman daftar pengumpulan tugas dosen di browser.
-* **Hasil Sebenarnya / Pengamatan:**
-  * **Dengan `with()` (Eager Loading):**  
-    * Total Query: **4 query** (Assignment, Submissions `WHERE IN`, Users `WHERE IN`, Grades `WHERE IN`).
-    * Waktu Render: **100.0 ms**.
-  * **Tanpa `with()` (Lazy Loading):**  
-    * Total Query: **34 query** (1 query assignment + 1 query submission + 16 query student + 16 query grade).
-    * Waktu Render: **218.4 ms** (naik lebih dari 2 kali lipat).
-* **Penjelasan / Analisis:**  
-  Dengan `with()`, Laravel cerdas mengeksekusi kueri batch menggunakan klausa `WHERE IN (id_1, id_2, ...)`. Tanpa `with()`, setiap iterasi di tabel HTML memicu 2 query baru ke MySQL.
+  3. Matikan sementara `preventLazyLoading()` agar halaman tidak berhenti di exception, lalu muat ulang halaman `/assignments/1/submissions` di browser dan catat angka pada tab Queries Debugbar.
+- **Sebenarnya:** Terjadi perbedaan angka yang sangat besar:
+  - **Saat Menggunakan `with()` (Eager Loading):**
+    - Total Query: **4 query** (Assignment, Submissions `WHERE IN`, Users `WHERE IN`, Grades `WHERE IN`).
+    - Waktu Render: **100.0 ms**.
+  - **Saat `with()` Dihapus (Lazy Loading):**
+    - Total Query melonjak menjadi **34 query** (1 query assignment + 1 query submission + 16 query data mahasiswa + 16 query data nilai).
+    - Waktu Render membengkak menjadi **218.4 ms** (naik lebih dari 2 kali lipat).
+  Eager loading dengan `with()` menggabungkan query menggunakan klausa `WHERE IN`, sedangkan tanpa `with()` sistem mengeksekusi kueri baru pada setiap baris tabel HTML.
 
----
-
-### Percobaan 3: Ganti `withCount('students')` Menjadi `count($course->students)`, Ukur Memori
-* **Yang Harus Diamati:** Beda menghitung (*count*) vs memuat (*load*) seluruh baris ke memori.
-* **Prediksi:**  
-  `withCount` memproses hitungan di server database MySQL dan hanya mengirim satu angka integer (hemat RAM). Sebaliknya, `count($course->students)` menarik seluruh data baris dan menginstansiasi puluhan objek model User di memori RAM PHP (boros RAM).
-* **Langkah Percobaan:**
-  1. Pada controller mata kuliah, lakukan uji komparasi menggunakan script tinker / profiler memori:
+**3. Ganti `withCount('students')` menjadi `count($course->students)`, ukur memori**
+Jawab:  
+- **Prediksi:** `withCount` akan jauh lebih hemat memori karena proses perhitungan dilakukan oleh server MySQL dan hanya mengembalikan satu nilai angka integer. Sedangkan `count($course->students)` akan memakan memori RAM jauh lebih besar karena Laravel harus mengambil seluruh kolom tabel dan menginstansiasi puluhan objek model User di memori PHP.
+- **Cara Uji:**
+  1. Jalankan pengujian perbandingan alokasi memori melalui Tinker:
      ```php
-     // Cara A: withCount (Database Aggregation)
+     // Opsi A: withCount (Database Aggregation)
      $course = Course::withCount('students')->first();
      $count = $course->students_count;
      
-     // Cara B: count() pada Collection (Memory Hydration)
+     // Opsi B: count() pada Collection (Memory Hydration)
      $course = Course::first();
      $count = count($course->students);
      ```
-* **Hasil Sebenarnya / Pengamatan:**
-  * **Cara A (`withCount`):**  
-    * SQL: `SELECT courses.*, (SELECT count(*) FROM users INNER JOIN course_user...) AS students_count FROM courses...`
-    * Memori yang dialokasikan: **~3.1 MB**.
-  * **Cara B (`count($course->students)`):**  
-    * SQL: `SELECT * FROM users INNER JOIN course_user...` (mengambil seluruh kolom: id, name, email, password hash, created_at, dll).
-    * Memori yang dialokasikan: **~4.8 MB** (ada lonjakan memori sebesar ~1.7 MB untuk menghidrasi 30 objek model `User`).
-* **Penjelasan / Analisis:**  
-  Jika kelas memiliki 1.000 mahasiswa, cara B akan memuat 1.000 objek model ke RAM server hanya untuk menghitung angkanya! `withCount()` adalah pilihan mutlak untuk penghitungan.
+  2. Periksa konsumsi memori yang tercatat di Debugbar atau menggunakan fungsi `memory_get_usage()`.
+- **Sebenarnya:**
+  - **Opsi A (`withCount`):** Kueri yang dieksekusi adalah `SELECT courses.*, (SELECT count(*) FROM users INNER JOIN course_user...) AS students_count`. Memori yang digunakan hanya **~3.1 MB**.
+  - **Opsi B (`count($course->students)`):** Kueri yang dieksekusi adalah `SELECT * FROM users INNER JOIN course_user...` yang menarik seluruh kolom pengguna (id, name, email, password hash, created_at, dll). Memori yang digunakan melonjak menjadi **~4.8 MB** (terjadi kenaikan memori ~1.7 MB hanya untuk membuat 30 objek model `User`).
+  Jika satu kelas memiliki ratusan atau ribuan mahasiswa, opsi B dapat memicu kehabisan memori server (*Memory Limit Exhausted*) hanya untuk menampilkan sebuah angka hitungan.
 
----
-
-### Percobaan 4: Hapus Index dari `assignments.course_id`, Jalankan `EXPLAIN`
-* **Yang Harus Diamati:** Nilai kolom `type` berubah menjadi `ALL` (*Full Table Scan*).
-* **Prediksi:**  
-  Tanpa index pada foreign key `course_id`, database tidak tahu letak tugas yang dimiliki suatu mata kuliah, sehingga terpaksa membaca seluruh isi tabel dari awal sampai akhir.
-* **Langkah Percobaan:**
-  1. Jalankan perintah `EXPLAIN` pada query pencarian kolom yang memiliki index:
+**4. Hapus index dari `assignments.course_id`, jalankan `EXPLAIN`**
+Jawab:  
+- **Prediksi:** Jika indeks foreign key `course_id` dihapus atau tidak digunakan, database tidak memiliki petunjuk lokasi baris data yang dicari, sehingga tipe akses berubah menjadi *Full Table Scan* (`ALL`) dan nilai `rows` akan memeriksa seluruh baris tabel dari awal sampai akhir.
+- **Cara Uji:**
+  1. Jalankan `EXPLAIN` pada kolom yang memiliki indeks foreign key (`course_id`):
      ```sql
      EXPLAIN SELECT * FROM assignments WHERE course_id = 1;
      ```
-  2. Jalankan perintah `EXPLAIN` pada pencarian kolom yang **tidak memiliki index** (misalnya pencarian deskripsi / teks bebas):
+  2. Jalankan `EXPLAIN` pada kolom pencarian teks bebas yang tidak memiliki indeks (misalnya `instructions`):
      ```sql
      EXPLAIN SELECT * FROM assignments WHERE instructions LIKE '%petunjuk%';
      ```
-* **Hasil Sebenarnya / Pengamatan:**
-  * **Pada Kolom Ber-Index (`course_id`):**  
-    `type` bernilai **`ref`**, `key` bernilai **`assignments_course_id_foreign`**, dan `rows` hanya membaca **15**.
-  * **Pada Kolom Tanpa Index (`instructions`):**  
-    `type` berubah menjadi **`ALL`**, `key` bernilai **`NULL`**, dan `rows` bernilai **seluruh jumlah baris tabel assignments**.
-* **Penjelasan / Analisis:**  
-  Nilai `type: ALL` adalah tanda bahaya terbesar di database (*Full Table Scan*). Saat data masih puluhan baris mungkin tidak terasa, namun saat tabel mencapai 100.000 baris, kueri dengan `type: ALL` akan menyebabkan server mengalami CPU 100% dan *freeze*.
+  3. Bandingkan kolom `type`, `key`, dan `rows` pada kedua hasil keluaran.
+- **Sebenarnya:**
+  - **Pada Kolom Berindeks (`course_id`):** Kolom `type` bernilai **`ref`**, `key` bernilai **`assignments_course_id_foreign`**, dan `rows` hanya membaca **15 baris data**.
+  - **Pada Kolom Tanpa Indeks (`instructions`):** Kolom `type` berubah menjadi **`ALL`**, `key` bernilai **`NULL`**, dan `rows` memeriksa **seluruh baris tabel assignments**.
+  Status `type: ALL` adalah tanda bahaya terbesar pada performa database (*Full Table Scan*). Pada tabel berskala besar dengan ratusan ribu baris, kueri dengan tipe `ALL` akan membebani CPU hingga 100% dan membuat server macet.
 
----
-
-### Percobaan 5: Naikkan Seeder Menjadi 300 Mahasiswa dan 1000 Submission, Buka Rekap Nilai
-* **Yang Harus Diamati:** Masalah yang tadinya kecil jadi jelas terlihat (*bottleneck amplification*).
-* **Prediksi:**  
-  Masalah komputasi perulangan nilai dan N+1 yang sebelumnya hanya memakan waktu 180 ms pada 30 mahasiswa akan meledak menjadi hitungan detik (*multi-second delay*) dan memori melonjak tajam.
-* **Langkah Percobaan:**
-  1. Jalankan simulasi peningkatan beban data seeder via Tinker:
+**5. Naikkan seeder menjadi 300 mahasiswa dan 1000 submission, buka rekap nilai**
+Jawab:  
+- **Prediksi:** Masalah komputasi nilai dan relasi query yang sebelumnya terasa cepat pada data kecil (30 mahasiswa) akan melambat secara drastis hingga dalam hitungan detik dan memori akan meningkat tajam (*bottleneck amplification*).
+- **Cara Uji:**
+  1. Tambahkan jumlah data mahasiswa secara massal melalui Tinker:
      ```powershell
      php artisan tinker --execute="User::factory(270)->create(['role' => 'mahasiswa']);"
      ```
-  2. Buka halaman Rekap Nilai Kelas Dosen (`/courses/1/grades`) di browser.
-* **Hasil Sebenarnya / Pengamatan:**
-  * Waktu muat halaman melonjak dari **183 ms menjadi 2.450 ms (2,45 detik)**!
-  * Penggunaan memori melonjak dari **4 MB menjadi 21.6 MB**.
-  * Jumlah baris di tab Debugbar queries membengkak karena perulangan perhitungan nilai akhir mahasiswa.
-* **Penjelasan / Analisis:**  
-  Inilah alasan mengapa aplikasi harus selalu diuji dengan data besar (*stress testing*). Kode yang buruk sering kali tidak terdeteksi pada fase development dengan 2–3 baris data dummy.
+  2. Buka halaman Rekap Nilai Kelas Dosen di browser: `/courses/1/grades`.
+  3. Perhatikan waktu render dan memori pada panel Debugbar.
+- **Sebenarnya:**
+  - Waktu muat halaman melonjak dari **183 ms menjadi 2.450 ms (2,45 detik)**.
+  - Konsumsi memori melonjak dari **4.0 MB menjadi 21.6 MB**.
+  - Jumlah baris query membengkak karena perulangan perhitungan nilai akhir untuk setiap mahasiswa.
+  Eksperimen ini membuktikan pentingnya pengujian dengan volume data besar (*stress testing*). Kode yang tidak efisien sering kali tidak terdeteksi pada tahap awal jika hanya diuji dengan 2–3 data contoh.
 
----
-
-### Percobaan 6: Jalankan `config:cache`, Lalu Panggil `env('APP_NAME')` dari Sebuah Controller
-* **Yang Harus Diamati:** Pemanggilan `env()` mengembalikan nilai `null` (*Ingat baik-baik untuk bekal deployment*).
-* **Prediksi:**  
-  Setelah konfigurasi di-cache, Laravel menonaktifkan pembacaan file `.env`. Pemanggilan `env()` di luar folder `config/` akan menghasilkan `null`.
-* **Langkah Percobaan:**
-  1. Jalankan perintah cache konfigurasi:
+**6. Jalankan `config:cache`, lalu panggil `env('APP_NAME')` dari sebuah controller**
+Jawab:  
+- **Prediksi:** Setelah konfigurasi di-cache, Laravel menonaktifkan pemuatan berkas `.env`. Pemanggilan fungsi `env()` di luar folder `config/` akan menghasilkan nilai `null`.
+- **Cara Uji:**
+  1. Jalankan perintah cache konfigurasi di terminal:
      ```powershell
      php artisan config:cache
      ```
-  2. Panggil fungsi `env('APP_NAME')` dan fungsi `config('app.name')` via Tinker:
+  2. Bandingkan hasil pemanggilan `env('APP_NAME')` dengan `config('app.name')` melalui Tinker:
      ```powershell
      php artisan tinker --execute="dump(env('APP_NAME')); dump(config('app.name'));"
      ```
-* **Hasil Sebenarnya / Pengamatan:**
+  3. Hapus kembali cache konfigurasi setelah pengujian selesai:
+     ```powershell
+     php artisan config:clear
+     ```
+- **Sebenarnya:** Terminal menampilkan hasil:
   ```text
   null
   "KampusLMS"
   ```
-  * `env('APP_NAME')` menghasilkan **`null`**!
-  * `config('app.name')` menghasilkan **`"KampusLMS"`**!
-  3. Bersihkan kembali cache: `php artisan config:clear`.
-* **Penjelasan / Analisis:**  
-  Ini adalah penyebab bug paling umum saat aplikasi dideploy ke server produksi. Di server produksi, `config:cache` wajib dijalankan. Jika ada programmer yang menulis `env('DB_HOST')` atau `env('APP_URL')` di dalam controller atau view Blade, kodenya akan mengembalikan `null` dan sistem langsung rusak. **Aturan baku: `env()` hanya boleh ditulis di dalam folder `config/*.php`**.
+  Fungsi `env('APP_NAME')` menghasilkan **`null`**, sedangkan `config('app.name')` tetap mengembalikan nilai yang benar yaitu **`"KampusLMS"`**.
+  Inilah penyebab bug yang paling sering terjadi saat deployment ke server produksi. Di server produksi, perintah `config:cache` wajib dijalankan demi kecepatan sistem. Jika ada pengembang yang menulis fungsi `env()` di dalam Controller atau View, kodenya akan mengembalikan `null` dan menyebabkan error. Oleh karena itu, aturan bakunya adalah **fungsi `env()` hanya boleh ditulis di dalam berkas folder `config/*.php`**.
 
----
-
-### Percobaan 7: Pasang Cache 10 Menit pada Nilai Mahasiswa, Ubah Nilainya, Muat Ulang
-* **Yang Harus Diamati:** Terjadi data basi (*stale data*) yang merugikan pengguna.
-* **Prediksi:**  
-  Meskipun dosen telah mengubah nilai di database, mahasiswa yang melihat transkrip nilainya akan tetap melihat nilai lama karena browser menyajikan data dari memori cache.
-* **Langkah Percobaan:**
-  1. Pasang cache buatan pada pembacaan nilai mahasiswa selama 10 menit:
+**7. Pasang cache 10 menit pada nilai mahasiswa, ubah nilainya, muat ulang**
+Jawab:  
+- **Prediksi:** Jika data nilai disimpan ke dalam cache tanpa adanya mekanisme pembersihan cache (*cache invalidation*), maka saat dosen mengubah nilai mahasiswa di database, mahasiswa tersebut akan tetap melihat nilai lama karena browser menyajikan data dari cache.
+- **Cara Uji:**
+  1. Pasang cache simulasi pada pembacaan nilai mahasiswa dengan durasi 10 menit:
      ```php
      $grade = Cache::remember("grade.student.{$studentId}", 600, function () use ($studentId) {
          return Grade::where('student_id', $studentId)->first()->score;
      });
      ```
-  2. Buka halaman nilai mahasiswa: nilai awal adalah **75**.
-  3. Login sebagai Dosen, edit nilai mahasiswa tersebut di database menjadi **95**.
+  2. Buka halaman nilai mahasiswa: nilai awal yang tampil adalah **75**.
+  3. Login sebagai Dosen, lalu perbarui nilai mahasiswa tersebut di database menjadi **95**.
   4. Kembali ke halaman mahasiswa dan refresh browser (F5).
-* **Hasil Sebenarnya / Pengamatan:**  
-  Nilai yang tampil di layar mahasiswa **tetap 75 (nilai lama)**! Mahasiswa panik dan mengira dosen belum memperbarui nilainya, meskipun di database nilainya sudah 95. Data baru akan tampil setelah menunggu 10 menit atau cache dibersihkan manual.
-* **Penjelasan / Analisis:**  
-  Cache **bukan selalu perbaikan**. Meng-cache data transaksional sensitif tanpa mekanisme *cache invalidation* otomatis (seperti event `Grade::saved(fn () => Cache::forget(...))`) adalah kesalahan fatal yang merusak integritas informasi akademik.
+- **Sebenarnya:** Nilai yang tampil di layar mahasiswa **tetap 75 (nilai lama)** meskipun di database nilainya sudah 95. Nilai yang baru baru akan tampil setelah menunggu waktu cache habis (10 menit) atau setelah cache dihapus secara manual.
+  Kondisi ini disebut sebagai data basi (*stale data*). Caching tidak boleh dipasang sembarangan pada data penting yang sering berubah tanpa adanya mekanisme *cache invalidation* otomatis (seperti event model `Grade::saved(...)` yang memanggil `Cache::forget(...)`).
 
 ---
 
-## PENJELASAN KONFIGURASI DOCKERFILE (LARAVEL PRODUCTION)
+## PENJELASAN DOCKERFILE
 
-### 1. Analogi Sederhana untuk Pemula
-Bayangkan **Dockerfile** ini seperti **buku resep otomatis** untuk merakit komputer server baru di cloud (seperti Railway). 
-
-Ketika komputer server itu baru dinyalakan, di dalamnya sama sekali belum ada PHP, belum ada web server Apache, belum ada Composer, dan belum ada kode aplikasi kita. Melalui instruksi di Dockerfile ini, sistem secara otomatis:
-1. Mengambil sistem operasi dasar yang sudah berisi PHP 8.4 dan Apache.
-2. Memasang semua alat pendukung (ekstensi database, manipulasi gambar, zip, git).
+**1. Analogi Sederhana untuk Pemula**  
+Jawab: Dockerfile ini bisa dibayangkan seperti **buku resep otomatis** untuk merakit komputer server baru di cloud (seperti Railway). Ketika server pertama kali dinyalakan, di dalamnya belum ada PHP, belum ada web server Apache, dan belum ada kode aplikasi kita. Lewat Dockerfile ini, server secara otomatis disiapkan dari nol hingga aplikasi siap diakses di internet:
+1. Mengambil sistem operasi Linux yang sudah memiliki PHP 8.4 dan web server Apache.
+2. Memasang semua alat pendukung (ekstensi database MySQL, pengolah gambar, zip, dan git).
 3. Mengatur agar web server Apache mengarahkan pengunjung ke folder yang aman (`/public`).
-4. Mengunduh Composer dan memasang dependensi Laravel yang dibutuhkan.
-5. Menyalin kode aplikasi KampusLMS ke dalam server.
-6. Menjalankan migrasi database serta menyalakan web server agar aplikasi langsung online dan bisa diakses.
+4. Mengunduh Composer dan memasang paket Laravel yang dibutuhkan.
+5. Menyalin seluruh kode aplikasi KampusLMS ke dalam server container.
+6. Menjalankan migrasi database serta menyalakan web server Apache sehingga website langsung online.
 
----
-
-### 2. Salinan Skrip Dockerfile Lengkap
-
+**2. Skrip Lengkap Berkas Dockerfile**  
+Jawab:
 ```dockerfile
 FROM php:8.4-apache
 
@@ -338,109 +263,63 @@ EXPOSE 80 8080
 CMD ["sh", "-c", "rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.* && export PORT=\"${PORT:-8080}\" && sed -i \"s/Listen .*/Listen $PORT/\" /etc/apache2/ports.conf && sed -i \"s/<VirtualHost \\*:.*>/<VirtualHost \\*:$PORT>/\" /etc/apache2/sites-available/000-default.conf && php artisan config:clear && php artisan route:clear && php artisan view:clear && (php artisan migrate --force || true) && (php artisan db:seed --force || true) && exec apache2-foreground"]
 ```
 
----
-
-### 3. Bedah Alur dan Penjelasan Per Bagian
-
-* **Langkah 0: Pondasi Server (`FROM php:8.4-apache`)**  
-  Mengambil image resmi Debian Linux yang sudah memiliki web server **Apache** dan interpreter **PHP versi 8.4** siap pakai.
-* **Langkah 1: Pemasangan Library Sistem & Ekstensi PHP (`RUN apt-get ...`)**  
-  Memasang ekstensi penting: `pdo_mysql` (koneksi MySQL), `mbstring` & `intl` (string dan waktu internasional), `gd` (gambar), `bcmath` (matematika nilai), dan `zip`.
-* **Langkah 2: Pengaturan Web Server Apache (`RUN a2enmod rewrite ...`)**  
-  Mengaktifkan URL rewrite untuk routing Laravel, mengunci MPM ke `mpm_prefork` agar stabil, dan mengizinkan `.htaccess`.
-* **Langkah 3: Mengarahkan Document Root ke Folder `/public`**  
-  Mengarahkan domain langsung ke `/var/www/html/public`. Ini adalah kunci keamanan utama agar file rahasia `.env` dan kode controller tidak bocor ke publik.
-* **Langkah 4: Memasang Composer Resmi (`COPY --from=composer:latest ...`)**  
-  Menyalin binary composer resmi ke `/usr/bin/composer`.
-* **Langkah 5: Menyalin Kode Proyek (`WORKDIR /var/www/html` & `COPY . .`)**  
-  Memindahkan seluruh source code aplikasi ke dalam container.
-* **Langkah 6: Memasang Dependensi Mode Produksi (`RUN composer install --no-dev ...`)**  
-  Mengunduh vendor tanpa paket testing (`--no-dev`) dan mengoptimasi autoload class PHP.
-* **Langkah 7: Mengatur Hak Akses Direktori (`chown -R www-data:www-data ...`)**  
-  Memberikan izin tulis ke user web server Linux (`www-data`) untuk folder `storage` dan `bootstrap/cache` agar tidak muncul error 500.
-* **Langkah 8: Port Dinamis & Skrip Startup (`CMD ["sh", "-c", "..."]`)**  
-  Menyesuaikan port server dengan variabel dinamis cloud Railway (`$PORT`), membersihkan cache lama, menjalankan migrasi database otomatis, dan menghidupkan web server Apache.
+**3. Penjelasan Setiap Perintah di Dockerfile**  
+Jawab:
+- `FROM php:8.4-apache`: Mengambil sistem operasi dasar berbasis Debian Linux yang sudah memiliki web server Apache dan interpreter PHP 8.4 siap pakai.
+- `RUN apt-get update && apt-get install -y ...`: Mengunduh peralatan sistem Linux seperti `git` untuk version control, `zip/unzip` untuk mengekstrak paket, dan library pendukung gambar serta teks.
+- `docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl`: Memasang ekstensi PHP resmi agar Laravel bisa terhubung ke database MySQL (`pdo_mysql`), menghitung rumus matematika nilai (`bcmath`), dan memproses tanggal/waktu internasional (`intl`).
+- `RUN a2enmod rewrite`: Mengaktifkan modul URL rewrite pada Apache agar alamat URL web yang cantik di Laravel (seperti `/courses/1`) bisa diarahkan ke berkas utama `index.php`.
+- `a2enmod mpm_prefork`: Memastikan web server menggunakan modul manajemen proses `prefork` dan mematikan `mpm_event` untuk mencegah error konflik modul pada container.
+- `ENV APACHE_DOCUMENT_ROOT /var/www/html/public`: Mengatur folder utama web server langsung ke folder `/public`. Langkah ini sangat penting untuk keamanan agar file rahasia `.env` tidak dapat diakses dari browser luar.
+- `COPY --from=composer:latest /usr/bin/composer /usr/bin/composer`: Mengambil binary Composer resmi untuk mengelola paket dependensi Laravel.
+- `WORKDIR /var/www/html` dan `COPY . .`: Menentukan direktori kerja server dan menyalin seluruh kode aplikasi KampusLMS ke dalam container.
+- `RUN composer install --no-dev ...`: Memasang semua library PHP yang dibutuhkan dalam mode produksi (tanpa library testing) dan mengoptimasi pemanggilan class agar website berjalan lebih cepat.
+- `RUN chown -R www-data:www-data ...`: Memberikan izin akses penuh ke user web server (`www-data`) pada folder `storage` dan `bootstrap/cache` agar aplikasi bisa menulis file log dan cache tanpa mengalami error izin akses (Permission Denied).
+- `CMD ["sh", "-c", "..."]`: Baris perintah yang dijalankan saat server menyala. Perintah ini mengatur port dinamis sesuai sistem cloud Railway (`$PORT`), membersihkan cache konfigurasi lama, menjalankan migrasi database otomatis, dan menyalakan Apache agar website dapat diakses publik.
 
 ---
 
-## PANDUAN EVALUASI CHECKPOINT DEPLOYMENT (8 PERTANYAAN PENGUJI)
+## EVALUASI CHECKPOINT DEPLOYMENT
 
-Berikut panduan menjawab pertanyaan penguji saat sesi evaluasi lisan dan demonstrasi teknis:
-
----
-
-### Checkpoint 1: Uji Akses Berkas `.env` via `curl -I`
-> **Pertanyaan Penguji:** *"Buka situs Anda, penguji akan menjalankan `curl -I https://domain/.env`. Harus 404 atau 403, tidak boleh 200!"*
-
-* **Jawaban:**  
-  File `.env` berisi kunci rahasia utama (`APP_KEY`, password database). Jika bernilai 200 OK, brankas rahasia aplikasi bocor ke internet. Hasil wajib **404 Not Found** atau **403 Forbidden**.
-* **Peragaan di Depan Penguji:**
+**1. Buka situs Anda, penguji akan menjalankan `curl -I https://domain/.env`. Harus 404 atau 403, tidak boleh 200.**  
+Jawab:
+- **Penjelasan:** Berkas `.env` berisi seluruh kunci rahasia aplikasi, seperti `APP_KEY`, password database, dan kredensial sistem. Jika saat diakses menghasilkan status `200 OK`, maka file konfigurasi rahasia tersebut telah bocor ke publik. Respon yang benar dan aman wajib menghasilkan **404 Not Found** atau **403 Forbidden**.
+- **Hasil Pengujian di Terminal:**
   ```bash
   curl -I https://kampuslms-kelompok-02.up.railway.app/.env
   ```
-  *Hasil Terminal:* `HTTP/1.1 404 Not Found` (Membuktikan bahwa document root Apache mengarah ke `public/`, sehingga file `.env` yang ada di root direktori server terlindungi rapat).
+  *Keluaran:* `HTTP/1.1 404 Not Found`. Hasil ini membuktikan bahwa konfigurasi web server aman karena Document Root diarahkan ke folder `/public`, sehingga berkas `.env` yang berada di luar folder public terlindungi rapat dari akses luar.
 
----
+**2. Apa yang terjadi kalau `APP_DEBUG=true` di produksi? Peragakan di lokal, jelaskan risikonya di produksi.**  
+Jawab:
+- **Penjelasan & Risiko:** Jika `APP_DEBUG=true` diaktifkan di server produksi, setiap kali terjadi error, Laravel akan menampilkan halaman debug Ignition secara lengkap. Halaman ini membocorkan struktur folder server, potongan kode program, query SQL, hingga password database (*Information Disclosure*). Pihak luar dapat memanfaatkan celah ini untuk mengeksploitasi sistem.
+- **Peragaan:** Di lingkungan lokal dengan `APP_DEBUG=true`, saat terjadi error sistem menampilkan detail baris kode dan data sensitif. Namun di server produksi Railway, `APP_DEBUG=false` sudah dipasang, sehingga jika terjadi kesalahan pengguna hanya melihat tampilan error umum yang ramah pengguna seperti `500 | Server Error` tanpa membocorkan rahasia dapur aplikasi.
 
-### Checkpoint 2: Bahaya dan Risiko `APP_DEBUG=true` di Server Produksi
-> **Pertanyaan Penguji:** *"Apa yang terjadi kalau `APP_DEBUG=true` di produksi? Peragakan di lokal, jelaskan risikonya di produksi!"*
+**3. Kenapa document root harus mengarah ke `public/`? Apa yang bocor kalau tidak?**  
+Jawab: Folder `public/` adalah satu-satunya gerbang yang dirancang aman untuk diakses oleh pengunjung internet. Di dalamnya hanya terdapat berkas `index.php` dan aset umum (gambar, CSS, JS). Jika document root salah diarahkan ke folder induk proyek (`/var/www/html`), maka seluruh berkas proyek seperti berkas rahasia `.env`, kode controller di `app/`, catatan log sistem di `storage/logs/laravel.log`, dan struktur tabel di `database/migrations/` dapat diunduh langsung lewat peramban web oleh siapa saja.
 
-* **Jawaban:**  
-  Jika `APP_DEBUG=true` aktif di produksi, setiap terjadi error, Laravel akan menampilkan layar Ignition yang membocorkan path direktori server, database password, dan kode aplikasi (*Information Disclosure*).
-* **Peragaan di Depan Penguji:**  
-  Tunjukkan bahwa di server produksi, saat route salah dibuka, yang muncul adalah halaman sopan `404 | NOT FOUND` atau `500 | SERVER ERROR` tanpa jejak rahasia sistem.
+**4. Tunjukkan `supervisorctl status`. Apa akibatnya kalau worker mati dan tidak ada yang tahu?**  
+Jawab:
+- **Penjelasan:** Perintah `supervisorctl status` digunakan untuk memastikan proses *queue worker* di latar belakang tetap menyala dan berjalan normal.
+- **Akibat Jika Worker Mati:** Jika worker mati tanpa ada yang tahu, maka tugas-tugas di latar belakang akan tertahan di database dan tidak pernah diproses (*silent failure*). Mahasiswa tidak akan pernah menerima email notifikasi tugas baru, notifikasi sistem tidak terkirim, dan pengguna mengira sistem berjalan padahal proses di belakang layar sedang macet total. Program pengawas seperti Supervisor bertugas memantau worker dan menghidupkannya kembali secara otomatis jika worker mengalami crash.
 
----
+**5. Kenapa `queue:restart` wajib setelah setiap deployment?**  
+Jawab: Proses *queue worker* berjalan secara terus-menerus di memori RAM dan membaca file kode PHP hanya satu kali saat worker dinyalakan. Jika pengembang memperbarui kode aplikasi lalu melakukan deployment, worker yang sedang aktif di RAM tidak akan mengetahui adanya perubahan tersebut dan tetap menjalankan logika kode versi lama. Menjalankan perintah `php artisan queue:restart` memberi instruksi kepada worker untuk berhenti secara aman setelah tugas yang sedang berjalan selesai, kemudian Supervisor akan menyalakan worker baru yang memuat kode program terbaru.
 
-### Checkpoint 3: Kenapa Document Root Harus Mengarah ke `public/`?
-> **Pertanyaan Penguji:** *"Kenapa document root harus mengarah ke `public/`? Apa yang bocor kalau tidak?"*
+**6. Setelah `config:cache`, apa yang terjadi pada `env()` di luar `config/`? Sudahkah kode Anda bersih dari itu?**  
+Jawab:
+- **Penjelasan:** Setelah perintah `php artisan config:cache` dijalankan, Laravel mematikan fungsi pembacaan file `.env` demi performa. Akibatnya, setiap pemanggilan fungsi `env()` di luar folder `config/` (seperti di Controller atau View Blade) akan mengembalikan nilai **`null`**.
+- **Status Kode:** Kode proyek KampusLMS **sudah 100% bersih** dari pemanggilan `env()` di luar `config/`. Seluruh nilai konfigurasi diakses menggunakan pembungkus resmi Laravel, yaitu fungsi `config('app.name')`, `config('database.default')`, dan seterusnya, sehingga aplikasi tetap berjalan stabil saat konfigurasi di-cache.
 
-* **Jawaban:**  
-  Folder `public/` adalah ruang tamu satu-satunya tempat file publik disimpan. Jika Document Root mengarah ke root project `/var/www/html`, maka file `.env`, file log `storage/logs/laravel.log`, berkas konfigurasi, dan file migrasi database bisa diunduh langsung lewat peramban web oleh siapapun.
+**7. Buka `docs/deployment.md`. Ceritakan satu masalah yang Anda temui dan bagaimana Anda menemukan penyebabnya.**  
+Jawab:
+- **Masalah yang Ditemui (Bidang UI/UX - Bella Alviana):** Terjadi masalah **Mixed Content HTTPS**. Saat aplikasi pertama kali dibuka melalui domain Railway (`https://`), seluruh tampilan halaman menjadi berantakan karena file CSS dan JavaScript gagal dimuat oleh browser.
+- **Cara Menemukan Penyebabnya:** Saya membuka peramban web Chrome, lalu menekan tombol `F12` untuk membuka **Inspect Element / DevTools**, kemudian memilih tab **Console**. Di sana terlihat pesan error merah yang menyatakan bahwa browser memblokir permintaan aset stylesheet karena aset tersebut diminta menggunakan protokol HTTP (`http://...`), sedangkan domain utama berjalan di protokol aman HTTPS (`https://...`).
+- **Solusi yang Diterapkan:** Kami mengonfigurasi trust proxy pada `bootstrap/app.php` dengan `$middleware->trustProxies(at: '*')` dan memaksakan skema URL HTTPS pada `app/Providers/AppServiceProvider.php` menggunakan `URL::forceScheme('https')` saat aplikasi berjalan di lingkungan produksi. Setelah itu seluruh aset CSS termuat dengan sempurna.
 
----
-
-### Checkpoint 4: Pemeriksaan `supervisorctl status` & Risiko Worker Mati
-> **Pertanyaan Penguji:** *"Tunjukkan `supervisorctl status`. Apa akibatnya kalau worker mati dan tidak ada yang tahu?"*
-
-* **Jawaban:**  
-  Perintah `supervisorctl status` memeriksa apakah proses latar belakang (*queue worker*) aktif.
-* **Akibat Jika Worker Mati Tanpa Pengawasan:**  
-  Terjadi *silent failure*. Email notifikasi tidak terkirim, antrean tugas mandek di database selamanya, dan sistem tampak berjalan normal di depan tetapi lumpuh di belakang. Supervisor bertugas menyalakan worker kembali secara otomatis jika terjadi crash.
-
----
-
-### Checkpoint 5: Mengapa `queue:restart` Wajib Setelah Setiap Deployment?
-> **Pertanyaan Penguji:** *"Kenapa `queue:restart` wajib setelah setiap deployment?"*
-
-* **Jawaban:**  
-  Queue worker berjalan secara *long-running* di memori RAM dan membaca file kode PHP hanya satu kali saat dinyalakan. Jika ada pembaruan kode yang di-deploy, worker di RAM masih menjalankan logika kode versi lama sampai diberi instruksi `php artisan queue:restart`.
-
----
-
-### Checkpoint 6: Nasib Pemanggilan `env()` Setelah `config:cache`
-> **Pertanyaan Penguji:** *"Setelah `config:cache`, apa yang terjadi pada `env()` di luar `config/`? Sudahkah kode Anda bersih dari itu?"*
-
-* **Jawaban:**  
-  Fungsi `env()` akan mengembalikan **`null`** karena pembacaan file `.env` dimatikan demi efisiensi. Kode KampusLMS **sudah 100% bersih** dari pemanggilan `env()` langsung di Controller maupun View, seluruhnya menggunakan pembungkus resmi `config('app.name')`.
-
----
-
-### Checkpoint 7: Ceritakan Satu Masalah di `docs/deployment.md` & Cara Menemukannya
-> **Pertanyaan Penguji:** *"Buka `docs/deployment.md`. Ceritakan satu masalah yang Anda temui dan bagaimana Anda menemukan penyebabnya!"*
-
-* **Jawaban (Fokus UI/UX - Bella Alviana):**  
-  Masalah **Mixed Content HTTPS**. Saat domain Railway dibuka, CSS dan file aset gagal termuat dan halaman berantakan.
-* **Cara Menemukannya:**  
-  Membuka Chrome DevTools (F12) tab Console. Terlihat error merah bahwa aset diminta via `http://` yang diblokir oleh browser karena domain utama berjalan di `https://`.
-* **Solusi:**  
-  Menambahkan `$middleware->trustProxies(at: '*')` di `bootstrap/app.php` dan `URL::forceScheme('https')` di `AppServiceProvider.php`.
-
----
-
-### Checkpoint 8: Bagian yang Ditulis dengan Bantuan AI & Alasan Perubahannya
-> **Pertanyaan Penguji:** *"Tunjukkan satu bagian yang Anda tulis dengan bantuan AI. Apa yang Anda ubah, dan kenapa?"*
-
-* **Jawaban Jujur:**  
-  1. **Skrip Port Binding Dockerfile:** AI awalnya memberikan port statis 80. Saya mengubahnya menjadi dinamis `export PORT="${PORT:-8080}"` agar kompatibel dengan sistem port acak Railway.
-  2. **Struktur Responsif Card Dashboard:** AI menyarankan card terpisah dengan tombol di luar kontainer. Saya mengubahnya menjadi card compact terpadu 1-klik dengan padding lebih rapat agar ramah pengguna mobile smartphone.
+**8. Tunjukkan satu bagian yang Anda tulis dengan bantuan AI. Apa yang Anda ubah, dan kenapa?**  
+Jawab:
+- **Bagian yang Dibuat dengan Bantuan AI:** Skrip penyusunan container pada baris perintah `CMD` di berkas `Dockerfile`, serta struktur komponen tampilan kartu (*card*) pada halaman dashboard dan daftar tugas.
+- **Apa yang Diubah dan Mengapa:**
+  1. Pada `Dockerfile`: AI awalnya memberikan port statis berupa angka 80. Namun, server cloud Railway menggunakan port acak yang berubah-ubah melalui variabel lingkungan `$PORT`. Oleh karena itu, saya mengubah skrip perintah Apache agar membaca port secara dinamis: `export PORT="${PORT:-8080}" && sed -i "s/Listen .*/Listen $PORT/" /etc/apache2/ports.conf`.
+  2. Pada Tampilan Kartu (UI/UX Mobile): Desain awal dari AI menghasilkan card yang ukurannya terlalu tinggi, berjarak renggang, dan tombol aksi terpisah yang memakan banyak ruang layar HP. Saya mengubahnya menjadi tampilan yang *clean*, *compact*, dengan padding rapat dan menjadikannya card interaktif 1-klik, sehingga mahasiswa dan dosen dapat melihat lebih banyak materi serta tugas dalam satu layar tanpa perlu scrolling terlalu panjang.
