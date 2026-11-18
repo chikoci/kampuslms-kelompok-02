@@ -67,32 +67,45 @@ Untuk mempermudah pengujian seluruh alur aplikasi dan otorisasi tiga peran civit
 | **Dawwas Eryansyah Pratama** | 10241019 | **Fitur 3**: Otorisasi Tugas, Pengumpulan Tugas (Anti-IDOR) & Penilaian (Grade), `AssignmentPolicy`, `SubmissionPolicy`, `GradePolicy`, Private File Storage Pipeline. |
 | **Armansyah** | 10241013 | **Fitur 4**: Otorisasi Pengguna, Anti Privilege Escalation (`UserPolicy`), Tabel IDOR (`docs/keamanan.md`), Skrip Pengujian Otomatis (`scripts/test-authz.sh`), `AuthzTest`, CI GitHub Actions. |
 
-## Cara Kolaborasi (Git Workflow Kelompok)
-Karena branch `main` dilindungi (*Branch Protection*), berikut adalah alur kerja yang **WAJIB** diikuti oleh semua anggota kelompok:
+## Alur Kolaborasi Tim (Git Workflow & Conventional Commits)
 
-1. **Sinkronisasi Kode Terbaru (Lakukan Sebelum Mulai Mengerjakan Apapun)**
+Branch `main` dilindungi oleh *Branch Protection*. Seluruh kontribusi fitur wajib masuk melalui Pull Request dengan alur berikut:
+
+1. **Sinkronisasi Kode Utama:**
    ```bash
-   git checkout main
+   git switch main
    git pull origin main
    ```
-2. **Buat Branch Baru (Bercabang)**
+
+2. **Buat Branch Fitur Baru (Gunakan Prefiks yang Sesuai):**
    ```bash
-   git checkout -b nama-branch-tugasmu
+   git switch -c feat/nama-fitur
    ```
-3. **Simpan dan Kirim Pekerjaan (Commit & Push)**
+   *Format penamaan branch:* `feat/*` (fitur), `fix/*` (perbaikan bug), `docs/*` (dokumentasi), `test/*` (pengujian).
+
+3. **Tinjau Perubahan & Commit (Conventional Commits):**
+   Hindari `git add .` secara buta untuk mencegah kebocoran `.env` atau `dd()`. Gunakan staging terpilih:
    ```bash
-   git add .
-   git commit -m "Deskripsikan apa yang baru dikerjakan"
-   git push -u origin nama-branch-tugasmu
+   git add -p
+   git commit -m "feat: deskripsi perubahan singkat dan jelas"
    ```
-4. **Compare & Pull Request di GitHub**
-   - Buka halaman repositori di web GitHub.
-   - Klik tombol hijau **Compare & pull request** yang muncul.
-   - Pastikan cabang tujuan adalah `main`, lalu klik **Create pull request**.
-5. **Approve dan Merge (Harus Dilakukan Anggota Lain)**
-   - Karena Anda tidak bisa me-*merge* PR Anda sendiri, mintalah teman kelompok Anda untuk membuka PR tersebut.
-   - Teman Anda harus mengklik tab **Files changed**, lalu klik **Review changes**, pilih **Approve**, dan klik **Submit review**.
-   - Setelah muncul tanda centang hijau, klik tombol **Merge pull request**.
-6. **Tarik Kembali Kode yang Sudah Digabungkan**
-   - Setelah di-merge di GitHub, setiap anggota kembali ke terminal komputer masing-masing.
-   - Lakukan langkah 1 lagi (`git checkout main` dan `git pull origin main`) untuk mendapatkan kodingan yang baru saja digabungkan tersebut!
+   *Contoh prefix commit:*
+   - `feat:` penambahan fitur baru
+   - `fix:` perbaikan bug atau celah keamanan
+   - `refactor:` perubahan struktur kode tanpa mengubah fungsi
+   - `docs:` pembaruan dokumentasi
+   - `test:` penambahan atau pembaruan test
+
+4. **Kirim Branch ke Remote Repository:**
+   ```bash
+   git push -u origin feat/nama-fitur
+   ```
+
+5. **Buka Pull Request (PR) di GitHub:**
+   - Masuk ke GitHub, klik **Compare & pull request** menuju branch `main`.
+   - Isi deskripsi PR mengikuti template otomatis yang telah disediakan (`.github/pull_request_template.md`).
+
+6. **Peer Review & Merge:**
+   - Minimal satu rekan tim wajib meninjau perubahan di tab **Files changed**.
+   - Reviewer memeriksa aspek keamanan, performa (N+1), dan keterbacaan kode sebelum memberikan **Approve**.
+   - Setelah status CI (GitHub Actions) hijau dan review disetujui, branch dapat di-merge ke `main`.
