@@ -86,6 +86,7 @@ class DashboardController extends Controller
                 'courses_count' => $myCourses->count(),
                 'total_students' => $myCourses->sum('students_count'),
                 'total_assignments' => Assignment::whereIn('course_id', $courseIds)->count(),
+                'total_submissions' => Submission::whereHas('assignment', fn ($q) => $q->whereIn('course_id', $courseIds))->count(),
                 'pending_grading_count' => $pendingSubmissions->count(),
             ];
         });

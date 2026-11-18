@@ -228,3 +228,4 @@ Berikut adalah status pemenuhan daftar periksa keamanan produksi pada aplikasi K
    Membantu tim mengidentifikasi masalah pemblokiran stylesheet CSS di peramban saat aplikasi pertama kali naik ke cloud Railway melalui pemeriksaan Console DevTools (F12), yang diselesaikan melalui trust proxy dan pemaksaan skema HTTPS.
 3. **Kepatuhan Protokol Keamanan & Anti-IDOR:**  
    Memverifikasi bahwa seluruh endpoint pengumpulan tugas dan rekapitulasi nilai mahasiswa terlindungi dari celah IDOR, baik pada pengujian lokal maupun server live produksi.
+
