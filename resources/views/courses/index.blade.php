@@ -1,10 +1,12 @@
-{{-- Halaman Daftar Mata Kuliah Mahasiswa --}}
-<x-layout title="Mata Kuliah - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah']
-]">
+{{-- Halaman Daftar Mata Kuliah --}}
+<x-layout title="Mata Kuliah - KampusLMS"
+    :backUrl="route('dashboard')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah']
+    ]">
 
-    {{-- A. PAGE BANNER HEADER DENGAN ILUSTRASI BERUANG BELAJAR --}}
+    {{-- A. PAGE BANNER HEADER --}}
     <div class="page-banner-card">
         <div>
             <h1 class="page-banner-title">Mata Kuliah</h1>
@@ -12,16 +14,12 @@
         </div>
         <div class="page-banner-actions-wrap" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
             @can('create', App\Models\Course::class)
-                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm page-banner-btn" style="border-radius: 9999px; padding: 0.5rem 1.25rem;">
-                    + Tambah Mata Kuliah
+                <a href="{{ route('courses.create') }}" class="btn btn-primary btn-sm page-banner-btn" style="border-radius: 8px; padding: 0.35rem 0.75rem; font-weight: 700;">
+                    + Mata Kuliah
                 </a>
             @endcan
             <div class="kavi-banner-composition">
-                <div class="kavi-banner-blob"></div>
-                <div class="kavi-sparkle s1" style="top: 8px; left: 10px; font-size: 0.85rem;">&#10022;</div>
-                <div class="kavi-sparkle s2" style="top: 20px; right: 8px; font-size: 0.8rem;">&#10022;</div>
                 <img src="{{ asset('images/illustrations/kavi-matakuliah.png') }}" alt="Kavi Belajar Mata Kuliah" class="kavi-banner-img">
-                <div class="kavi-pedestal-shadow" style="width: 100px; height: 12px; bottom: -2px;"></div>
             </div>
         </div>
     </div>

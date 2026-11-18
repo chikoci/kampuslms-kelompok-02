@@ -1,6 +1,8 @@
 @props([
     'title' => 'KampusLMS',
     'breadcrumbs' => [],
+    'backUrl' => null,
+    'backLabel' => 'Kembali',
 ])
 @php
     $errors = $errors ?? new \Illuminate\Support\ViewErrorBag();
@@ -111,95 +113,118 @@
 
         {{-- AREA UTAMA --}}
         <div class="app-main">
-            {{-- HEADER ATAS RESPONSIVE --}}
-            <header class="app-header">
-                {{-- Hamburger Toggle Button (Khusus Mobile) --}}
-                <button type="button" class="mobile-hamburger-btn" id="sidebarToggleBtn" aria-label="Buka Menu Navigasi" title="Buka Menu">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"/>
-                        <line x1="3" y1="6" x2="21" y2="6"/>
-                        <line x1="3" y1="18" x2="21" y2="18"/>
-                    </svg>
-                </button>
-
-                <div class="header-actions-right">
-                    {{-- Lonceng Notifikasi --}}
-                    <a href="{{ route('notifications.index') }}" class="header-btn-notification" id="notificationBellBtn" title="Pusat Pemberitahuan">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+            {{-- STICKY HEADER AREA (Header + Tombol Back + Breadcrumb tetap stay saat scroll - Sesuai Gambar 3) --}}
+            <div class="sticky-app-header-area" id="stickyAppHeaderArea">
+                {{-- HEADER ATAS RESPONSIVE --}}
+                <header class="app-header">
+                    {{-- Hamburger Toggle Button (Khusus Mobile) --}}
+                    <button type="button" class="mobile-hamburger-btn" id="sidebarToggleBtn" aria-label="Buka Menu Navigasi" title="Buka Menu">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
                         </svg>
-                        <span id="notificationBadge" class="header-notif-badge" style="{{ auth()->user()->unreadNotifications->count() > 0 ? 'display: inline-flex;' : 'display: none;' }}">
-                            {{ auth()->user()->unreadNotifications->count() }}
-                        </span>
-                    </a>
+                    </button>
 
-                    {{-- Profil Mahasiswa Dinamis & Dropdown --}}
-                    <div class="header-user-profile" id="userProfileBtn" title="Menu Pengguna">
-                        @php
-                            $userNames = explode(' ', auth()->user()->name);
-                            $initials = strtoupper(substr($userNames[0] ?? 'U', 0, 1) . (isset($userNames[1]) ? substr($userNames[1], 0, 1) : ''));
-                        @endphp
-                        <div class="header-avatar">{{ $initials }}</div>
-                        <span class="header-user-name">{{ auth()->user()->name }}</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
+                    <div class="header-actions-right">
+                        {{-- Lonceng Notifikasi --}}
+                        <a href="{{ route('notifications.index') }}" class="header-btn-notification" id="notificationBellBtn" title="Pusat Pemberitahuan">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                            </svg>
+                            <span id="notificationBadge" class="header-notif-badge" style="{{ auth()->user()->unreadNotifications->count() > 0 ? 'display: inline-flex;' : 'display: none;' }}">
+                                {{ auth()->user()->unreadNotifications->count() }}
+                            </span>
+                        </a>
 
-                        {{-- Dropdown Profile --}}
-                        <div class="header-dropdown-menu" id="userProfileDropdown">
-                            <div class="dropdown-user-info">
-                                <div class="name">{{ auth()->user()->name }}</div>
-                                <div class="role">
-                                    <span class="badge {{ auth()->user()->role === 'admin' ? 'badge-danger' : (auth()->user()->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; text-transform: capitalize;">
-                                        {{ auth()->user()->role }}
-                                    </span>
-                                    @if (auth()->user()->nim_nip)
-                                        <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.35rem;">{{ auth()->user()->nim_nip }}</span>
-                                    @endif
+                        {{-- Profil Mahasiswa Dinamis & Dropdown --}}
+                        <div class="header-user-profile" id="userProfileBtn" title="Menu Pengguna">
+                            @php
+                                $userNames = explode(' ', auth()->user()->name);
+                                $initials = strtoupper(substr($userNames[0] ?? 'U', 0, 1) . (isset($userNames[1]) ? substr($userNames[1], 0, 1) : ''));
+                            @endphp
+                            <div class="header-avatar">{{ $initials }}</div>
+                            <span class="header-user-name">{{ auth()->user()->name }}</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
+
+                            {{-- Dropdown Profile --}}
+                            <div class="header-dropdown-menu" id="userProfileDropdown">
+                                <div class="dropdown-user-info">
+                                    <div class="name">{{ auth()->user()->name }}</div>
+                                    <div class="role">
+                                        <span class="badge {{ auth()->user()->role === 'admin' ? 'badge-danger' : (auth()->user()->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; text-transform: capitalize;">
+                                            {{ auth()->user()->role }}
+                                        </span>
+                                        @if (auth()->user()->nim_nip)
+                                            <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.35rem;">{{ auth()->user()->nim_nip }}</span>
+                                        @endif
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{{ auth()->user()->email }}</div>
                                 </div>
-                                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{{ auth()->user()->email }}</div>
-                            </div>
 
-                            <a href="{{ route('notifications.index') }}" class="dropdown-item-link">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                                </svg>
-                                Pemberitahuan
-                            </a>
+                                <a href="{{ route('notifications.index') }}" class="dropdown-item-link">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                                    </svg>
+                                    Pemberitahuan
+                                </a>
 
-                            <a href="{{ route('tentang') }}" class="dropdown-item-link">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <line x1="12" y1="16" x2="12" y2="12"/>
-                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                                </svg>
-                                Tentang Aplikasi
-                            </a>
+                                <a href="{{ route('tentang') }}" class="dropdown-item-link">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="16" x2="12" y2="12"/>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                    </svg>
+                                    Tentang Aplikasi
+                                </a>
 
-                            <div style="border-top: 1px solid #f1f5f9; margin-top: 0.35rem; padding-top: 0.35rem;">
-                                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                                    @csrf
-                                    <button type="submit" class="dropdown-logout-btn">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                                            <polyline points="16 17 21 12 16 7"/>
-                                            <line x1="21" y1="12" x2="9" y2="12"/>
-                                        </svg>
-                                        Keluar
-                                    </button>
-                                </form>
+                                <div style="border-top: 1px solid #f1f5f9; margin-top: 0.35rem; padding-top: 0.35rem;">
+                                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                                        @csrf
+                                        <button type="submit" class="dropdown-logout-btn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                                <polyline points="16 17 21 12 16 7"/>
+                                                <line x1="21" y1="12" x2="9" y2="12"/>
+                                            </svg>
+                                            Keluar
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            {{-- Breadcrumb Navigation Dinamis --}}
-            @if (!empty($breadcrumbs))
-                <x-breadcrumb :items="$breadcrumbs" />
-            @endif
+                {{-- Header Navigasi Halaman: Tombol Back & Breadcrumb Terpisah Jelas (Sesuai Panduan UI/UX) --}}
+                @if (!empty($backUrl) || !empty($breadcrumbs))
+                    <div class="page-navigation-header">
+                        @if (!empty($backUrl))
+                            <div class="nav-back-row">
+                                <a href="{{ $backUrl }}"
+                                   class="btn-back-action"
+                                   onclick="if (window.history.length > 1 && document.referrer && document.referrer.indexOf(window.location.host) !== -1) { event.preventDefault(); window.history.back(); }"
+                                   title="Kembali ke halaman sebelumnya">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m15 18-6-6 6-6"/>
+                                    </svg>
+                                    <span>{{ $backLabel ?? 'Kembali' }}</span>
+                                </a>
+                            </div>
+                        @endif
+
+                        @if (!empty($breadcrumbs))
+                            <div class="nav-breadcrumb-row">
+                                <x-breadcrumb :items="$breadcrumbs" />
+                            </div>
+                        @endif
+                    </div>
+                @endif
+            </div>
 
             {{-- Flash Messages --}}
             @if (session('success'))

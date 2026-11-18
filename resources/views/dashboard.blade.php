@@ -5,93 +5,81 @@
         {{-- DASHBOARD ADMINISTRATOR SISTEM                           --}}
         {{-- ======================================================== --}}
 
-        {{-- 1. HERO WELCOME ADMINISTRATOR TERPADU (SESUAI REFERENSI GAMBAR 3) --}}
+        {{-- 1. HERO WELCOME ADMINISTRATOR TERPADU --}}
         <div class="admin-hero-unified">
             <div class="admin-hero-unified-left">
-                <span class="admin-unified-badge">Dashboard Administrator</span>
+                <span class="admin-unified-badge">Administrator</span>
                 <h1 class="admin-unified-title">Hi, {{ auth()->user()->name }}!</h1>
-                <p class="admin-unified-subtitle">Ringkasan manajemen sistem, infrastruktur data, dan kontrol pengguna KampusLMS.</p>
+                <p class="admin-unified-subtitle">Ringkasan sistem dan kontrol data civitas akademika.</p>
 
-                {{-- Tiga Card Statistik Sejajar Horizontal --}}
+                {{-- Tiga Card Statistik Sejajar --}}
                 <div class="admin-unified-stats-row">
-                    {{-- Stat 1: Total Pengguna --}}
+                    {{-- Stat 1: Pengguna --}}
                     <a href="{{ route('users.index') }}" class="admin-mini-stat-card">
                         <div class="admin-mini-stat-icon blue">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                                 <circle cx="9" cy="7" r="4"/>
-                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                             </svg>
                         </div>
                         <div class="admin-mini-stat-info">
-                            <span class="admin-mini-stat-label">Total Pengguna</span>
+                            <span class="admin-mini-stat-label">Pengguna</span>
                             <span class="admin-mini-stat-value">{{ $metrics['users_count'] }}</span>
                         </div>
                     </a>
 
-                    {{-- Stat 2: Mata Kuliah Terdaftar --}}
+                    {{-- Stat 2: Mata Kuliah --}}
                     <a href="{{ route('courses.index') }}" class="admin-mini-stat-card">
                         <div class="admin-mini-stat-icon green">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
                                 <path d="M6 6h10"/>
-                                <path d="M6 10h10"/>
                             </svg>
                         </div>
                         <div class="admin-mini-stat-info">
-                            <span class="admin-mini-stat-label">Mata Kuliah Terdaftar</span>
+                            <span class="admin-mini-stat-label">Mata Kuliah</span>
                             <span class="admin-mini-stat-value">{{ $metrics['courses_count'] }}</span>
                         </div>
                     </a>
 
-                    {{-- Stat 3: Tugas & Evaluasi --}}
+                    {{-- Stat 3: Tugas --}}
                     <a href="{{ route('courses.index') }}" class="admin-mini-stat-card">
                         <div class="admin-mini-stat-icon yellow">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                                 <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
                             </svg>
                         </div>
                         <div class="admin-mini-stat-info">
-                            <span class="admin-mini-stat-label">Tugas & Evaluasi</span>
+                            <span class="admin-mini-stat-label">Tugas</span>
                             <span class="admin-mini-stat-value">{{ $metrics['assignments_count'] }}</span>
                         </div>
                     </a>
                 </div>
 
-                {{-- Dua Tombol Aksi Sejajar di Bawah Card Statistik --}}
+                {{-- Dua Tombol Aksi Simpel Menggunakan Simbol (+) --}}
                 <div class="admin-unified-actions-row">
                     <a href="{{ route('register') }}" class="admin-btn-dark">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <line x1="19" y1="8" x2="19" y2="14"/>
-                            <line x1="22" y1="11" x2="16" y2="11"/>
-                        </svg>
-                        Daftarkan Pengguna
-                    </a>
-                    <a href="{{ route('courses.create') }}" class="admin-btn-light">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"/>
                             <line x1="5" y1="12" x2="19" y2="12"/>
                         </svg>
-                        Tambah Mata Kuliah
+                        <span>Pengguna</span>
+                    </a>
+                    <a href="{{ route('courses.create') }}" class="admin-btn-light">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        <span>Mata Kuliah</span>
                     </a>
                 </div>
             </div>
 
-            {{-- Ilustrasi Maskot Kavi di Sebelah Kanan --}}
+            {{-- Ilustrasi Maskot Kavi di Sisi Kanan (Hanya Ditampilkan di Layar Desktop) --}}
             <div class="admin-hero-unified-right">
-                <div class="kavi-hero-composition" style="width: 170px; height: 170px;">
-                    <div class="kavi-hero-blob" style="width: 160px; height: 160px;"></div>
-                    <div class="kavi-sparkle s1">&#10022;</div>
-                    <div class="kavi-sparkle s2">&#10022;</div>
-                    <div class="kavi-sparkle s3">&#10022;</div>
-                    <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Administrator" class="kavi-hero-img" style="max-height: 160px;">
-                    <div class="kavi-pedestal-shadow" style="width: 130px; bottom: 0;"></div>
+                <div class="kavi-hero-composition" style="width: 140px; height: 140px;">
+                    <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Administrator" class="kavi-hero-img" style="max-height: 130px;">
                 </div>
             </div>
         </div>
@@ -235,15 +223,10 @@
                     </div>
                 </div>
 
-                {{-- Integrasi Komposisi Maskot KAVI untuk Dosen --}}
+                {{-- Komposisi Maskot KAVI untuk Dosen (Clean & Ringan) --}}
                 <div class="hero-welcome-right">
-                    <div class="kavi-hero-composition">
-                        <div class="kavi-hero-blob"></div>
-                        <div class="kavi-sparkle s1">&#10022;</div>
-                        <div class="kavi-sparkle s2">&#10022;</div>
-                        <div class="kavi-sparkle s3">&#10022;</div>
-                        <img src="{{ asset('images/illustrations/kavi-belajar.png') }}" alt="Kavi Dosen Pengampu" class="kavi-hero-img">
-                        <div class="kavi-pedestal-shadow"></div>
+                    <div class="kavi-hero-composition" style="width: 150px; height: 150px;">
+                        <img src="{{ asset('images/illustrations/kavi-belajar.png') }}" alt="Kavi Dosen Pengampu" class="kavi-hero-img" style="max-height: 140px;">
                     </div>
                 </div>
             </div>
@@ -348,24 +331,41 @@
                         Pengumpulan Belum Dinilai
                     </h3>
                 </div>
+
+                @php
+                    $pendingByCourse = $pendingSubmissions->groupBy(fn ($item) => $item->assignment?->course_id);
+                @endphp
+
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    @forelse ($pendingSubmissions as $submission)
-                        <div class="course-card-compact" onclick="window.location='{{ route('submissions.show', $submission) }}'">
-                            <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
-                                <h4 class="course-compact-title">{{ $submission->student?->name }}</h4>
-                                <div class="course-compact-meta">
-                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $submission->assignment?->course?->code }}</span>
-                                    <span style="font-size: 0.72rem; color: #64748b;">{{ $submission->assignment?->title }}</span>
+                    @forelse ($pendingByCourse as $cId => $courseSubmissions)
+                        @php
+                            $targetCourse = $courseSubmissions->first()?->assignment?->course;
+                            $countPending = $courseSubmissions->count();
+                        @endphp
+                        @if ($targetCourse)
+                            <div class="course-card-compact" onclick="window.location='{{ route('courses.submissions', $targetCourse) }}'" title="Lihat pengumpulan {{ $targetCourse->name }}" style="cursor: pointer;">
+                                <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                                    <h4 class="course-compact-title">{{ $targetCourse->name }}</h4>
+                                    <div class="course-compact-meta" style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
+                                        <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $targetCourse->code }}</span>
+                                        <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-size: 0.7rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #d97706;"></span>
+                                            {{ $countPending }} belum dinilai
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="course-chevron">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
                                 </div>
                             </div>
-                            <div class="course-chevron">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"/>
-                                </svg>
-                            </div>
-                        </div>
+                        @endif
                     @empty
-                        <p class="text-muted" style="text-align: center; padding: 2rem 0;">Semua pengumpulan sudah selesai dinilai. Kerja bagus!</p>
+                        <div style="text-align: center; padding: 2rem 1rem; border: 1px dashed #e2e8f0; border-radius: 12px; background: #f8fafc;">
+                            <div style="font-weight: 600; color: #0f172a; font-size: 0.875rem;">Semua Selesai Dinilai</div>
+                            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">Tidak ada tugas yang menunggu evaluasi.</div>
+                        </div>
                     @endforelse
                 </div>
             </div>
@@ -434,15 +434,10 @@
                     </div>
                 </div>
 
-                {{-- Integrasi Komposisi Maskot KAVI --}}
+                {{-- Komposisi Maskot KAVI untuk Mahasiswa (Clean & Ringan) --}}
                 <div class="hero-welcome-right">
-                    <div class="kavi-hero-composition">
-                        <div class="kavi-hero-blob"></div>
-                        <div class="kavi-sparkle s1">&#10022;</div>
-                        <div class="kavi-sparkle s2">&#10022;</div>
-                        <div class="kavi-sparkle s3">&#10022;</div>
-                        <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Maskot KampusLMS" class="kavi-hero-img">
-                        <div class="kavi-pedestal-shadow"></div>
+                    <div class="kavi-hero-composition" style="width: 150px; height: 150px;">
+                        <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Maskot KampusLMS" class="kavi-hero-img" style="max-height: 140px;">
                     </div>
                 </div>
             </div>

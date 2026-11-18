@@ -1,8 +1,10 @@
-<x-layout title="Tambah Mata Kuliah - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => 'Tambah Mata Kuliah']
-]">
+<x-layout title="Tambah Mata Kuliah - KampusLMS"
+    :backUrl="route('courses.index')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => 'Tambah Mata Kuliah']
+    ]">
 
     {{-- Header Judul di Luar Form Card (Sesuai Referensi Gambar 1) --}}
     <div style="margin-top: 1.25rem; margin-bottom: 1.5rem;">

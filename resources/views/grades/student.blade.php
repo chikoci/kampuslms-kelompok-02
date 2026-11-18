@@ -1,7 +1,9 @@
-<x-layout title="Nilai Saya - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Nilai Saya']
-]">
+<x-layout title="Nilai Saya - KampusLMS"
+    :backUrl="route('dashboard')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Nilai Saya']
+    ]">
 
     {{-- A. PAGE HEADER DENGAN ILUSTRASI BERUANG NILAI A+ --}}
     <div class="page-banner-card">
@@ -10,11 +12,7 @@
             <p class="page-banner-subtitle">Transkrip & Rekap Nilai Tugas dari seluruh mata kuliah yang Anda ikuti.</p>
         </div>
         <div class="kavi-banner-composition">
-            <div class="kavi-banner-blob gold"></div>
-            <div class="kavi-sparkle s1" style="top: 5px; left: 8px; font-size: 0.95rem; color: #f59e0b;">&#10022;</div>
-            <div class="kavi-sparkle s2" style="top: 15px; right: 10px; font-size: 0.85rem; color: #3b82f6;">&#10022;</div>
             <img src="{{ asset('images/illustrations/kavi-nilai.png') }}" alt="Kavi Meraih Prestasi" class="kavi-banner-img">
-            <div class="kavi-pedestal-shadow" style="width: 110px; height: 12px; bottom: -2px;"></div>
         </div>
     </div>
 
@@ -26,8 +24,8 @@
         </div>
     @else
 
-        {{-- B. DAFTAR MATA KULIAH BERJEJER KE BAWAH DENGAN CARD NILAI INTERAKTIF & RINGKAS --}}
-        <div class="grade-cards-list" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
+        {{-- B. DAFTAR MATA KULIAH BERJEJER KE BAWAH (RINGKAS & TIDAK BERJARAK BERLEBIHAN - SESUAI GAMBAR 5) --}}
+        <div class="grade-cards-list" style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.5rem;">
             @foreach ($courses as $c)
                 @php
                     $totalAssignments = $c->assignments->count();
@@ -67,14 +65,14 @@
                     $equalWeight = $totalAssignments > 0 ? round(100 / $totalAssignments, 1) : 0;
                 @endphp
 
-                <div class="grade-accordion-card card-modern clean-course-card" 
+                <div class="grade-accordion-card clean-course-card" 
                      id="grade-card-{{ $c->id }}"
-                     style="padding: 0; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); transition: all 0.2s ease;">
+                     style="padding: 0; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 10px; margin: 0; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03); transition: all 0.15s ease;">
                     
-                    {{-- 1. HEADER KARTU: HANYA MENAMPILKAN NAMA MATA KULIAH (RINGKAS & HEMAT TEMPAT) --}}
+                    {{-- 1. HEADER KARTU: HANYA MENAMPILKAN NAMA MATA KULIAH (RINGKAS & RAPAT) --}}
                     <div class="grade-card-header clean-course-header" 
                          onclick="toggleCourseGrade('{{ $c->id }}')" 
-                         style="cursor: pointer; padding: 0.75rem 1rem; background: #ffffff; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; user-select: none;">
+                         style="cursor: pointer; padding: 0.65rem 1rem; background: #ffffff; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; user-select: none;">
                         
                         {{-- HANYA NAMA MATA KULIAH --}}
                         <h3 class="clean-course-title" style="margin: 0; font-size: 0.925rem; font-weight: 700; color: #0f172a; line-height: 1.25; flex: 1; min-width: 0;">
@@ -82,8 +80,8 @@
                         </h3>
 
                         {{-- Chevron Icon Indicator --}}
-                        <div class="clean-course-chevron" id="chevron-box-{{ $c->id }}" style="width: 26px; height: 26px; border-radius: 7px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b; flex-shrink: 0; transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;">
-                            <svg id="icon-toggle-{{ $c->id }}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.25s ease;">
+                        <div class="clean-course-chevron" id="chevron-box-{{ $c->id }}" style="width: 24px; height: 24px; border-radius: 6px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b; flex-shrink: 0; transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;">
+                            <svg id="icon-toggle-{{ $c->id }}" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.25s ease;">
                                 <polyline points="6 9 12 15 18 9"/>
                             </svg>
                         </div>
