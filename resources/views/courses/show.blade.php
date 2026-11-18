@@ -83,23 +83,79 @@
                 <div class="sub">Bobot Akademik Semester</div>
             </div>
 
-            <div class="detail-meta-box detail-meta-box-clickable" onclick="openPesertaModal()" role="button" tabindex="0" title="Klik untuk melihat daftar mahasiswa peserta" style="cursor: pointer; position: relative; border-color: #bfdbfe; background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%); transition: all 0.2s ease;">
+            <div class="detail-meta-box detail-meta-box-clickable" onclick="togglePesertaView()" role="button" tabindex="0" title="Klik untuk melihat peserta kelas" style="cursor: pointer;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                    <div class="lbl" style="margin: 0; color: #1e40af; font-weight: 700;">Mahasiswa Terdaftar</div>
-                    <span class="badge" style="background: #dbeafe; color: #1d4ed8; font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.25rem;">
-                        <span>Lihat Peserta</span>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    <div class="lbl" style="margin: 0;">Mahasiswa Terdaftar</div>
+                    <span class="badge" id="badgeLihatPeserta" style="background: #eff6ff; color: #2563eb; font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        <span id="badgeLihatPesertaText">Lihat Peserta</span>
+                        <svg id="badgeLihatPesertaIcon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;"><polyline points="6 9 12 15 18 9"/></svg>
                     </span>
                 </div>
-                <div class="val" style="color: #1e3a8a;">
-                    {{ $course->students()->count() }} <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Orang</span>
-                </div>
-                <div class="sub" style="color: #2563eb; display: flex; align-items: center; gap: 0.3rem; font-weight: 600;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-                    Klik untuk rincian peserta
-                </div>
+                <div class="val">{{ $course->students()->count() }} <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Orang</span></div>
+                <div class="sub">Peserta Kelas Aktif</div>
             </div>
         </div>
+    </div>
+
+    {{-- FULL VIEW PESERTA MAHASISWA TERDAFTAR (IN-PAGE, BUKAN POPUP/JENDELA) --}}
+    <div id="pesertaFullSection" class="card-modern" style="display: none; margin-bottom: 1rem; border: 1px solid #bfdbfe; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05); animation: fadeIn 0.2s ease;">
+        <div class="card-header-row" style="margin-bottom: 0.85rem; padding-bottom: 0.65rem; border-bottom: 1px solid #f1f5f9;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <h3 class="card-header-title" style="margin: 0; font-size: 1rem; font-weight: 700; color: #0f172a;">
+                    Daftar Mahasiswa Terdaftar
+                </h3>
+                <span style="font-size: 0.72rem; font-weight: 700; background: #eff6ff; color: #2563eb; padding: 0.15rem 0.5rem; border-radius: 9999px;">
+                    {{ $course->students()->count() }} Mahasiswa
+                </span>
+            </div>
+            <button type="button" onclick="togglePesertaView()" class="btn btn-secondary btn-sm" style="font-size: 0.78rem; padding: 0.25rem 0.65rem; display: inline-flex; align-items: center; gap: 0.3rem;" title="Tutup Tampilan Peserta">
+                <span>Tutup</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+
+        @php
+            $allCourseStudents = $course->students()->orderBy('name')->get();
+        @endphp
+
+        @if ($allCourseStudents->isEmpty())
+            <div style="text-align: center; padding: 2rem 1rem; color: #64748b; font-size: 0.85rem;">
+                Belum ada mahasiswa yang terdaftar di kelas ini.
+            </div>
+        @else
+            {{-- Filter Cepat Nama / NIM --}}
+            <div style="margin-bottom: 0.75rem;">
+                <input type="text" id="searchPesertaInput" onkeyup="filterPesertaList()" placeholder="Cari nama atau NIM mahasiswa..." style="width: 100%; max-width: 320px; padding: 0.4rem 0.75rem; font-size: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; background: #f8fafc;">
+            </div>
+
+            {{-- Grid Peserta (Responsive, Tampilan Penuh Lebar Halaman) --}}
+            <div id="pesertaListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.5rem; max-height: 480px; overflow-y: auto; padding-right: 0.25rem;">
+                @foreach ($allCourseStudents as $idx => $mhs)
+                    <div class="peserta-item-card" data-name="{{ strtolower($mhs->name) }}" data-nim="{{ strtolower($mhs->nim_nip ?? '') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0;">
+                            <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: #2563eb; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                {{ strtoupper(substr($mhs->name, 0, 1)) }}
+                            </div>
+                            <div style="min-width: 0;">
+                                <div style="font-size: 0.85rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ $mhs->name }}
+                                </div>
+                                <div style="font-size: 0.72rem; color: #64748b; font-family: monospace;">
+                                    NIM: {{ $mhs->nim_nip ?? '-' }}
+                                </div>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600; flex-shrink: 0;">#{{ $idx + 1 }}</span>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 
     {{-- SECTION 1: MATERI PERKULIAHAN --}}
@@ -397,97 +453,38 @@
         </div>
     @endif
 
-    {{-- MODAL INTERAKTIF: DAFTAR MAHASISWA TERDAFTAR (BISA DIAKSES OLEH SEMUA USER) --}}
-    <div id="modalPesertaMahasiswa" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 1rem;">
-        <div style="background: #ffffff; width: 100%; max-width: 520px; border-radius: 14px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh;">
-            
-            {{-- Header Modal --}}
-            <div style="padding: 0.9rem 1.25rem; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #f8fafc;">
-                <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0f172a;">Mahasiswa Terdaftar</h3>
-                        <p style="margin: 0; font-size: 0.72rem; color: #64748b;">{{ $course->students()->count() }} mahasiswa aktif di mata kuliah ini</p>
-                    </div>
-                </div>
-                <button type="button" onclick="closePesertaModal()" style="border: none; background: transparent; color: #64748b; font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px;" title="Tutup">&times;</button>
-            </div>
-
-            {{-- Body Modal: Daftar Peserta Mahasiswa --}}
-            <div style="padding: 0.85rem 1.25rem; overflow-y: auto; flex: 1;">
-                @php
-                    $allCourseStudents = $course->students()->orderBy('name')->get();
-                @endphp
-                @if ($allCourseStudents->isEmpty())
-                    <p style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 2rem 0; margin: 0;">
-                        Belum ada mahasiswa yang terdaftar di kelas ini.
-                    </p>
-                @else
-                    <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                        @foreach ($allCourseStudents as $idx => $mhs)
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0;">
-                                    <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: #2563eb; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        {{ strtoupper(substr($mhs->name, 0, 1)) }}
-                                    </div>
-                                    <div style="min-width: 0;">
-                                        <div style="font-size: 0.85rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            {{ $mhs->name }}
-                                        </div>
-                                        <div style="font-size: 0.72rem; color: #64748b; font-family: monospace;">
-                                            NIM: {{ $mhs->nim_nip ?? '-' }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">#{{ $idx + 1 }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-
-            {{-- Footer Modal --}}
-            <div style="padding: 0.75rem 1.25rem; border-top: 1px solid #e2e8f0; background: #f8fafc; text-align: right;">
-                <button type="button" onclick="closePesertaModal()" class="btn btn-secondary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.85rem;">
-                    Tutup
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        function openPesertaModal() {
-            const modal = document.getElementById('modalPesertaMahasiswa');
-            if (modal) {
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+        function togglePesertaView() {
+            const section = document.getElementById('pesertaFullSection');
+            const badgeText = document.getElementById('badgeLihatPesertaText');
+            const badgeIcon = document.getElementById('badgeLihatPesertaIcon');
+            if (!section) return;
+
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+                if (badgeText) badgeText.textContent = 'Tutup Peserta';
+                if (badgeIcon) badgeIcon.style.transform = 'rotate(180deg)';
+                section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                section.style.display = 'none';
+                if (badgeText) badgeText.textContent = 'Lihat Peserta';
+                if (badgeIcon) badgeIcon.style.transform = 'rotate(0deg)';
             }
         }
-        function closePesertaModal() {
-            const modal = document.getElementById('modalPesertaMahasiswa');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            }
+
+        function filterPesertaList() {
+            const query = (document.getElementById('searchPesertaInput')?.value || '').toLowerCase();
+            const items = document.querySelectorAll('.peserta-item-card');
+            items.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                const nim = item.getAttribute('data-nim') || '';
+                if (name.includes(query) || nim.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
-        window.addEventListener('click', function(e) {
-            const modal = document.getElementById('modalPesertaMahasiswa');
-            if (modal && e.target === modal) {
-                closePesertaModal();
-            }
-        });
-        window.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closePesertaModal();
-            }
-        });
     </script>
 
 </x-layout>
