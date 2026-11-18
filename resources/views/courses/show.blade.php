@@ -97,10 +97,10 @@
         </div>
     </div>
 
-    {{-- FULL VIEW PESERTA MAHASISWA TERDAFTAR (IN-PAGE, BUKAN POPUP/JENDELA) --}}
-    <div id="pesertaFullSection" class="card-modern" style="display: none; margin-bottom: 1rem; border: 1px solid #bfdbfe; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05); animation: fadeIn 0.2s ease;">
+    {{-- FULL VIEW PESERTA MAHASISWA TERDAFTAR (IN-PAGE TABEL SESUAI REFERENSI) --}}
+    <div id="pesertaFullSection" class="card-modern" style="display: none; margin-bottom: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); animation: fadeIn 0.2s ease;">
         <div class="card-header-row" style="margin-bottom: 0.85rem; padding-bottom: 0.65rem; border-bottom: 1px solid #f1f5f9;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
@@ -114,10 +114,13 @@
                     {{ $course->students()->count() }} Mahasiswa
                 </span>
             </div>
-            <button type="button" onclick="togglePesertaView()" class="btn btn-secondary btn-sm" style="font-size: 0.78rem; padding: 0.25rem 0.65rem; display: inline-flex; align-items: center; gap: 0.3rem;" title="Tutup Tampilan Peserta">
-                <span>Tutup</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="text" id="searchPesertaInput" onkeyup="filterPesertaList()" placeholder="Cari nama atau NIM..." style="padding: 0.35rem 0.65rem; font-size: 0.78rem; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; background: #f8fafc; max-width: 200px;">
+                <button type="button" onclick="togglePesertaView()" class="btn btn-secondary btn-sm" style="font-size: 0.78rem; padding: 0.25rem 0.65rem; display: inline-flex; align-items: center; gap: 0.3rem;" title="Tutup Tampilan Peserta">
+                    <span>Tutup</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
         </div>
 
         @php
@@ -129,31 +132,32 @@
                 Belum ada mahasiswa yang terdaftar di kelas ini.
             </div>
         @else
-            {{-- Filter Cepat Nama / NIM --}}
-            <div style="margin-bottom: 0.75rem;">
-                <input type="text" id="searchPesertaInput" onkeyup="filterPesertaList()" placeholder="Cari nama atau NIM mahasiswa..." style="width: 100%; max-width: 320px; padding: 0.4rem 0.75rem; font-size: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; background: #f8fafc;">
-            </div>
-
-            {{-- Grid Peserta (Responsive, Tampilan Penuh Lebar Halaman) --}}
-            <div id="pesertaListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.5rem; max-height: 480px; overflow-y: auto; padding-right: 0.25rem;">
-                @foreach ($allCourseStudents as $idx => $mhs)
-                    <div class="peserta-item-card" data-name="{{ strtolower($mhs->name) }}" data-nim="{{ strtolower($mhs->nim_nip ?? '') }}" style="display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0;">
-                            <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: #2563eb; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                {{ strtoupper(substr($mhs->name, 0, 1)) }}
-                            </div>
-                            <div style="min-width: 0;">
-                                <div style="font-size: 0.85rem; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    {{ $mhs->name }}
-                                </div>
-                                <div style="font-size: 0.72rem; color: #64748b; font-family: monospace;">
-                                    NIM: {{ $mhs->nim_nip ?? '-' }}
-                                </div>
-                            </div>
-                        </div>
-                        <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600; flex-shrink: 0;">#{{ $idx + 1 }}</span>
-                    </div>
-                @endforeach
+            {{-- Tabel Peserta Bersih Sesuai Referensi Gambar --}}
+            <div style="overflow-x: auto; border: 1px solid #eef2f6; border-radius: 12px; background: #ffffff;">
+                <table class="grade-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 1px solid #eef2f6;">
+                            <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.8rem; font-weight: 700; color: #475569; width: 180px;">NIM</th>
+                            <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.8rem; font-weight: 700; color: #475569;">Nama Lengkap</th>
+                            <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.8rem; font-weight: 700; color: #475569; width: 220px;">Terdaftar Sejak</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pesertaTableBody">
+                        @foreach ($allCourseStudents as $student)
+                            <tr class="peserta-table-row" data-name="{{ strtolower($student->name) }}" data-nim="{{ strtolower($student->nim_nip ?? '') }}" style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;">
+                                <td style="padding: 0.85rem 1rem; font-weight: 700; color: #475569; font-size: 0.85rem; font-family: monospace;">
+                                    {{ $student->nim_nip ?? '-' }}
+                                </td>
+                                <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0f172a; font-size: 0.875rem;">
+                                    {{ $student->name }}
+                                </td>
+                                <td style="padding: 0.85rem 1rem; color: #64748b; font-size: 0.85rem;">
+                                    {{ $student->pivot->enrolled_at ? \Carbon\Carbon::parse($student->pivot->enrolled_at)->translatedFormat('d M Y, H:i') : '-' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
     </div>
@@ -474,14 +478,14 @@
 
         function filterPesertaList() {
             const query = (document.getElementById('searchPesertaInput')?.value || '').toLowerCase();
-            const items = document.querySelectorAll('.peserta-item-card');
-            items.forEach(item => {
-                const name = item.getAttribute('data-name') || '';
-                const nim = item.getAttribute('data-nim') || '';
+            const rows = document.querySelectorAll('.peserta-table-row');
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name') || '';
+                const nim = row.getAttribute('data-nim') || '';
                 if (name.includes(query) || nim.includes(query)) {
-                    item.style.display = 'flex';
+                    row.style.display = '';
                 } else {
-                    item.style.display = 'none';
+                    row.style.display = 'none';
                 }
             });
         }
