@@ -149,14 +149,14 @@
             weightSummary.textContent = `${total}% / 100%`;
 
             if (Math.abs(total - 100.0) <= 0.05) {
-                weightBadge.textContent = 'Bobot Tepat 100% (Valid ✔)';
+                weightBadge.textContent = 'Bobot Tepat 100% (Valid)';
                 weightBadge.style.background = '#dcfce7';
                 weightBadge.style.color = '#15803d';
                 btnSubmitRubric.disabled = false;
                 btnSubmitRubric.style.opacity = '1';
                 btnSubmitRubric.style.cursor = 'pointer';
             } else {
-                weightBadge.textContent = `Total bobot ${total}% (Harus 100% ⚠️)`;
+                weightBadge.textContent = `Total bobot ${total}% (Harus 100%)`;
                 weightBadge.style.background = '#fee2e2';
                 weightBadge.style.color = '#dc2626';
             }

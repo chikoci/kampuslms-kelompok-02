@@ -66,73 +66,6 @@
             </div>
         </div>
 
-        {{-- Rubrik Penilaian Bertingkat (Transparansi Kriteria bagi Dosen & Mahasiswa) --}}
-        @if($assignment->rubric && $assignment->rubric->criteria->isNotEmpty())
-            <div class="rubric-showcase-card">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
-                            <span class="badge" style="background: #eff6ff; color: #2563eb; font-weight: 800; font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 6px; letter-spacing: 0.03em;">
-                                PANDUAN RUBRIK PENILAIAN
-                            </span>
-                        </div>
-                        <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">
-                            {{ $assignment->rubric->title }}
-                        </h3>
-                    </div>
-                    <span class="badge" style="font-size: 0.8rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.35rem 0.75rem; border-radius: 8px;">
-                        ✓ Total Bobot: 100%
-                    </span>
-                </div>
-
-                @if($assignment->rubric->description)
-                    <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1.25rem; line-height: 1.6;">
-                        {{ $assignment->rubric->description }}
-                    </p>
-                @endif
-
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    @foreach($assignment->rubric->criteria as $criterion)
-                        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.15rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
-                                <div style="flex: 1; min-width: 200px;">
-                                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">
-                                        {{ $criterion->title }}
-                                    </h4>
-                                    @if($criterion->description)
-                                        <p style="font-size: 0.8rem; color: #64748b; margin: 0.25rem 0 0 0; line-height: 1.45;">
-                                            {{ $criterion->description }}
-                                        </p>
-                                    @endif
-                                </div>
-                                <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 8px; font-size: 0.8rem; flex-shrink: 0;">
-                                    Bobot: {{ (float)$criterion->weight }}%
-                                </span>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.65rem;">
-                                @foreach($criterion->levels as $level)
-                                    <div class="rubric-level-pill-card">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                                            <strong style="color: #0f172a; font-size: 0.825rem;">{{ $level->title }}</strong>
-                                            <span style="font-size: 0.75rem; font-weight: 800; color: #2563eb; background: #ffffff; padding: 0.1rem 0.4rem; border-radius: 6px; border: 1px solid #dbeafe;">
-                                                {{ (float)$level->score_percentage }}%
-                                            </span>
-                                        </div>
-                                        @if($level->description)
-                                            <div style="font-size: 0.75rem; color: #64748b; line-height: 1.4;">
-                                                {{ $level->description }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-
         {{-- Khusus Dosen/Admin: Link ke Rekap Seluruh Pengumpulan --}}
         @can('update', $assignment)
             <div style="margin-bottom: 2rem; padding: 1.25rem 1.5rem; background: #eff6ff; border-radius: 18px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -152,7 +85,7 @@
         @endphp
 
         @if(auth()->user()->role === 'mahasiswa')
-            <div class="submission-status-card">
+            <div class="submission-status-card" style="margin-bottom: 2rem;">
                 <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -237,8 +170,14 @@
                     @can('update', $mySubmission)
                         <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed #e2e8f0;">
                             <details>
-                                <summary style="cursor: pointer; font-size: 0.875rem; font-weight: 700; color: #2563eb;">
-                                    &#8635; Ingin Mengumpulkan Ulang? Klik di sini untuk mengunggah berkas baru
+                                <summary style="cursor: pointer; font-size: 0.875rem; font-weight: 700; color: #2563eb; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                        <path d="M3 21v-5h5"/>
+                                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                        <path d="M21 3v5h-5"/>
+                                    </svg>
+                                    <span>Ingin Mengumpulkan Ulang? Klik di sini untuk mengunggah berkas baru</span>
                                 </summary>
                                 <form action="{{ route('assignments.submissions.store', $assignment) }}" method="POST" enctype="multipart/form-data" style="margin-top: 1.25rem;">
                                     @csrf
@@ -297,6 +236,68 @@
                         </button>
                     </form>
                 @endif
+            </div>
+        @endif
+
+        {{-- Rubrik Penilaian Bertingkat (Transparansi Kriteria bagi Dosen & Mahasiswa) --}}
+        @if($assignment->rubric && $assignment->rubric->criteria->isNotEmpty())
+            <div class="rubric-showcase-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">
+                            Rubrik Penilaian
+                        </h3>
+                    </div>
+                    <span class="badge" style="font-size: 0.8rem; font-weight: 700; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.35rem 0.75rem; border-radius: 8px;">
+                        Total Bobot: 100%
+                    </span>
+                </div>
+
+                @if($assignment->rubric->description)
+                    <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1.25rem; line-height: 1.6;">
+                        {{ $assignment->rubric->description }}
+                    </p>
+                @endif
+
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    @foreach($assignment->rubric->criteria as $criterion)
+                        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.15rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+                                <div style="flex: 1; min-width: 200px;">
+                                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">
+                                        {{ $criterion->title }}
+                                    </h4>
+                                    @if($criterion->description)
+                                        <p style="font-size: 0.8rem; color: #64748b; margin: 0.25rem 0 0 0; line-height: 1.45;">
+                                            {{ $criterion->description }}
+                                        </p>
+                                    @endif
+                                </div>
+                                <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 8px; font-size: 0.8rem; flex-shrink: 0;">
+                                    Bobot: {{ (float)$criterion->weight }}%
+                                </span>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.65rem;">
+                                @foreach($criterion->levels as $level)
+                                    <div class="rubric-level-pill-card">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                            <strong style="color: #0f172a; font-size: 0.825rem;">{{ $level->title }}</strong>
+                                            <span style="font-size: 0.75rem; font-weight: 800; color: #2563eb; background: #ffffff; padding: 0.1rem 0.4rem; border-radius: 6px; border: 1px solid #dbeafe;">
+                                                {{ (float)$level->score_percentage }}%
+                                            </span>
+                                        </div>
+                                        @if($level->description)
+                                            <div style="font-size: 0.75rem; color: #64748b; line-height: 1.4;">
+                                                {{ $level->description }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         @endif
 

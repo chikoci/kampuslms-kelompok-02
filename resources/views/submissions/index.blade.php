@@ -105,8 +105,13 @@
                                 </td>
                                 <td>
                                     @if($submission->file_path)
-                                        <a href="{{ route('submissions.download', $submission) }}" class="btn-open-class" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe; font-size: 0.75rem; padding: 0.25rem 0.65rem;">
-                                            &#128190; {{ $submission->original_name }}
+                                        <a href="{{ route('submissions.download', $submission) }}" class="btn-open-class" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe; font-size: 0.75rem; padding: 0.25rem 0.65rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                <polyline points="7 10 12 15 17 10"/>
+                                                <line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                            <span class="file-name-truncate" title="{{ $submission->original_name }}">{{ $submission->original_name }}</span>
                                         </a>
                                     @else
                                         <span style="color: #94a3b8;">-</span>
@@ -233,8 +238,13 @@
                                 </td>
                                 <td style="padding: 0.75rem 1rem;">
                                     @if($sub && $sub->file_path)
-                                        <a href="{{ route('submissions.download', $sub) }}" class="btn-open-class" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; background: #eff6ff; color: #2563eb; border-color: #bfdbfe;">
-                                            &#128190; Unduh
+                                        <a href="{{ route('submissions.download', $sub) }}" class="btn-open-class" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; background: #eff6ff; color: #2563eb; border-color: #bfdbfe; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                <polyline points="7 10 12 15 17 10"/>
+                                                <line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                            <span>Unduh</span>
                                         </a>
                                     @else
                                         <span style="color: #cbd5e1;">-</span>

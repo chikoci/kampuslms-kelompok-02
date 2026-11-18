@@ -63,7 +63,7 @@
                         <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">{{ $submission->assignment->course->name }}</span>
                     </div>
                     <span class="badge" style="background: {{ $submission->is_late ? '#fee2e2' : '#ecfdf5' }}; color: {{ $submission->is_late ? '#b91c1c' : '#047857' }}; font-weight: 700; font-size: 0.75rem; border-radius: 8px; padding: 0.25rem 0.65rem; border: 1px solid {{ $submission->is_late ? '#fecaca' : '#a7f3d0' }};">
-                        {{ $submission->is_late ? '⚠️ Terlambat Dikumpulkan' : '✓ Dikumpulkan Tepat Waktu' }}
+                        {{ $submission->is_late ? 'Terlambat Dikumpulkan' : 'Dikumpulkan Tepat Waktu' }}
                     </span>
                 </div>
 
@@ -231,7 +231,7 @@
                 @else
                     <div style="padding: 1.25rem 1.5rem; background: #fffbeb; border-radius: 16px; border: 1.5px solid #fde68a; margin-bottom: 1.5rem;">
                         <p style="color: #b45309; font-weight: 600; margin: 0; font-size: 0.9rem;">
-                            ⏳ Pengumpulan tugas ini belum diberikan penilaian.
+                            Pengumpulan tugas ini belum diberikan penilaian.
                         </p>
                     </div>
                 @endif
@@ -250,7 +250,7 @@
                             </h4>
                             @if($rubric && $rubric->criteria->isNotEmpty())
                                 <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.75rem;">
-                                    ⚖️ Penilaian Berbasis Rubrik Bertingkat
+                                    Penilaian Berbasis Rubrik Bertingkat
                                 </span>
                             @endif
                         </div>
