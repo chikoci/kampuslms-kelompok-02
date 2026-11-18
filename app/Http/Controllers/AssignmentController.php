@@ -74,7 +74,7 @@ class AssignmentController extends Controller
     {
         Gate::authorize('view', $assignment);
 
-        $assignment->load(['course', 'submissions.student', 'submissions.grade']);
+        $assignment->load(['course', 'rubric.criteria.levels', 'submissions.student', 'submissions.grade']);
 
         return view('assignments.show', compact('assignment'));
     }
