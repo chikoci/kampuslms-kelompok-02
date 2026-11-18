@@ -92,11 +92,6 @@
                         @endif
                     </div>
                 </div>
-                <div class="course-chevron" style="width: 28px; height: 28px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; flex-shrink: 0;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                </div>
             </div>
         @empty
             <div class="card-modern" style="text-align: center; padding: 2rem 1rem; color: #64748b; font-size: 0.85rem;">

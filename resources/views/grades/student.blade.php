@@ -87,6 +87,17 @@
                     {{-- 2. DETAIL NILAI TERSEMBUNYI (FOKUS HANYA NAMA TUGAS & NILAI) --}}
                     <div id="grade-body-{{ $c->id }}" class="grade-accordion-content clean-course-body" style="display: none; border-top: 1px solid #f1f5f9; background: #fafbfc; padding: 0.6rem 0.85rem;">
                         
+                        {{-- Ringkasan Nilai Akhir Kumulatif Tepat di Atas (Tidak Perlu Scroll ke Bawah) --}}
+                        @if ($finalScore !== null)
+                            <div style="margin-bottom: 0.5rem; padding: 0.45rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.825rem; color: #334155;">
+                                <span style="font-weight: 600; color: #475569;">Nilai Akhir:</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <strong style="color: #0f172a; font-size: 0.95rem;">{{ number_format($finalScore, 1) }}</strong>
+                                    <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 800; padding: 0.1rem 0.4rem; border-radius: 5px;">{{ $gradeLetter }}</span>
+                                </div>
+                            </div>
+                        @endif
+
                         @if ($c->assignments->isEmpty())
                             <p class="text-muted" style="font-size: 0.825rem; font-style: italic; padding: 0.75rem 0; margin: 0; text-align: center;">
                                 Belum ada tugas pada mata kuliah ini.
@@ -131,17 +142,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
-                            {{-- Ringkasan Nilai Akhir Kumulatif --}}
-                            @if ($finalScore !== null)
-                                <div style="margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: #475569;">
-                                    <span style="font-weight: 600;">Nilai Akhir:</span>
-                                    <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                        <strong style="color: #0f172a; font-size: 0.95rem;">{{ number_format($finalScore, 1) }}</strong>
-                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 800; padding: 0.1rem 0.4rem; border-radius: 5px;">{{ $gradeLetter }}</span>
-                                    </div>
-                                </div>
-                            @endif
                         @endif
                     </div>
 
