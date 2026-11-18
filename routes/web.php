@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
 
     // CRUD Mata Kuliah (Otorisasi via CoursePolicy)
     Route::resource('courses', CourseController::class);
+    Route::get('/courses/{course}/submissions', [CourseController::class, 'submissions'])->name('courses.submissions');
     Route::post('/courses/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
     Route::delete('/courses/{course}/unenroll/{student}', [CourseController::class, 'unenroll'])->name('courses.unenroll');
 

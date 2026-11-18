@@ -1,8 +1,10 @@
 {{-- Halaman Daftar Pengguna --}}
-<x-layout title="Daftar Pengguna - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Pengguna']
-]">
+<x-layout title="Daftar Pengguna - KampusLMS"
+    :backUrl="route('dashboard')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Pengguna']
+    ]">
 
     {{-- A. PAGE BANNER HEADER DENGAN ILUSTRASI MASKOT KAVI --}}
     <div class="page-banner-card">
@@ -17,22 +19,16 @@
         </div>
         <div class="page-banner-actions-wrap" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
             @can('create', App\Models\User::class)
-                <a href="{{ route('register') }}" class="btn btn-primary btn-sm page-banner-btn" style="border-radius: 9999px; padding: 0.55rem 1.35rem; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; text-decoration: none;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <line x1="19" y1="8" x2="19" y2="14"/>
-                        <line x1="22" y1="11" x2="16" y2="11"/>
+                <a href="{{ route('register') }}" class="btn btn-primary btn-sm page-banner-btn" style="border-radius: 8px; padding: 0.35rem 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700; text-decoration: none;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
-                    + Tambah Pengguna
+                    <span>Pengguna</span>
                 </a>
             @endcan
             <div class="kavi-banner-composition">
-                <div class="kavi-banner-blob"></div>
-                <div class="kavi-sparkle s1" style="top: 8px; left: 10px; font-size: 0.85rem;">&#10022;</div>
-                <div class="kavi-sparkle s2" style="top: 20px; right: 8px; font-size: 0.8rem;">&#10022;</div>
                 <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Manajemen Pengguna" class="kavi-banner-img">
-                <div class="kavi-pedestal-shadow" style="width: 100px; height: 12px; bottom: -2px;"></div>
             </div>
         </div>
     </div>
@@ -83,9 +79,11 @@
         </form>
     </div>
 
-    {{-- C. TABEL DAFTAR PENGGUNA --}}
-    <div class="card-modern" style="padding: 0; overflow: hidden; margin-top: 1.5rem;">
-        <div style="overflow-x: auto;">
+    {{-- C. TABEL DAFTAR PENGGUNA (DESKTOP & MOBILE RESPONSIVE) --}}
+    <div class="card-modern" style="padding: 0; overflow: hidden; margin-top: 1.25rem;">
+        
+        {{-- 1. Desktop Table View (> 767px) --}}
+        <div class="users-desktop-table" style="overflow-x: auto;">
             <table class="data-table" style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
@@ -164,6 +162,63 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- 2. Mobile Cards View (<= 767px) --}}
+        <div class="users-mobile-cards" style="display: none; flex-direction: column;">
+            @forelse ($users as $user)
+                @php
+                    $uNames = explode(' ', $user->name);
+                    $uInitials = count($uNames) >= 2 
+                        ? strtoupper(substr($uNames[0], 0, 1) . substr($uNames[1], 0, 1))
+                        : strtoupper(substr($user->name, 0, 2));
+                    $uBg = $user->role === 'admin' ? '#fee2e2' : ($user->role === 'dosen' ? '#dbeafe' : '#d1fae5');
+                    $uColor = $user->role === 'admin' ? '#ef4444' : ($user->role === 'dosen' ? '#2563eb' : '#10b981');
+                @endphp
+                <div class="user-card-item" style="padding: 0.75rem 0.85rem; border-bottom: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 0.45rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.6rem; min-width: 0; flex: 1;">
+                            <div style="width: 34px; height: 34px; border-radius: 10px; background: {{ $uBg }}; color: {{ $uColor }}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; flex-shrink: 0;">
+                                {{ $uInitials }}
+                            </div>
+                            <div style="min-width: 0; flex: 1;">
+                                <a href="{{ route('users.show', $user) }}" style="font-weight: 700; color: #0f172a; text-decoration: none; font-size: 0.9rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2;">
+                                    {{ $user->name }}
+                                </a>
+                                <div style="font-size: 0.72rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    {{ $user->email }}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge {{ $user->role === 'admin' ? 'badge-danger' : ($user->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.68rem; text-transform: capitalize; padding: 0.15rem 0.45rem; border-radius: 6px; flex-shrink: 0;">
+                            {{ $user->role }}
+                        </span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #64748b; padding-top: 0.35rem; border-top: 1px dashed #f1f5f9;">
+                        <span>NIM/NIP: <strong style="color: #334155; font-family: monospace;">{{ $user->nim_nip ?? '-' }}</strong></span>
+                        <div style="display: flex; gap: 0.35rem; align-items: center;">
+                            <a href="{{ route('users.show', $user) }}" class="btn-open-class" style="padding: 0.25rem 0.6rem; font-size: 0.72rem;">Detail</a>
+                            @can('update', $user)
+                                <a href="{{ route('users.edit', $user) }}" class="btn-open-class" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; color: #2563eb; border-color: #bfdbfe; background: #eff6ff;">Edit</a>
+                            @endcan
+                            @can('delete', $user)
+                                <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $user->name }}?');" style="margin: 0; display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-open-class" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; color: #dc2626; border-color: #fecaca; background: #fef2f2;">Hapus</button>
+                                </form>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="empty-state-card" style="padding: 2.5rem 1.5rem; text-align: center;">
+                    <img src="{{ asset('images/illustrations/calendar-empty.png') }}" alt="Pengguna Tidak Ditemukan" class="empty-state-img">
+                    <p class="empty-state-text">Belum ada data pengguna yang sesuai dengan filter pencarian Anda.</p>
+                </div>
+            @endforelse
+        </div>
+
     </div>
 
     {{-- Link Pagination --}}

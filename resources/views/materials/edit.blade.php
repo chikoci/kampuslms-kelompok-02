@@ -1,14 +1,15 @@
-<x-layout title="Edit Materi: {{ $material->title }} - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $material->course->name, 'url' => route('courses.show', $material->course)],
-    ['label' => $material->title, 'url' => route('materials.show', $material)],
-    ['label' => 'Edit Materi']
-]">
-    <div style="max-width: 700px; margin: 2rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f3f4f6;">
-            <a href="{{ route('courses.show', $material->course_id) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">&larr; Kembali ke {{ $material->course->name }}</a>
-            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-top: 0.5rem;">Edit Materi Perkuliahan</h1>
+<x-layout title="Edit Materi: {{ $material->title }} - KampusLMS"
+    :backUrl="route('materials.show', $material)"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $material->course->name, 'url' => route('courses.show', $material->course)],
+        ['label' => $material->title, 'url' => route('materials.show', $material)],
+        ['label' => 'Edit Materi']
+    ]">
+    <div style="max-width: 700px; margin: 1.5rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9;">
+            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0 0 0.35rem 0;">Edit Materi Perkuliahan</h1>
             <p style="color: #6b7280; font-size: 0.875rem;">Mata Kuliah: <strong>{{ $material->course->name }}</strong></p>
         </div>
 

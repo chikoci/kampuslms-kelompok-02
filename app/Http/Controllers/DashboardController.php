@@ -79,7 +79,6 @@ class DashboardController extends Controller
             ->doesntHave('grade')
             ->with(['assignment.course', 'student'])
             ->latest()
-            ->take(8)
             ->get();
 
         $metrics = Cache::remember("dashboard.dosen.{$user->id}.metrics", now()->addMinutes(10), function () use ($myCourses, $courseIds, $pendingSubmissions) {
@@ -87,6 +86,7 @@ class DashboardController extends Controller
                 'courses_count' => $myCourses->count(),
                 'total_students' => $myCourses->sum('students_count'),
                 'total_assignments' => Assignment::whereIn('course_id', $courseIds)->count(),
+                'total_submissions' => Submission::whereHas('assignment', fn ($q) => $q->whereIn('course_id', $courseIds))->count(),
                 'pending_grading_count' => $pendingSubmissions->count(),
             ];
         });

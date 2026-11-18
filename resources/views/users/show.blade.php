@@ -1,17 +1,15 @@
-<x-layout title="Detail: {{ $user->name }} - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Pengguna', 'url' => route('users.index')],
-    ['label' => $user->name]
-]">
+<x-layout title="Detail: {{ $user->name }} - KampusLMS"
+    :backUrl="route('users.index')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Pengguna', 'url' => route('users.index')],
+        ['label' => $user->name]
+    ]">
 
     {{-- Header Banner Profil Pengguna --}}
-    <div class="card-modern" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);">
-        {{-- Toolbar Atas: Navigasi Kembali & Aksi Edit/Hapus --}}
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.75rem;">
-            <a href="{{ route('users.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-                &larr; Kembali ke Daftar Pengguna
-            </a>
-
+    <div class="card-modern" style="margin-bottom: 1.5rem;">
+        {{-- Toolbar Atas: Aksi Edit/Hapus Pengguna --}}
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.75rem;">
             <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                 @can('update', $user)
                     <a href="{{ route('users.edit', $user) }}" class="btn btn-secondary btn-sm" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">

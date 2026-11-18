@@ -5,117 +5,83 @@
         {{-- DASHBOARD ADMINISTRATOR SISTEM                           --}}
         {{-- ======================================================== --}}
 
-        {{-- 1. HERO WELCOME CARD ADMINISTRATOR (DENGAN AKSI UTAMA & MASKOT KAVI) --}}
-        <div class="hero-welcome-card admin-hero-card">
-            <div class="hero-welcome-left">
-                <div class="hero-welcome-text">
-                    <span class="badge badge-primary" style="margin-bottom: 0.5rem; display: inline-block; font-size: 0.75rem; font-weight: 700;">Dashboard Administrator</span>
-                    <h1 class="hero-welcome-title">Hi, {{ auth()->user()->name }}!</h1>
-                    <p class="hero-welcome-subtitle">Ringkasan manajemen sistem, infrastruktur data, dan kontrol pengguna KampusLMS.</p>
+        {{-- 1. HERO WELCOME ADMINISTRATOR TERPADU --}}
+        <div class="admin-hero-unified">
+            <div class="admin-hero-unified-left">
+                <span class="admin-unified-badge">Dashboard Admin</span>
+                <h1 class="admin-unified-title">Hi, {{ auth()->user()->name }}!</h1>
+                <p class="admin-unified-subtitle">Ringkasan sistem dan kontrol data civitas akademika.</p>
+
+                {{-- Tiga Card Statistik Sejajar --}}
+                <div class="admin-unified-stats-row">
+                    {{-- Stat 1: Pengguna --}}
+                    <a href="{{ route('users.index') }}" class="admin-mini-stat-card">
+                        <div class="admin-mini-stat-icon blue">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <div class="admin-mini-stat-info">
+                            <span class="admin-mini-stat-label">Pengguna</span>
+                            <span class="admin-mini-stat-value">{{ $metrics['users_count'] }}</span>
+                        </div>
+                    </a>
+
+                    {{-- Stat 2: Mata Kuliah --}}
+                    <a href="{{ route('courses.index') }}" class="admin-mini-stat-card">
+                        <div class="admin-mini-stat-icon green">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                                <path d="M6 6h10"/>
+                            </svg>
+                        </div>
+                        <div class="admin-mini-stat-info">
+                            <span class="admin-mini-stat-label">Mata Kuliah</span>
+                            <span class="admin-mini-stat-value">{{ $metrics['courses_count'] }}</span>
+                        </div>
+                    </a>
+
+                    {{-- Stat 3: Tugas --}}
+                    <a href="{{ route('courses.index') }}" class="admin-mini-stat-card">
+                        <div class="admin-mini-stat-icon yellow">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                        </div>
+                        <div class="admin-mini-stat-info">
+                            <span class="admin-mini-stat-label">Tugas</span>
+                            <span class="admin-mini-stat-value">{{ $metrics['assignments_count'] }}</span>
+                        </div>
+                    </a>
                 </div>
 
-                {{-- Tombol Aksi Utama Administrator --}}
-                <div class="admin-actions-group">
-                    <a href="{{ route('register') }}" class="btn btn-primary" style="padding: 0.65rem 1.35rem; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <line x1="19" y1="8" x2="19" y2="14"/>
-                            <line x1="22" y1="11" x2="16" y2="11"/>
+                {{-- Dua Tombol Aksi Simpel Menggunakan Simbol (+) --}}
+                <div class="admin-unified-actions-row">
+                    <a href="{{ route('register') }}" class="admin-btn-dark">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
                         </svg>
-                        Daftarkan Pengguna
+                        <span>Pengguna</span>
                     </a>
-                    <a href="{{ route('courses.create') }}" class="btn btn-secondary" style="padding: 0.65rem 1.35rem; font-weight: 700; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.5rem; background: #ffffff; border: 1.5px solid #cbd5e1; color: #1e293b;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 5v14M5 12h14"/>
+                    <a href="{{ route('courses.create') }}" class="admin-btn-light">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
                         </svg>
-                        Tambah Mata Kuliah
+                        <span>Mata Kuliah</span>
                     </a>
                 </div>
             </div>
 
-            {{-- Integrasi Komposisi Maskot KAVI untuk Admin --}}
-            <div class="hero-welcome-right">
-                <div class="kavi-hero-composition">
-                    <div class="kavi-hero-blob"></div>
-                    <div class="kavi-sparkle s1">&#10022;</div>
-                    <div class="kavi-sparkle s2">&#10022;</div>
-                    <div class="kavi-sparkle s3">&#10022;</div>
-                    <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Administrator" class="kavi-hero-img">
-                    <div class="kavi-pedestal-shadow"></div>
+            {{-- Ilustrasi Maskot Kavi di Sisi Kanan (Hanya Ditampilkan di Layar Desktop) --}}
+            <div class="admin-hero-unified-right">
+                <div class="kavi-hero-composition" style="width: 140px; height: 140px;">
+                    <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Administrator" class="kavi-hero-img" style="max-height: 130px;">
                 </div>
             </div>
-        </div>
-
-        {{-- 2. GRID 3 KARTU STATISTIK SISTEM (INTERAKTIF & SEIMBANG) --}}
-        <div class="stats-overview-grid">
-            {{-- Card 1: Total Pengguna --}}
-            <a href="{{ route('users.index') }}" class="stat-card-modern">
-                <div class="stat-card-top">
-                    <div class="stat-icon-wrapper blue">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </div>
-                    <span class="stat-tag blue">Civitas</span>
-                </div>
-                <div class="stat-main">
-                    <div class="stat-number">{{ $metrics['users_count'] }}</div>
-                    <div class="stat-label">Total Pengguna Terdaftar</div>
-                </div>
-                <div class="stat-footer">
-                    <span class="stat-detail">{{ $metrics['students_count'] }} Mahasiswa &bull; {{ $metrics['lecturers_count'] }} Dosen</span>
-                    <span class="stat-arrow">&rarr;</span>
-                </div>
-            </a>
-
-            {{-- Card 2: Total Mata Kuliah --}}
-            <a href="{{ route('courses.index') }}" class="stat-card-modern">
-                <div class="stat-card-top">
-                    <div class="stat-icon-wrapper green">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                            <path d="M6 6h10"/>
-                            <path d="M6 10h10"/>
-                        </svg>
-                    </div>
-                    <span class="stat-tag green">Kurikulum</span>
-                </div>
-                <div class="stat-main">
-                    <div class="stat-number">{{ $metrics['courses_count'] }}</div>
-                    <div class="stat-label">Mata Kuliah Terdaftar</div>
-                </div>
-                <div class="stat-footer">
-                    <span class="stat-detail">{{ $metrics['materials_count'] }} Materi Pembelajaran</span>
-                    <span class="stat-arrow">&rarr;</span>
-                </div>
-            </a>
-
-            {{-- Card 3: Tugas & Evaluasi --}}
-            <a href="{{ route('courses.index') }}" class="stat-card-modern">
-                <div class="stat-card-top">
-                    <div class="stat-icon-wrapper yellow">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                        </svg>
-                    </div>
-                    <span class="stat-tag yellow">Evaluasi</span>
-                </div>
-                <div class="stat-main">
-                    <div class="stat-number">{{ $metrics['assignments_count'] }}</div>
-                    <div class="stat-label">Tugas & Evaluasi</div>
-                </div>
-                <div class="stat-footer">
-                    <span class="stat-detail">{{ $metrics['submissions_count'] }} Total Pengumpulan</span>
-                    <span class="stat-arrow">&rarr;</span>
-                </div>
-            </a>
         </div>
 
         {{-- 3. BARIS BAWAH: PENGGUNA TERBARU & MATA KULIAH TERBARU (2 KOLOM SEIMBANG) --}}
@@ -134,16 +100,20 @@
                     </h3>
                     <a href="{{ route('users.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @foreach ($recentUsers as $usr)
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 12px; background: #f8fafc; border: 1px solid #eef2f6; cursor: pointer; transition: all 0.15s ease;" onclick="window.location='{{ route('users.show', $usr) }}'">
-                            <div>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a;">{{ $usr->name }}</div>
-                                <div style="font-size: 0.75rem; color: #64748b;">{{ $usr->email }}</div>
+                        <div class="course-card-compact" onclick="window.location='{{ route('users.show', $usr) }}'" style="margin-bottom: 0; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; overflow: hidden;">
+                                <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
+                                    <h4 class="course-compact-title" style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $usr->name }}</h4>
+                                    <span class="badge {{ $usr->role === 'admin' ? 'badge-danger' : ($usr->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem; text-transform: capitalize; flex-shrink: 0;">
+                                        {{ $usr->role }}
+                                    </span>
+                                </div>
+                                <div class="course-compact-meta" style="margin-top: 0.2rem; min-width: 0; overflow: hidden;">
+                                    <span style="font-size: 0.72rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">{{ $usr->email }}</span>
+                                </div>
                             </div>
-                            <span class="badge {{ $usr->role === 'admin' ? 'badge-danger' : ($usr->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; text-transform: capitalize;">
-                                {{ $usr->role }}
-                            </span>
                         </div>
                     @endforeach
                 </div>
@@ -162,15 +132,16 @@
                     </h3>
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @foreach ($recentCourses as $c)
-                        <div class="course-card-item" onclick="window.location='{{ route('courses.show', $c) }}'" style="cursor: pointer;">
-                            <div class="course-info-col">
-                                <span class="badge-code-modern">{{ $c->code }}</span>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a; margin-top: 0.25rem;">{{ $c->name }}</div>
-                                <div style="font-size: 0.75rem; color: #64748b;">Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}</div>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $c) }}'" style="margin-bottom: 0; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; overflow: hidden;">
+                                <h4 class="course-compact-title" style="margin: 0 0 0.2rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $c->name }}</h4>
+                                <div class="course-compact-meta" style="min-width: 0; overflow: hidden;">
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">{{ $c->code }}</span>
+                                    <span style="font-size: 0.72rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">&bull; Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
+                                </div>
                             </div>
-                            <a href="{{ route('courses.show', $c) }}" class="btn-open-class" onclick="event.stopPropagation()">Buka &rarr;</a>
                         </div>
                     @endforeach
                 </div>
@@ -197,60 +168,34 @@
                     <div class="hero-metric-row">
                         {{-- Mata Kuliah Diampu --}}
                         <div class="hero-metric-item">
-                            <div class="hero-metric-icon blue">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                    <path d="M6 6h10"/>
-                                    <path d="M6 10h10"/>
-                                </svg>
-                            </div>
                             <div class="hero-metric-text">
-                                <span class="label">Mata Kuliah<br>Diampu</span>
+                                <span class="label">Mata Kuliah Diampu</span>
                                 <span class="value">{{ $metrics['courses_count'] }}</span>
                             </div>
                         </div>
 
-                        {{-- Total Tugas --}}
+                        {{-- Total Tugas Dikumpulkan --}}
                         <div class="hero-metric-item">
-                            <div class="hero-metric-icon green">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                    <line x1="16" y1="13" x2="8" y2="13"/>
-                                    <line x1="16" y1="17" x2="8" y2="17"/>
-                                </svg>
-                            </div>
                             <div class="hero-metric-text">
-                                <span class="label">Total Tugas<br>Diterbitkan</span>
-                                <span class="value">{{ $metrics['total_assignments'] }}</span>
+                                <span class="label">Tugas Dikumpulkan</span>
+                                <span class="value">{{ $metrics['total_submissions'] ?? ($metrics['total_assignments'] ?? 0) }}</span>
                             </div>
                         </div>
 
                         {{-- Menunggu Penilaian --}}
                         <div class="hero-metric-item">
-                            <div class="hero-metric-icon yellow">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                            </div>
                             <div class="hero-metric-text">
-                                <span class="label">Menunggu<br>Penilaian</span>
+                                <span class="label">Menunggu Penilaian</span>
                                 <span class="value">{{ $metrics['pending_grading_count'] }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Integrasi Komposisi Maskot KAVI untuk Dosen --}}
+                {{-- Komposisi Maskot KAVI untuk Dosen (Clean & Ringan) --}}
                 <div class="hero-welcome-right">
-                    <div class="kavi-hero-composition">
-                        <div class="kavi-hero-blob"></div>
-                        <div class="kavi-sparkle s1">&#10022;</div>
-                        <div class="kavi-sparkle s2">&#10022;</div>
-                        <div class="kavi-sparkle s3">&#10022;</div>
-                        <img src="{{ asset('images/illustrations/kavi-belajar.png') }}" alt="Kavi Dosen Pengampu" class="kavi-hero-img">
-                        <div class="kavi-pedestal-shadow"></div>
+                    <div class="kavi-hero-composition" style="width: 150px; height: 150px;">
+                        <img src="{{ asset('images/illustrations/kavi-belajar.png') }}" alt="Kavi Dosen Pengampu" class="kavi-hero-img" style="max-height: 140px;">
                     </div>
                 </div>
             </div>
@@ -320,21 +265,16 @@
                     </h3>
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @forelse ($myCourses as $course)
-                        <div class="course-card-item" onclick="window.location='{{ route('courses.show', $course) }}'" style="cursor: pointer;">
-                            <div class="course-info-col">
-                                <span class="badge-code-modern">{{ $course->code }}</span>
-                                <h4 class="course-title">{{ $course->name }}</h4>
-                                <div class="course-meta-text">
-                                    <span>{{ $course->students_count }} Mahasiswa</span> &bull;
-                                    <span>{{ $course->sks }} SKS</span>
-                                </div>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; overflow: hidden;">
+                                <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $course->name }}</h4>
+                                <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">[{{ $course->code }}]</span>
                             </div>
-                            <a href="{{ route('courses.show', $course) }}" class="btn-open-class" onclick="event.stopPropagation()">Buka Kelas &rarr;</a>
                         </div>
                     @empty
-                        <p class="text-muted" style="text-align: center; padding: 2rem 0;">Anda belum ditugaskan untuk mengampu mata kuliah.</p>
+                        <p class="text-muted" style="text-align: center; padding: 1.5rem 0; margin: 0; font-size: 0.85rem;">Anda belum ditugaskan untuk mengampu mata kuliah.</p>
                     @endforelse
                 </div>
             </div>
@@ -351,17 +291,35 @@
                         Pengumpulan Belum Dinilai
                     </h3>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    @forelse ($pendingSubmissions as $submission)
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 12px; background: #f8fafc; border: 1px solid #eef2f6; cursor: pointer; transition: all 0.15s ease;" onclick="window.location='{{ route('submissions.show', $submission) }}'">
-                            <div>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: #0f172a;">{{ $submission->student?->name }}</div>
-                                <div style="font-size: 0.75rem; color: #64748b;">{{ $submission->assignment?->title }} ({{ $submission->assignment?->course?->code }})</div>
+
+                @php
+                    $pendingByCourse = $pendingSubmissions->groupBy(fn ($item) => $item->assignment?->course_id);
+                @endphp
+
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                    @forelse ($pendingByCourse as $cId => $courseSubmissions)
+                        @php
+                            $targetCourse = $courseSubmissions->first()?->assignment?->course;
+                            $countPending = $courseSubmissions->count();
+                        @endphp
+                        @if ($targetCourse)
+                            <div class="course-card-compact" onclick="window.location='{{ route('courses.submissions', $targetCourse) }}'" title="Lihat pengumpulan {{ $targetCourse->name }}" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                                <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; overflow: hidden;">
+                                    <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $targetCourse->name }}</h4>
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">({{ $targetCourse->code }})</span>
+                                </div>
+                                <div style="flex-shrink: 0;">
+                                    <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px; white-space: nowrap;">
+                                        {{ $countPending }} Mahasiswa
+                                    </span>
+                                </div>
                             </div>
-                            <a href="{{ route('submissions.show', $submission) }}" class="btn-open-class" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="event.stopPropagation()">Beri Nilai &rarr;</a>
-                        </div>
+                        @endif
                     @empty
-                        <p class="text-muted" style="text-align: center; padding: 2rem 0;">Semua pengumpulan sudah selesai dinilai. Kerja bagus!</p>
+                        <div style="text-align: center; padding: 1.5rem 1rem; border: 1px dashed #e2e8f0; border-radius: 10px; background: #f8fafc;">
+                            <div style="font-weight: 600; color: #0f172a; font-size: 0.85rem;">Semua Selesai Dinilai</div>
+                            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">Tidak ada tugas yang menunggu evaluasi.</div>
+                        </div>
                     @endforelse
                 </div>
             </div>
@@ -384,61 +342,38 @@
                         <p class="hero-welcome-subtitle">Selamat datang di Kampus LMS!</p>
                     </div>
 
+                    {{-- 3 Kartu Metrik Ringkas Mahasiswa (Simple: Teks Label + Angka Total) --}}
                     <div class="hero-metric-row">
                         {{-- Mata Kuliah yang Diikuti --}}
                         <div class="hero-metric-item">
-                            <div class="hero-metric-icon blue">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                                    <path d="M6 6h10"/>
-                                    <path d="M6 10h10"/>
-                                </svg>
-                            </div>
                             <div class="hero-metric-text">
-                                <span class="label">Mata Kuliah<br>yang Diikuti</span>
+                                <span class="label">Mata Kuliah yang Diikuti</span>
                                 <span class="value">{{ $metrics['courses_count'] }}</span>
                             </div>
                         </div>
 
                         {{-- Tugas Mendatang --}}
                         <div class="hero-metric-item">
-                            <div class="hero-metric-icon yellow">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                            </div>
                             <div class="hero-metric-text">
-                                <span class="label">Tugas<br>Mendatang</span>
+                                <span class="label">Tugas Mendatang</span>
                                 <span class="value">{{ $metrics['upcoming_count'] }}</span>
                             </div>
                         </div>
 
                         {{-- Tugas Terkumpul --}}
                         <div class="hero-metric-item">
-                            <div class="hero-metric-icon green">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                    <polyline points="22 4 12 14.01 9 11.01"/>
-                                </svg>
-                            </div>
                             <div class="hero-metric-text">
-                                <span class="label">Tugas<br>Terkumpul</span>
+                                <span class="label">Tugas Terkumpul</span>
                                 <span class="value">{{ $metrics['submitted_count'] }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Integrasi Komposisi Maskot KAVI --}}
+                {{-- Komposisi Maskot KAVI untuk Mahasiswa (Clean & Ringan) --}}
                 <div class="hero-welcome-right">
-                    <div class="kavi-hero-composition">
-                        <div class="kavi-hero-blob"></div>
-                        <div class="kavi-sparkle s1">&#10022;</div>
-                        <div class="kavi-sparkle s2">&#10022;</div>
-                        <div class="kavi-sparkle s3">&#10022;</div>
-                        <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Maskot KampusLMS" class="kavi-hero-img">
-                        <div class="kavi-pedestal-shadow"></div>
+                    <div class="kavi-hero-composition" style="width: 150px; height: 150px;">
+                        <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Maskot KampusLMS" class="kavi-hero-img" style="max-height: 140px;">
                     </div>
                 </div>
             </div>
@@ -522,35 +457,23 @@
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @forelse ($enrolledCourses as $course)
-                        {{-- Sesuai aturan: TIDAK MENGGUNAKAN LOGO/ICON BESAR DI SEBELAH KIRI CARD --}}
-                        <div class="course-card-item" onclick="window.location='{{ route('courses.show', $course) }}'" style="cursor: pointer;">
-                            <div class="course-info-col">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span class="badge-code-modern">{{ $course->code }}</span>
-                                    <span style="font-size: 0.75rem; color: #64748b;">{{ $course->sks }} SKS</span>
-                                </div>
-                                <h4 class="course-title">{{ $course->name }}</h4>
-                                <div class="course-meta-text">
-                                    <span>Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
-                                </div>
-                            </div>
-                            <div class="course-actions-col">
-                                <a href="{{ route('courses.show', $course) }}" class="btn-open-class" onclick="event.stopPropagation()">
-                                    Buka Kelas &rarr;
-                                </a>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; overflow: hidden;">
+                                <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $course->name }}</h4>
+                                <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">[{{ $course->code }}]</span>
                             </div>
                         </div>
                     @empty
-                        <div class="empty-state-card">
+                        <div class="empty-state-card" style="padding: 1.5rem 1rem;">
                             <p class="empty-state-text">Anda belum terdaftar pada mata kuliah apapun.</p>
                         </div>
                     @endforelse
                 </div>
             </div>
 
-            {{-- 2. TUGAS MENDATANG --}}
+            {{-- 2. TUGAS MENDATANG (LIST RINGKAS: JUDUL TUGAS UTAMA, KURSUS & KODE DI BAWAHNYA) --}}
             <div class="card-modern">
                 <div class="card-header-row">
                     <h3 class="card-header-title">
@@ -566,37 +489,33 @@
                 </div>
 
                 @if ($upcomingAssignments->isNotEmpty())
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                         @foreach ($upcomingAssignments as $assignment)
-                            <div class="course-card-item" onclick="window.location='{{ route('assignments.show', $assignment) }}'" style="cursor: pointer;">
-                                <div class="course-info-col">
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <span class="badge badge-warning" style="font-size: 0.7rem;">
-                                            Tenggat: {{ $assignment->due_at->translatedFormat('d M Y, H:i') }}
-                                        </span>
+                            <div class="course-card-compact" onclick="window.location='{{ route('assignments.show', $assignment) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.55rem 0.75rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                                <div style="flex: 1; min-width: 0; overflow: hidden;">
+                                    {{-- Nama Tugas Utama --}}
+                                    <div style="font-size: 0.85rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.15rem;">
+                                        {{ $assignment->title }}
                                     </div>
-                                    <h4 class="course-title">
-                                        <a href="{{ route('assignments.show', $assignment) }}" style="color: inherit; text-decoration: none;">
-                                            {{ $assignment->title }}
-                                        </a>
-                                    </h4>
-                                    <div class="course-meta-text">
-                                        <span>Mata Kuliah: {{ $assignment->course?->name }}</span>
+                                    {{-- Mata Kuliah & Kode di Bawahnya (Kecil) --}}
+                                    <div style="font-size: 0.72rem; color: #64748b; display: flex; align-items: center; gap: 0.35rem; min-width: 0; overflow: hidden;">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">{{ $assignment->course?->name }}</span>
+                                        @if ($assignment->course?->code)
+                                            <span class="badge-code-modern" style="font-size: 0.65rem; padding: 0.08rem 0.35rem; flex-shrink: 0;">({{ $assignment->course?->code }})</span>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="course-actions-col">
-                                    <a href="{{ route('assignments.show', $assignment) }}" class="btn-open-class" onclick="event.stopPropagation()">
-                                        Kumpulkan &rarr;
-                                    </a>
-                                </div>
+                                <span class="badge" style="background: #fef3c7; color: #b45309; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px; flex-shrink: 0; white-space: nowrap;">
+                                    {{ $assignment->due_at->translatedFormat('d M, H:i') }}
+                                </span>
                             </div>
                         @endforeach
                     </div>
                 @else
                     {{-- Empty State dengan Ilustrasi Kalender Sesuai Referensi Visual --}}
-                    <div class="empty-state-card" style="padding: 2.75rem 1.5rem;">
-                        <img src="{{ asset('images/illustrations/calendar-empty.png') }}" alt="Tidak Ada Tugas Mendatang" class="empty-state-img">
-                        <p class="empty-state-text">Tidak ada tugas mendatang saat ini. Kerja bagus!</p>
+                    <div class="empty-state-card" style="padding: 1.5rem 1rem;">
+                        <img src="{{ asset('images/illustrations/calendar-empty.png') }}" alt="Tidak Ada Tugas Mendatang" class="empty-state-img" style="max-height: 50px;">
+                        <p class="empty-state-text" style="font-size: 0.825rem;">Tidak ada tugas mendatang saat ini. Kerja bagus!</p>
                     </div>
                 @endif
             </div>

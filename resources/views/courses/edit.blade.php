@@ -1,9 +1,11 @@
-<x-layout title="Edit Mata Kuliah - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $course->name, 'url' => route('courses.show', $course)],
-    ['label' => 'Edit Mata Kuliah']
-]">
+<x-layout title="Edit Mata Kuliah - KampusLMS"
+    :backUrl="route('courses.show', $course)"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $course->name, 'url' => route('courses.show', $course)],
+        ['label' => 'Edit Mata Kuliah']
+    ]">
 
     <div class="form-card" style="margin-top: 1rem;">
         {{-- Card Header Terpadu di Dalam 1 Card --}}

@@ -1,14 +1,15 @@
-<x-layout title="Edit Tugas: {{ $assignment->title }}" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $assignment->course->name, 'url' => route('courses.show', $assignment->course)],
-    ['label' => $assignment->title, 'url' => route('assignments.show', $assignment)],
-    ['label' => 'Edit Tugas']
-]">
-    <div style="max-width: 750px; margin: 2rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f3f4f6;">
-            <a href="{{ route('assignments.show', $assignment) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">&larr; Kembali ke Detail Tugas</a>
-            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-top: 0.5rem;">Edit Tugas Perkuliahan</h1>
+<x-layout title="Edit Tugas: {{ $assignment->title }}"
+    :backUrl="route('assignments.show', $assignment)"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $assignment->course->name, 'url' => route('courses.show', $assignment->course)],
+        ['label' => $assignment->title, 'url' => route('assignments.show', $assignment)],
+        ['label' => 'Edit Tugas']
+    ]">
+    <div style="max-width: 750px; margin: 1.5rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9;">
+            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0 0 0.35rem 0;">Edit Tugas Perkuliahan</h1>
             <p style="color: #6b7280; font-size: 0.875rem;">Mata Kuliah: <strong>{{ $assignment->course->name }}</strong></p>
         </div>
 

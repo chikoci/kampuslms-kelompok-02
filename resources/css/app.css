@@ -1,16 +1,3 @@
-@import 'tailwindcss';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source "../**/*.blade.php";
-@source "../**/*.js";
-@source "../**/*.vue";
-
-@theme {
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-@layer components {
 /* ==========================================================================
    KampusLMS - Custom Theme & Layout Styles
    ========================================================================== */
@@ -964,8 +951,6 @@ textarea.form-control {
     background-color: #ffffff !important;
     color: #334155 !important;
 }
-}
-
 
 
 /* ==========================================================================
@@ -983,9 +968,9 @@ textarea.form-control {
     --text-muted: #64748b;
     --border-soft: #e2e8f0;
     --border-card: #eef2f6;
-    --shadow-soft: 0 4px 20px -2px rgba(148, 163, 184, 0.08);
-    --shadow-hover: 0 10px 25px -5px rgba(37, 99, 235, 0.08);
-    --radius-card: 24px;
+    --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    --radius-card: 16px;
     --radius-pill: 9999px;
 }
 
@@ -1378,11 +1363,11 @@ body.lms-modern {
 
 /* Hero Banners */
 .hero-welcome-card {
-    background: linear-gradient(135deg, #ffffff 0%, #eef5ff 100%);
-    border-radius: 28px;
-    border: 1px solid #e0ebf9;
-    box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.08);
-    padding: 2rem 2.25rem;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    padding: 1.75rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1641,6 +1626,20 @@ body.lms-modern {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+}
+
+/* Responsive View Utilities for Grade & Users */
+.grade-mobile-view {
+    display: none;
+}
+.grade-desktop-view {
+    display: block;
+}
+.users-mobile-cards {
+    display: none;
+}
+.users-desktop-table {
+    display: block;
 }
 
 /* Grade Accordion Card (Nilai Saya Vertikal) */
@@ -2089,6 +2088,15 @@ img {
 }
 
 /* 3. Dashboard Responsive Grids */
+.dashboard-top-grid,
+.dashboard-bottom-grid,
+.admin-dashboard-grid {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
 .dashboard-top-grid {
     display: grid;
     grid-template-columns: 1.8fr 1.2fr;
@@ -2099,8 +2107,8 @@ img {
 
 .dashboard-bottom-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
 }
 
 /* 4. Table Containers - Isolate Horizontal Scroll */
@@ -2152,6 +2160,7 @@ img {
         overflow-x: hidden !important;
         max-width: 100vw !important;
         width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .app-shell {
@@ -2160,6 +2169,7 @@ img {
         max-width: 100vw !important;
         overflow-x: hidden !important;
         min-height: 100vh !important;
+        box-sizing: border-box !important;
     }
 
     .app-main {
@@ -2168,6 +2178,42 @@ img {
         max-width: 100% !important;
         min-width: 0 !important;
         margin-left: 0 !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    main {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Sticky Header Stay di Mobile */
+    .sticky-app-header-area {
+        position: -webkit-sticky !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: #f0f4f9 !important;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+        margin-top: -0.85rem !important;
+        margin-left: -0.85rem !important;
+        margin-right: -0.85rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.5rem !important;
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+        margin-bottom: 0.85rem !important;
+    }
+
+    /* Responsive Submissions: Tampilkan Mobile Cards, Sembunyikan Tabel */
+    .submission-mobile-cards {
+        display: flex !important;
+    }
+    .submission-desktop-table {
+        display: none !important;
     }
 
     /* Header */
@@ -2370,14 +2416,15 @@ img {
     }
 
     /* Grids on Mobile */
-    .dashboard-top-grid {
-        grid-template-columns: 1fr !important;
+    .dashboard-top-grid,
+    .dashboard-bottom-grid,
+    .admin-dashboard-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
         gap: 0.85rem !important;
-    }
-
-    .dashboard-bottom-grid {
-        grid-template-columns: 1fr !important;
-        gap: 0.85rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
     }
 
     /* Hilangkan panel notifikasi di dashboard mobile sesuai instruksi user (sudah ada di lonceng navbar) */
@@ -2614,20 +2661,22 @@ img {
     .course-card-item {
         flex-direction: column !important;
         align-items: flex-start !important;
-        padding: 0.85rem 0.95rem !important;
+        padding: 0.75rem 0.85rem !important;
         border-radius: 14px !important;
-        gap: 0.65rem !important;
-        transition: transform 0.15s ease, background 0.15s ease !important;
+        gap: 0.45rem !important;
+        transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease !important;
+        min-height: auto !important;
     }
 
     .course-card-item:active {
         transform: scale(0.985) !important;
-        background: #f1f5f9 !important;
+        background: #f8fafc !important;
     }
 
     .course-title {
-        font-size: 0.95rem !important;
+        font-size: 0.925rem !important;
         margin-bottom: 0.15rem !important;
+        line-height: 1.25 !important;
     }
 
     .course-info-col {
@@ -2639,35 +2688,37 @@ img {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        padding-top: 0.5rem !important;
-        border-top: 1px dashed #eef2f6 !important;
+        padding-top: 0.4rem !important;
+        border-top: 1px dashed #f1f5f9 !important;
+        gap: 0.4rem !important;
     }
 
     .btn-open-class {
-        padding: 0.35rem 0.85rem !important;
-        font-size: 0.78rem !important;
+        padding: 0.3rem 0.75rem !important;
+        font-size: 0.76rem !important;
+        border-radius: 8px !important;
     }
 
     .btn-open-class:active {
-        transform: scale(0.96) !important;
+        transform: scale(0.95) !important;
     }
 
-    /* Nilai Saya Accordion Cards */
+    /* Nilai Saya Accordion Cards Compact */
     .grade-accordion-card {
         border-radius: 16px !important;
-        margin-bottom: 0.65rem !important;
+        margin-bottom: 0.5rem !important;
     }
 
-    .grade-accordion-header {
-        padding: 0.85rem 0.95rem !important;
+    .grade-card-header {
+        padding: 0.75rem 0.85rem !important;
     }
 
-    .grade-accordion-title {
-        font-size: 0.95rem !important;
+    .grade-course-title {
+        font-size: 0.925rem !important;
     }
 
     .grade-accordion-body {
-        padding: 0.85rem 0.95rem !important;
+        padding: 0.75rem 0.85rem !important;
     }
 
     /* Buttons mobile touch feedback */
@@ -2984,12 +3035,13 @@ img {
     width: auto;
     object-fit: contain;
     filter: drop-shadow(0 12px 24px rgba(37, 99, 235, 0.12));
-    animation: gentleFloat 4s ease-in-out infinite;
+    animation: none !important;
+    transform: none !important;
 }
 
 @keyframes gentleFloat {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    50% { transform: translateY(0); }
 }
 
 .login-submit-btn {
@@ -3075,66 +3127,24 @@ img {
     flex-shrink: 0;
 }
 
-.kavi-hero-blob {
-    position: absolute;
-    width: 210px;
-    height: 210px;
-    border-radius: 54% 46% 62% 38% / 45% 58% 42% 55%;
-    background: radial-gradient(circle at 45% 45%, #dbeafe 0%, #e0e7ff 65%, transparent 100%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -55%);
-    z-index: 1;
-    pointer-events: none;
-    animation: blobMorph 8s ease-in-out infinite alternate;
-}
-
-@keyframes blobMorph {
-    0% { border-radius: 54% 46% 62% 38% / 45% 58% 42% 55%; transform: translate(-50%, -55%) rotate(0deg); }
-    100% { border-radius: 42% 58% 45% 55% / 58% 40% 60% 42%; transform: translate(-50%, -52%) rotate(8deg); }
-}
-
-.kavi-pedestal-shadow {
-    position: absolute;
-    bottom: -6px;
-    width: 140px;
-    height: 16px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.2) 0%, rgba(37, 99, 235, 0.05) 50%, transparent 75%);
-    z-index: 1;
-    pointer-events: none;
-}
-
-.kavi-sparkle {
-    position: absolute;
-    font-size: 1rem;
-    color: #f59e0b;
-    pointer-events: none;
-    z-index: 3;
-    animation: sparkleBlink 3s ease-in-out infinite alternate;
-}
-
-.kavi-sparkle.s1 { top: 12px; left: 16px; font-size: 1.15rem; color: #3b82f6; }
-.kavi-sparkle.s2 { top: 30px; right: 20px; font-size: 0.95rem; color: #f59e0b; animation-delay: 1.5s; }
-.kavi-sparkle.s3 { bottom: 45px; left: 0; font-size: 0.85rem; color: #10b981; animation-delay: 0.8s; }
-
-@keyframes sparkleBlink {
-    0% { opacity: 0.35; transform: scale(0.85) rotate(0deg); }
-    100% { opacity: 1; transform: scale(1.15) rotate(15deg); }
+.kavi-hero-blob,
+.kavi-pedestal-shadow,
+.kavi-sparkle,
+.kavi-banner-blob {
+    display: none !important;
 }
 
 .kavi-hero-img {
     position: relative;
     z-index: 2;
-    max-height: 205px;
+    max-height: 160px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 8px 18px rgba(37, 99, 235, 0.12));
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .kavi-hero-composition:hover .kavi-hero-img {
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-2px);
 }
 
 /* 2. Banner KAVI Composition (Mata Kuliah & Nilai Saya) */
@@ -3143,40 +3153,22 @@ img {
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    width: 160px;
-    height: 140px;
+    width: 140px;
+    height: 120px;
     flex-shrink: 0;
-}
-
-.kavi-banner-blob {
-    position: absolute;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%, #dbeafe 0%, rgba(239, 246, 255, 0.4) 65%, transparent 100%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    pointer-events: none;
-}
-
-.kavi-banner-blob.gold {
-    background: radial-gradient(circle at 50% 50%, #fef3c7 0%, #eff6ff 65%, transparent 100%);
 }
 
 .kavi-banner-img {
     position: relative;
     z-index: 2;
-    max-height: 140px;
+    max-height: 120px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 6px 14px rgba(37, 99, 235, 0.1));
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .kavi-banner-composition:hover .kavi-banner-img {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 }
 
 /* 3. Login Page Refined Layout & Composition (Following Reference Image) */
@@ -3269,12 +3261,13 @@ img {
     width: auto;
     object-fit: contain;
     filter: drop-shadow(0 14px 26px rgba(37, 99, 235, 0.16));
-    animation: kaviGentleFloat 4s ease-in-out infinite;
+    animation: none !important;
+    transform: none !important;
 }
 
 @keyframes kaviGentleFloat {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-7px); }
+    50% { transform: translateY(0); }
 }
 
 .login-cloud-pedestal {
@@ -3312,8 +3305,170 @@ img {
 }
 
 /* ==========================================================================
-   KampusLMS 2026 - Breadcrumb, Form Actions & Submission Navigation
+   KampusLMS 2026 - Distinct Back Action & Breadcrumb Navigation System
    ========================================================================== */
+
+/* Sticky App Header Area: Header, Tombol Back & Breadcrumb tetap stay saat scroll (Gambar 3) */
+.sticky-app-header-area {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #f0f4f9;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    margin-top: -1.25rem;
+    margin-bottom: 1rem;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+/* Global Pagination & SVG Guards agar tidak pernah berukuran raksasa */
+nav[role="navigation"] svg,
+.pagination svg,
+.pagination-wrapper svg {
+    width: 16px !important;
+    height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.sticky-app-header-area .app-header {
+    margin-bottom: 0.65rem;
+}
+
+.sticky-app-header-area .page-navigation-header {
+    margin-bottom: 0.25rem;
+}
+
+/* Page Navigation Header: Menjamin Back dan Breadcrumb terpisah tegas */
+.page-navigation-header {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-back-row {
+    display: flex;
+    align-items: center;
+}
+
+.btn-back-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem;
+    background-color: #ffffff;
+    color: #1e293b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.btn-back-action:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
+    transform: translateX(-2px);
+}
+
+.btn-back-action svg {
+    flex-shrink: 0;
+    color: #475569;
+    transition: transform 0.15s ease;
+}
+
+.btn-back-action:hover svg {
+    color: #0f172a;
+    transform: translateX(-2px);
+}
+
+.nav-breadcrumb-row {
+    padding: 0.05rem 0;
+}
+
+.nav-breadcrumb-row .breadcrumb-nav {
+    margin-bottom: 0;
+    padding: 0;
+}
+
+/* Lecturer Dashboard: Ringkasan Pengumpulan Belum Dinilai Per Mata Kuliah */
+.pending-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pending-course-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    gap: 1rem;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.pending-course-card:hover {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+}
+
+.pending-course-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pending-course-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.35rem 0;
+    line-height: 1.3;
+}
+
+.pending-course-count {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #d97706;
+}
+
+.btn-view-submissions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.btn-view-submissions:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
 
 /* Breadcrumb Navigation */
 .breadcrumb-nav {
@@ -3772,17 +3927,33 @@ img {
         flex-direction: column !important;
     }
 
-    .stats-overview-grid {
-        grid-template-columns: 1fr !important;
-        gap: 0.85rem !important;
+    .admin-hero-card .hero-metric-row {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.35rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0.85rem 0 !important;
     }
 
-    .stat-card-modern {
-        padding: 1.15rem 1.25rem !important;
+    .admin-hero-card .hero-metric-item {
+        padding: 0.5rem 0.3rem !important;
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 0.35rem !important;
     }
 
-    .stat-number {
-        font-size: 1.75rem !important;
+    .admin-hero-card .hero-metric-icon {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .admin-hero-card .hero-metric-text .label {
+        font-size: 0.65rem !important;
+    }
+
+    .admin-hero-card .hero-metric-text .value {
+        font-size: 1.05rem !important;
     }
 
     .admin-actions-group {
@@ -3804,5 +3975,1010 @@ img {
     .admin-dashboard-grid {
         grid-template-columns: 1fr;
     }
+
+    /* Mobile Responsive Card Utilities & Views */
+    .grade-mobile-view {
+        display: block !important;
+    }
+    .grade-desktop-view {
+        display: none !important;
+    }
+    .users-mobile-cards {
+        display: flex !important;
+    }
+    .users-desktop-table {
+        display: none !important;
+    }
+
+    /* Admin Stat Cards Compact on Mobile */
+    .stat-card-modern {
+        padding: 0.85rem 1rem !important;
+        border-radius: 16px !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .stat-card-modern:active {
+        transform: scale(0.985) !important;
+        background: #f8fafc !important;
+    }
+    .stat-card-top {
+        margin-bottom: 0.35rem !important;
+    }
+    .stat-icon-wrapper {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 10px !important;
+    }
+    .stat-icon-wrapper svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .stat-tag {
+        font-size: 0.68rem !important;
+        padding: 0.15rem 0.45rem !important;
+        border-radius: 6px !important;
+    }
+    .stat-number {
+        font-size: 1.55rem !important;
+        margin-bottom: 0.1rem !important;
+        line-height: 1.1 !important;
+    }
+    .stat-label {
+        font-size: 0.825rem !important;
+    }
+    .stat-footer {
+        margin-top: 0.4rem !important;
+        padding-top: 0.4rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Course Detail 3-Column Compact Grid */
+    .detail-meta-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.4rem !important;
+        margin-top: 0.85rem !important;
+    }
+    .detail-meta-box {
+        padding: 0.55rem 0.35rem !important;
+        border-radius: 12px !important;
+        text-align: center !important;
+    }
+    .detail-meta-box .lbl {
+        font-size: 0.62rem !important;
+        line-height: 1.15 !important;
+    }
+    .detail-meta-box .val {
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        margin-top: 0.15rem !important;
+    }
+    .detail-meta-box .sub {
+        display: none !important;
+    }
+
+    /* Submissions & Assignment Metrics Compact Grids */
+    .submission-metrics-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.4rem !important;
+        margin-bottom: 0.85rem !important;
+    }
+    .submission-metrics-grid .grade-metric-box {
+        padding: 0.55rem 0.35rem !important;
+        border-radius: 12px !important;
+        text-align: center !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .submission-metrics-grid .lbl {
+        font-size: 0.62rem !important;
+        line-height: 1.15 !important;
+    }
+    .submission-metrics-grid .val {
+        font-size: 1.05rem !important;
+        margin-top: 0.15rem !important;
+    }
+
+    .submission-status-card {
+        padding: 0.85rem 0.75rem !important;
+        border-radius: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .submission-status-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 0.35rem !important;
+        margin-bottom: 0.85rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+    .submission-status-box {
+        padding: 0.55rem 0.35rem !important;
+        border-radius: 10px !important;
+        text-align: center !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    .submission-status-box .status-lbl {
+        font-size: 0.58rem !important;
+        line-height: 1.15 !important;
+        display: block !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+    }
+    .submission-status-box .status-val {
+        font-size: 0.78rem !important;
+        margin-top: 0.15rem !important;
+        word-break: break-word !important;
+    }
+    .submission-status-box .status-val.score {
+        font-size: 0.88rem !important;
+    }
+    .file-name-truncate {
+        max-width: 130px !important;
+    }
+    .btn-open-class {
+        max-width: 100% !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
+    }
+
+    .submission-info-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.65rem !important;
+        margin-bottom: 1rem !important;
+    }
+    .submission-info-grid > div {
+        padding: 0.85rem 1rem !important;
+        border-radius: 14px !important;
+    }
 }
+
+
+
+/* ========================================================
+   CLEAN EXPANDABLE COURSE CARD (ONLY COURSE NAME INITIAL)
+   ======================================================== */
+.clean-course-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 0.65rem;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clean-course-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.clean-course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.15rem;
+    cursor: pointer;
+    user-select: none;
+    background: #ffffff;
+    transition: background-color 0.15s ease;
+    gap: 0.75rem;
+}
+
+.clean-course-header:hover {
+    background-color: #f8fafc;
+}
+
+.clean-course-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+    flex: 1;
+    min-width: 0;
+}
+
+.clean-course-chevron {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #64748b;
+    flex-shrink: 0;
+    transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.clean-course-card.expanded .clean-course-chevron {
+    transform: rotate(180deg);
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.clean-course-body {
+    display: none;
+    padding: 0.85rem 1.15rem 1rem 1.15rem;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbfc;
+}
+
+.clean-course-card.expanded .clean-course-body {
+    display: block;
+}
+
+/* ========================================================
+   ADMIN DASHBOARD HERO BANNER (MATCHING IMAGE 3)
+   ======================================================== */
+.admin-hero-unified {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.admin-hero-unified-left {
+    flex: 1;
+    min-width: 0;
+    z-index: 2;
+}
+
+.admin-hero-unified-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1.5rem;
+    z-index: 2;
+}
+
+.admin-unified-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.admin-unified-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.admin-unified-subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0 0 1.25rem 0;
+    line-height: 1.4;
+}
+
+.admin-unified-stats-row {
+    display: flex;
+    gap: 0.85rem;
+    margin-bottom: 1.35rem;
+    flex-wrap: wrap;
+}
+
+.admin-mini-stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.65rem 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    min-width: 140px;
+    transition: all 0.2s ease;
+}
+
+.admin-mini-stat-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.admin-mini-stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.admin-mini-stat-icon.blue {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.admin-mini-stat-icon.green {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.admin-mini-stat-icon.yellow {
+    background: #fefce8;
+    color: #d97706;
+}
+
+.admin-mini-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-mini-stat-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #64748b;
+    line-height: 1.2;
+}
+
+.admin-mini-stat-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    margin-top: 2px;
+}
+
+.admin-unified-actions-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-btn-dark {
+    background: #0f172a;
+    color: #ffffff !important;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    border: 1px solid #0f172a;
+    transition: all 0.15s ease;
+}
+
+.admin-btn-dark:hover {
+    background: #1e293b;
+    color: #ffffff !important;
+}
+
+.admin-btn-light {
+    background: #ffffff;
+    color: #0f172a !important;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    border: 1.5px solid #cbd5e1;
+    transition: all 0.15s ease;
+}
+
+.admin-btn-light:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+    .sticky-app-header-area {
+        padding-top: 0.75rem;
+        padding-bottom: 0.45rem;
+        margin-top: -1rem;
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        margin-bottom: 0.85rem;
+    }
+    .admin-hero-unified {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.25rem 1rem;
+    }
+    .admin-hero-unified-right {
+        display: none !important;
+    }
+    .admin-unified-title {
+        font-size: 1.4rem;
+    }
+    .admin-unified-stats-row {
+        gap: 0.45rem;
+        width: 100%;
+    }
+    .admin-mini-stat-card {
+        flex: 1 1 calc(33.333% - 0.4rem);
+        min-width: 85px;
+        padding: 0.5rem 0.65rem;
+        gap: 0.45rem;
+    }
+    .admin-mini-stat-label {
+        font-size: 0.68rem;
+    }
+    .admin-mini-stat-value {
+        font-size: 1.1rem;
+    }
+    .admin-unified-actions-row {
+        width: 100%;
+        gap: 0.5rem;
+    }
+    .admin-btn-dark, .admin-btn-light {
+        flex: 1;
+        justify-content: center;
+        padding: 0.55rem 0.85rem;
+        font-size: 0.825rem;
+    }
+}
+
+/* Tightly spaced grade cards list for Mahasiswa (Gambar 5) */
+.grade-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem !important;
+}
+
+.grade-cards-list .clean-course-card,
+.grade-cards-list .grade-accordion-card {
+    margin-bottom: 0 !important;
+}
+
+
+/* ========================================================
+   COMPACT & 1-CLICK INTERACTIVE COURSE & ITEM CARDS
+   ======================================================== */
+.course-card-compact {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.65rem 0.95rem;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.course-card-compact:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
+    transform: translateY(-1px);
+}
+
+.course-card-compact:active {
+    transform: scale(0.985);
+    background: #f1f5f9;
+}
+
+.course-compact-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+}
+
+.course-compact-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.course-chevron {
+    display: none !important;
+}
+
+.detail-meta-box-clickable {
+    cursor: pointer !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease !important;
+}
+
+.detail-meta-box-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    border-color: #60a5fa !important;
+}
+
+.detail-meta-box-clickable:active {
+    transform: translateY(0);
+}
+
+.btn-icon-action {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-icon-action.edit:hover {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #d97706;
+}
+
+.btn-icon-action.delete:hover {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+/* Global Compact Spacing Tweaks */
+.card-modern {
+    padding: 1.15rem 1.25rem;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+}
+
+.card-header-row {
+    margin-bottom: 0.75rem;
+}
+
+.card-header-title {
+    font-size: 1rem;
+}
+
+.section-block {
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+    .card-modern {
+        padding: 0.85rem 0.95rem;
+        border-radius: 14px;
+        margin-bottom: 0.75rem;
+    }
+    .course-card-compact {
+        padding: 0.65rem 0.85rem;
+        border-radius: 10px;
+    }
+    .course-compact-title {
+        font-size: 0.875rem;
+    }
+    .course-compact-meta {
+        font-size: 0.7rem;
+        gap: 0.35rem;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .assignments-mobile-cards {
+        display: flex !important;
+    }
+    .assignments-desktop-table {
+        display: none !important;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .materials-mobile-cards {
+        display: flex !important;
+    }
+    .materials-desktop-table {
+        display: none !important;
+    }
+}
+
+/* Submission Status Card & Grid Base Styles (Detail Tugas Mahasiswa) */
+.submission-status-card {
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.submission-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.submission-status-box {
+    padding: 0.85rem 0.75rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #eef2f6;
+    text-align: left;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.submission-status-box .status-lbl {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: block;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.submission-status-box .status-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 0.25rem;
+    word-break: break-word;
+}
+
+.submission-status-box .status-val.score {
+    color: #2563eb;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.file-name-truncate {
+    display: inline-block;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Global Container Width & Overflow Guard */
+.card-modern {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.course-card-compact {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* ========================================================
+   FITUR DIFERENSIASI: RUBRIK PENILAIAN BERTINGKAT
+   ======================================================== */
+
+/* 1. Halaman Kelola Rubrik (Manage Rubric) */
+.rubric-manage-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    padding: 1.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.rubric-weight-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0f7ff;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 0.95rem 1.25rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.05);
+}
+
+.rubric-weight-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+}
+
+.criterion-card-modern {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    box-sizing: border-box;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.criterion-card-modern:hover {
+    border-color: #94a3b8;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
+}
+
+.criterion-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+
+.levels-container-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.levels-header-grid {
+    display: grid;
+    grid-template-columns: 170px 1fr 95px 36px;
+    gap: 0.65rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+}
+
+.level-row-item {
+    display: grid;
+    grid-template-columns: 170px 1fr 95px 36px;
+    gap: 0.65rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    background: #ffffff;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.level-row-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.btn-add-criterion-dashed {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px dashed #93c5fd;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.btn-add-criterion-dashed:hover {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-add-level-pill {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #2563eb;
+    border-radius: 8px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.15s ease;
+}
+
+.btn-add-level-pill:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+/* 2. Detail Tugas Rubric Showcase */
+.rubric-showcase-card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+    margin-bottom: 2rem;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+}
+
+.rubric-level-pill-card {
+    padding: 0.65rem 0.85rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    min-width: 140px;
+    flex: 1;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.rubric-level-pill-card:hover {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    transform: translateY(-1px);
+}
+
+/* 3. Interactive Grading Radio Cards */
+.rubric-radio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.rubric-level-radio-card {
+    display: block;
+    cursor: pointer;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.85rem 0.95rem;
+    background: #f8fafc;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+.rubric-level-radio-card:hover {
+    border-color: #93c5fd;
+    background: #f0f7ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06);
+}
+
+.rubric-level-radio-card:has(.rubric-radio:checked),
+.rubric-level-radio-card.active {
+    border-color: #2563eb !important;
+    background: #eff6ff !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12) !important;
+}
+
+.rubric-level-radio-card:has(.rubric-radio:checked) .level-title,
+.rubric-level-radio-card.active .level-title {
+    color: #1d4ed8 !important;
+}
+
+.rubric-score-preview-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1.5px solid #86efac;
+    border-radius: 14px;
+    padding: 1.15rem 1.35rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+    box-sizing: border-box;
+}
+
+@media (max-width: 680px) {
+    .criterion-header-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .levels-header-grid {
+        display: none !important;
+    }
+
+    .level-row-item {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        padding: 0.75rem !important;
+        background: #f8fafc !important;
+        border-radius: 12px !important;
+    }
+
+    .level-row-mobile-top {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.45rem !important;
+        width: 100% !important;
+    }
+
+    .level-row-mobile-top .level-title-input {
+        flex: 1 !important;
+    }
+
+    .rubric-radio-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+
+    .rubric-showcase-card {
+        padding: 1rem 0.85rem !important;
+    }
+
+    .rubric-level-pill-card {
+        min-width: 100% !important;
+    }
+}
+
 
