@@ -1,19 +1,18 @@
-<x-layout title="Tugas: {{ $course->name }}" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $course->name, 'url' => route('courses.show', $course)],
-    ['label' => 'Daftar Tugas']
-]">
+<x-layout title="Tugas: {{ $course->name }}"
+    :backUrl="route('courses.show', $course)"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $course->name, 'url' => route('courses.show', $course)],
+        ['label' => 'Daftar Tugas']
+    ]">
     <div class="header-actions-row">
         <div>
-            <a href="{{ route('courses.show', $course) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; margin-bottom: 0.5rem;">
-                &larr; Kembali ke {{ $course->name }}
-            </a>
-            <h1 class="page-title" style="margin-top: 0.5rem;">Daftar Tugas: {{ $course->name }}</h1>
+            <h1 class="page-title">Daftar Tugas: {{ $course->name }}</h1>
         </div>
         @can('create', [\App\Models\Assignment::class, $course])
-            <a href="{{ route('courses.assignments.create', $course) }}" class="btn btn-primary">
-                + Tambah Tugas
+            <a href="{{ route('courses.assignments.create', $course) }}" class="btn btn-primary btn-sm" style="font-weight: 700; border-radius: 8px;">
+                + Tugas
             </a>
         @endcan
     </div>

@@ -968,9 +968,9 @@ textarea.form-control {
     --text-muted: #64748b;
     --border-soft: #e2e8f0;
     --border-card: #eef2f6;
-    --shadow-soft: 0 4px 20px -2px rgba(148, 163, 184, 0.08);
-    --shadow-hover: 0 10px 25px -5px rgba(37, 99, 235, 0.08);
-    --radius-card: 24px;
+    --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    --shadow-hover: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    --radius-card: 16px;
     --radius-pill: 9999px;
 }
 
@@ -1363,11 +1363,11 @@ body.lms-modern {
 
 /* Hero Banners */
 .hero-welcome-card {
-    background: linear-gradient(135deg, #ffffff 0%, #eef5ff 100%);
-    border-radius: 28px;
-    border: 1px solid #e0ebf9;
-    box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.08);
-    padding: 2rem 2.25rem;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    padding: 1.75rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -2146,9 +2146,9 @@ img {
    Mobile Smartphone Breakpoint (320px - 767px)
    ========================================================================== */
 @media (max-width: 767px) {
-    /* Layout & App Shell */
+    /* Layout & App Shell - Menggunakan clip agar position: sticky tetap aktif di mobile */
     html, body {
-        overflow-x: hidden !important;
+        overflow-x: clip !important;
         max-width: 100vw !important;
         width: 100% !important;
     }
@@ -2157,7 +2157,7 @@ img {
         display: block !important;
         width: 100% !important;
         max-width: 100vw !important;
-        overflow-x: hidden !important;
+        overflow-x: clip !important;
         min-height: 100vh !important;
     }
 
@@ -2167,6 +2167,32 @@ img {
         max-width: 100% !important;
         min-width: 0 !important;
         margin-left: 0 !important;
+    }
+
+    /* Sticky Header Stay di Mobile */
+    .sticky-app-header-area {
+        position: -webkit-sticky !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: #f0f4f9 !important;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+        margin-top: -0.85rem !important;
+        margin-left: -0.85rem !important;
+        margin-right: -0.85rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.5rem !important;
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+        margin-bottom: 0.85rem !important;
+    }
+
+    /* Responsive Submissions: Tampilkan Mobile Cards, Sembunyikan Tabel */
+    .submission-mobile-cards {
+        display: flex !important;
+    }
+    .submission-desktop-table {
+        display: none !important;
     }
 
     /* Header */
@@ -3078,66 +3104,24 @@ img {
     flex-shrink: 0;
 }
 
-.kavi-hero-blob {
-    position: absolute;
-    width: 210px;
-    height: 210px;
-    border-radius: 54% 46% 62% 38% / 45% 58% 42% 55%;
-    background: radial-gradient(circle at 45% 45%, #dbeafe 0%, #e0e7ff 65%, transparent 100%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -55%);
-    z-index: 1;
-    pointer-events: none;
-    animation: blobMorph 8s ease-in-out infinite alternate;
-}
-
-@keyframes blobMorph {
-    0% { border-radius: 54% 46% 62% 38% / 45% 58% 42% 55%; transform: translate(-50%, -55%) rotate(0deg); }
-    100% { border-radius: 42% 58% 45% 55% / 58% 40% 60% 42%; transform: translate(-50%, -52%) rotate(8deg); }
-}
-
-.kavi-pedestal-shadow {
-    position: absolute;
-    bottom: -6px;
-    width: 140px;
-    height: 16px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.2) 0%, rgba(37, 99, 235, 0.05) 50%, transparent 75%);
-    z-index: 1;
-    pointer-events: none;
-}
-
-.kavi-sparkle {
-    position: absolute;
-    font-size: 1rem;
-    color: #f59e0b;
-    pointer-events: none;
-    z-index: 3;
-    animation: sparkleBlink 3s ease-in-out infinite alternate;
-}
-
-.kavi-sparkle.s1 { top: 12px; left: 16px; font-size: 1.15rem; color: #3b82f6; }
-.kavi-sparkle.s2 { top: 30px; right: 20px; font-size: 0.95rem; color: #f59e0b; animation-delay: 1.5s; }
-.kavi-sparkle.s3 { bottom: 45px; left: 0; font-size: 0.85rem; color: #10b981; animation-delay: 0.8s; }
-
-@keyframes sparkleBlink {
-    0% { opacity: 0.35; transform: scale(0.85) rotate(0deg); }
-    100% { opacity: 1; transform: scale(1.15) rotate(15deg); }
+.kavi-hero-blob,
+.kavi-pedestal-shadow,
+.kavi-sparkle,
+.kavi-banner-blob {
+    display: none !important;
 }
 
 .kavi-hero-img {
     position: relative;
     z-index: 2;
-    max-height: 205px;
+    max-height: 160px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 8px 18px rgba(37, 99, 235, 0.12));
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .kavi-hero-composition:hover .kavi-hero-img {
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-2px);
 }
 
 /* 2. Banner KAVI Composition (Mata Kuliah & Nilai Saya) */
@@ -3146,40 +3130,22 @@ img {
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    width: 160px;
-    height: 140px;
+    width: 140px;
+    height: 120px;
     flex-shrink: 0;
-}
-
-.kavi-banner-blob {
-    position: absolute;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%, #dbeafe 0%, rgba(239, 246, 255, 0.4) 65%, transparent 100%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    pointer-events: none;
-}
-
-.kavi-banner-blob.gold {
-    background: radial-gradient(circle at 50% 50%, #fef3c7 0%, #eff6ff 65%, transparent 100%);
 }
 
 .kavi-banner-img {
     position: relative;
     z-index: 2;
-    max-height: 140px;
+    max-height: 120px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 6px 14px rgba(37, 99, 235, 0.1));
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .kavi-banner-composition:hover .kavi-banner-img {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 }
 
 /* 3. Login Page Refined Layout & Composition (Following Reference Image) */
@@ -3315,8 +3281,170 @@ img {
 }
 
 /* ==========================================================================
-   KampusLMS 2026 - Breadcrumb, Form Actions & Submission Navigation
+   KampusLMS 2026 - Distinct Back Action & Breadcrumb Navigation System
    ========================================================================== */
+
+/* Sticky App Header Area: Header, Tombol Back & Breadcrumb tetap stay saat scroll (Gambar 3) */
+.sticky-app-header-area {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #f0f4f9;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    margin-top: -1.25rem;
+    margin-bottom: 1rem;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+/* Global Pagination & SVG Guards agar tidak pernah berukuran raksasa */
+nav[role="navigation"] svg,
+.pagination svg,
+.pagination-wrapper svg {
+    width: 16px !important;
+    height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.sticky-app-header-area .app-header {
+    margin-bottom: 0.65rem;
+}
+
+.sticky-app-header-area .page-navigation-header {
+    margin-bottom: 0.25rem;
+}
+
+/* Page Navigation Header: Menjamin Back dan Breadcrumb terpisah tegas */
+.page-navigation-header {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-back-row {
+    display: flex;
+    align-items: center;
+}
+
+.btn-back-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem;
+    background-color: #ffffff;
+    color: #1e293b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.btn-back-action:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
+    transform: translateX(-2px);
+}
+
+.btn-back-action svg {
+    flex-shrink: 0;
+    color: #475569;
+    transition: transform 0.15s ease;
+}
+
+.btn-back-action:hover svg {
+    color: #0f172a;
+    transform: translateX(-2px);
+}
+
+.nav-breadcrumb-row {
+    padding: 0.05rem 0;
+}
+
+.nav-breadcrumb-row .breadcrumb-nav {
+    margin-bottom: 0;
+    padding: 0;
+}
+
+/* Lecturer Dashboard: Ringkasan Pengumpulan Belum Dinilai Per Mata Kuliah */
+.pending-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pending-course-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    gap: 1rem;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.pending-course-card:hover {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+}
+
+.pending-course-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pending-course-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.35rem 0;
+    line-height: 1.3;
+}
+
+.pending-course-count {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #d97706;
+}
+
+.btn-view-submissions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.btn-view-submissions:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
 
 /* Breadcrumb Navigation */
 .breadcrumb-nav {
@@ -4036,9 +4164,9 @@ img {
    ADMIN DASHBOARD HERO BANNER (MATCHING IMAGE 3)
    ======================================================== */
 .admin-hero-unified {
-    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+    background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 1.75rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -4046,7 +4174,7 @@ img {
     margin-bottom: 1.5rem;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .admin-hero-unified-left {
@@ -4209,35 +4337,65 @@ img {
 }
 
 @media (max-width: 768px) {
+    .sticky-app-header-area {
+        padding-top: 0.75rem;
+        padding-bottom: 0.45rem;
+        margin-top: -1rem;
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        margin-bottom: 0.85rem;
+    }
     .admin-hero-unified {
         flex-direction: column;
         align-items: flex-start;
         padding: 1.25rem 1rem;
     }
     .admin-hero-unified-right {
-        margin-left: 0;
-        margin-top: 1rem;
-        align-self: center;
+        display: none !important;
     }
     .admin-unified-title {
         font-size: 1.4rem;
     }
     .admin-unified-stats-row {
-        gap: 0.5rem;
+        gap: 0.45rem;
         width: 100%;
     }
     .admin-mini-stat-card {
-        flex: 1 1 calc(33.333% - 0.5rem);
-        min-width: 100px;
-        padding: 0.5rem;
+        flex: 1 1 calc(33.333% - 0.4rem);
+        min-width: 85px;
+        padding: 0.5rem 0.65rem;
+        gap: 0.45rem;
+    }
+    .admin-mini-stat-label {
+        font-size: 0.68rem;
+    }
+    .admin-mini-stat-value {
+        font-size: 1.1rem;
     }
     .admin-unified-actions-row {
         width: 100%;
+        gap: 0.5rem;
     }
     .admin-btn-dark, .admin-btn-light {
         flex: 1;
         justify-content: center;
+        padding: 0.55rem 0.85rem;
+        font-size: 0.825rem;
     }
+}
+
+/* Tightly spaced grade cards list for Mahasiswa (Gambar 5) */
+.grade-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem !important;
+}
+
+.grade-cards-list .clean-course-card,
+.grade-cards-list .grade-accordion-card {
+    margin-bottom: 0 !important;
 }
 
 

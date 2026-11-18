@@ -79,7 +79,6 @@ class DashboardController extends Controller
             ->doesntHave('grade')
             ->with(['assignment.course', 'student'])
             ->latest()
-            ->take(8)
             ->get();
 
         $metrics = Cache::remember("dashboard.dosen.{$user->id}.metrics", now()->addMinutes(10), function () use ($myCourses, $courseIds, $pendingSubmissions) {

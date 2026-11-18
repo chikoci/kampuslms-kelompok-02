@@ -1,8 +1,10 @@
 {{-- Halaman Daftar Pengguna --}}
-<x-layout title="Daftar Pengguna - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Pengguna']
-]">
+<x-layout title="Daftar Pengguna - KampusLMS"
+    :backUrl="route('dashboard')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Pengguna']
+    ]">
 
     {{-- A. PAGE BANNER HEADER DENGAN ILUSTRASI MASKOT KAVI --}}
     <div class="page-banner-card">
@@ -17,22 +19,16 @@
         </div>
         <div class="page-banner-actions-wrap" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
             @can('create', App\Models\User::class)
-                <a href="{{ route('register') }}" class="btn btn-primary btn-sm page-banner-btn" style="border-radius: 9999px; padding: 0.55rem 1.35rem; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; text-decoration: none;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <line x1="19" y1="8" x2="19" y2="14"/>
-                        <line x1="22" y1="11" x2="16" y2="11"/>
+                <a href="{{ route('register') }}" class="btn btn-primary btn-sm page-banner-btn" style="border-radius: 8px; padding: 0.35rem 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700; text-decoration: none;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
-                    + Tambah Pengguna
+                    <span>Pengguna</span>
                 </a>
             @endcan
             <div class="kavi-banner-composition">
-                <div class="kavi-banner-blob"></div>
-                <div class="kavi-sparkle s1" style="top: 8px; left: 10px; font-size: 0.85rem;">&#10022;</div>
-                <div class="kavi-sparkle s2" style="top: 20px; right: 8px; font-size: 0.8rem;">&#10022;</div>
                 <img src="{{ asset('images/illustrations/kavi-dashboard.png') }}" alt="Kavi Manajemen Pengguna" class="kavi-banner-img">
-                <div class="kavi-pedestal-shadow" style="width: 100px; height: 12px; bottom: -2px;"></div>
             </div>
         </div>
     </div>

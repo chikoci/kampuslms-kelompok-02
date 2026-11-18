@@ -14,7 +14,9 @@
     }
 @endphp
 
-<x-layout title="Detail Pengumpulan: {{ $submission->student->name }} - KampusLMS" :breadcrumbs="$breadcrumbs">
+<x-layout title="Detail Pengumpulan: {{ $submission->student->name }} - KampusLMS"
+    :backUrl="$isStaff ? route('courses.submissions', $submission->assignment->course_id) : route('assignments.show', $submission->assignment_id)"
+    :breadcrumbs="$breadcrumbs">
 
     <div class="submission-detail-container">
         <div class="card-modern">
@@ -253,14 +255,7 @@
                 @endcan
             </div>
 
-            {{-- 7. Area Bawah Card: Tombol Kembali di Pojok Kanan Bawah di Dalam Card --}}
-            <div class="submission-card-bottom-bar">
-                <div class="submission-bottom-back">
-                    <a href="{{ route('assignments.show', $submission->assignment_id) }}" class="btn btn-secondary nav-track-link" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.25rem; font-weight: 600;">
-                        &larr; Kembali ke Detail Tugas
-                    </a>
-                </div>
-            </div>
+
 
         </div>
     </div>

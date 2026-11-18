@@ -1,18 +1,14 @@
 {{-- Halaman Detail Materi Perkuliahan --}}
-<x-layout title="Materi: {{ $material->title }} - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $material->course->name, 'url' => route('courses.show', $material->course)],
-    ['label' => $material->title]
-]">
+<x-layout title="Materi: {{ $material->title }} - KampusLMS"
+    :backUrl="route('courses.show', $material->course_id)"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $material->course->name, 'url' => route('courses.show', $material->course)],
+        ['label' => $material->title]
+    ]">
 
     <div class="card-modern" style="max-width: 900px; margin: 0 auto;">
-        {{-- Navigasi Kembali di Dalam Container Card Sesuai Permintaan UI/UX --}}
-        <div style="margin-bottom: 1.25rem;">
-            <a href="{{ route('courses.show', $material->course_id) }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-                &larr; Kembali ke {{ $material->course->name ?? 'Mata Kuliah' }}
-            </a>
-        </div>
         {{-- Header Materi --}}
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 1rem;">
             <div>

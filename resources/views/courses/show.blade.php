@@ -1,43 +1,56 @@
 {{-- Halaman Detail Mata Kuliah --}}
-<x-layout title="Detail: {{ $course->name }} - KampusLMS" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $course->name]
-]">
+<x-layout title="Detail: {{ $course->name }} - KampusLMS"
+    :backUrl="route('courses.index')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $course->name]
+    ]">
 
     {{-- Header Banner Mata Kuliah --}}
-    <div class="card-modern" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);">
-        {{-- Toolbar Atas di Dalam Card: Navigasi Kembali & Aksi Dosen/Admin --}}
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.75rem;">
-            <a href="{{ route('courses.index') }}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-                &larr; Kembali ke Daftar Mata Kuliah
-            </a>
-
-            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                @can('update', $course)
-                    <a href="{{ route('courses.grades', $course) }}" class="btn-open-class" style="background: #ecfdf5; color: #047857; border-color: #a7f3d0;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="card-modern" style="margin-bottom: 1.5rem;">
+        @can('update', $course)
+            {{-- Toolbar Aksi Dosen/Admin --}}
+            <div class="course-show-toolbar" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.85rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                    <a href="{{ route('courses.submissions', $course) }}" class="btn-open-class" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe; font-weight: 600;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Pengumpulan
+                    </a>
+                    <a href="{{ route('courses.grades', $course) }}" class="btn-open-class" style="background: #ecfdf5; color: #047857; border-color: #a7f3d0; font-weight: 600;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="20" x2="18" y2="10"/>
                             <line x1="12" y1="20" x2="12" y2="4"/>
                             <line x1="6" y1="20" x2="6" y2="14"/>
                         </svg>
-                        Rekap Nilai Kelas
+                        Nilai
                     </a>
-                    <a href="{{ route('courses.edit', $course) }}" class="btn-open-class" style="color: #d97706; border-color: #fde68a;">
-                        Edit Mata Kuliah
+                    <a href="{{ route('courses.edit', $course) }}" class="btn-icon-action edit" style="width: 30px; height: 30px;" title="Edit Mata Kuliah">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
                     </a>
-                @endcan
-                @can('delete', $course)
-                    <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini beserta seluruh materi dan tugasnya?');" style="margin: 0; display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca;">
-                            Hapus
-                        </button>
-                    </form>
-                @endcan
+                    @can('delete', $course)
+                        <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Hapus mata kuliah ini beserta seluruh materi dan tugasnya?');" style="margin: 0; display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-icon-action delete" style="width: 30px; height: 30px;" title="Hapus Mata Kuliah">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                            </button>
+                        </form>
+                    @endcan
+                </div>
             </div>
-        </div>
+        @endcan
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
@@ -95,7 +108,7 @@
 
             @can('create', [\App\Models\Material::class, $course])
                 <a href="{{ route('courses.materials.create', $course) }}" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-                    + Tambah Materi
+                    + Materi
                 </a>
             @endcan
         </div>
@@ -190,7 +203,7 @@
 
             @can('create', [\App\Models\Assignment::class, $course])
                 <a href="{{ route('courses.assignments.create', $course) }}" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-                    + Tambah Tugas
+                    + Tugas
                 </a>
             @endcan
         </div>
@@ -259,7 +272,7 @@
     </div>
 
     {{-- SECTION 3: PESERTA MAHASISWA TERDAFTAR --}}
-    <div class="card-modern">
+    <div class="card-modern" id="peserta-mahasiswa">
         <div class="card-header-row" style="flex-wrap: wrap; gap: 0.75rem;">
             <h3 class="card-header-title">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -270,7 +283,7 @@
                 </svg>
                 Peserta Mahasiswa Terdaftar
                 <span style="font-size: 0.75rem; font-weight: 600; background: #eff6ff; color: #2563eb; padding: 0.2rem 0.55rem; border-radius: 9999px;">
-                    {{ $course->students->count() }} Orang
+                    {{ $course->students()->count() }} Orang
                 </span>
             </h3>
 
@@ -284,7 +297,7 @@
                                 <option value="{{ $mhs->id }}">{{ $mhs->name }} ({{ $mhs->nim_nip ?? 'NIM -' }})</option>
                             @endforeach
                         </select>
-                        <button type="submit" class="filter-btn-primary" style="padding: 0.45rem 1rem; font-size: 0.8rem;">
+                        <button type="submit" class="filter-btn-primary" style="padding: 0.45rem 0.85rem; font-size: 0.8rem;" title="Daftarkan Mahasiswa">
                             + Daftarkan
                         </button>
                     </form>
@@ -292,12 +305,45 @@
             @endcan
         </div>
 
-        @if ($course->students->isEmpty())
-            <div class="empty-state-card" style="padding: 2rem 1rem;">
+        @php
+            $studentsList = $enrolledStudents ?? $course->students;
+        @endphp
+
+        @if ($studentsList->isEmpty())
+            <div class="empty-state-card" style="padding: 1.5rem 1rem;">
                 <p class="empty-state-text">Belum ada mahasiswa yang terdaftar di kelas ini.</p>
             </div>
         @else
-            <div style="overflow-x: auto; border: 1px solid #eef2f6; border-radius: 16px;">
+            {{-- Mobile View: Kartu Mahasiswa Ringkas (<= 767px) --}}
+            <div class="students-mobile-cards" style="display: none; flex-direction: column; gap: 0.4rem;">
+                @foreach ($studentsList as $student)
+                    <div class="course-card-compact" style="cursor: default; padding: 0.55rem 0.75rem; margin-bottom: 0.35rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; color: #0f172a; font-size: 0.85rem; line-height: 1.2;">
+                                {{ $student->name }}
+                            </div>
+                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.15rem;">
+                                NIM: <strong style="color: #334155; font-family: monospace;">{{ $student->nim_nip ?? '-' }}</strong> &bull; {{ $student->pivot->enrolled_at ? \Carbon\Carbon::parse($student->pivot->enrolled_at)->translatedFormat('d M Y') : '-' }}
+                            </div>
+                        </div>
+                        @can('unenroll', $course)
+                            <form action="{{ route('courses.unenroll', [$course, $student]) }}" method="POST" onsubmit="return confirm('Keluarkan mahasiswa {{ $student->name }} dari mata kuliah ini?');" style="margin: 0; display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-icon-action delete" title="Keluarkan {{ $student->name }}" style="color: #dc2626; border-color: #fecaca; width: 26px; height: 26px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        @endcan
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop View: Tabel Peserta Mahasiswa (> 767px) --}}
+            <div class="students-desktop-table" style="overflow-x: auto; border: 1px solid #eef2f6; border-radius: 16px;">
                 <table class="grade-table">
                     <thead>
                         <tr>
@@ -305,12 +351,12 @@
                             <th>Nama Lengkap</th>
                             <th>Terdaftar Sejak</th>
                             @can('unenroll', $course)
-                                <th style="text-align: right;">Aksi</th>
+                                <th style="text-align: right; width: 60px;">Aksi</th>
                             @endcan
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($course->students as $student)
+                        @foreach ($studentsList as $student)
                             <tr>
                                 <td style="font-weight: 700; color: #64748b; font-size: 0.85rem;">
                                     {{ $student->nim_nip ?? '-' }}
@@ -326,8 +372,11 @@
                                         <form action="{{ route('courses.unenroll', [$course, $student]) }}" method="POST" onsubmit="return confirm('Keluarkan mahasiswa {{ $student->name }} dari mata kuliah ini?');" style="margin: 0; display: inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn-open-class" style="color: #dc2626; border-color: #fecaca; padding: 0.25rem 0.65rem; font-size: 0.75rem;">
-                                                Keluarkan
+                                            <button type="submit" class="btn-icon-action delete" title="Keluarkan {{ $student->name }}" style="color: #dc2626; border-color: #fecaca;">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"/>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                </svg>
                                             </button>
                                         </form>
                                     </td>
@@ -337,6 +386,13 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- Paginasi Peserta Mahasiswa Terdaftar --}}
+            @if (isset($enrolledStudents) && $enrolledStudents->hasPages())
+                <div style="padding: 0.85rem 1rem; border-top: 1px solid #eef2f6; background: #ffffff;">
+                    {{ $enrolledStudents->fragment('peserta-mahasiswa')->links() }}
+                </div>
+            @endif
         @endif
     </div>
 

@@ -1,13 +1,14 @@
-<x-layout title="Buat Tugas: {{ $course->name }}" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $course->name, 'url' => route('courses.show', $course)],
-    ['label' => 'Tambah Tugas']
-]">
-    <div style="max-width: 750px; margin: 2rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f3f4f6;">
-            <a href="{{ route('courses.show', $course) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">&larr; Kembali ke {{ $course->name }}</a>
-            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-top: 0.5rem;">Buat Tugas Perkuliahan Baru</h1>
+<x-layout title="Buat Tugas: {{ $course->name }}"
+    :backUrl="route('courses.show', $course)"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $course->name, 'url' => route('courses.show', $course)],
+        ['label' => 'Tambah Tugas']
+    ]">
+    <div style="max-width: 750px; margin: 1.5rem auto; padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9;">
+            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0 0 0.35rem 0;">Buat Tugas Perkuliahan Baru</h1>
             <p style="color: #6b7280; font-size: 0.875rem;">Mata Kuliah: <strong>{{ $course->name }} ({{ $course->code }})</strong></p>
         </div>
 
