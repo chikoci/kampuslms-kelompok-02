@@ -73,7 +73,7 @@
         @endphp
 
         @if(auth()->user()->role === 'mahasiswa')
-            <div style="padding: 1.75rem; background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+            <div class="submission-status-card">
                 <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -83,17 +83,17 @@
                 </h3>
 
                 @if($mySubmission)
-                    <div class="submission-status-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                        <div style="padding: 1rem; background: #f8fafc; border-radius: 14px; border: 1px solid #eef2f6;">
-                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Waktu Pengumpulan</span>
-                            <p style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-top: 0.25rem;">
+                    <div class="submission-status-grid">
+                        <div class="submission-status-box">
+                            <span class="status-lbl">Waktu Pengumpulan</span>
+                            <p class="status-val">
                                 {{ $mySubmission->submitted_at?->translatedFormat('d M Y, H:i') }}
                             </p>
                         </div>
 
-                        <div style="padding: 1rem; background: #f8fafc; border-radius: 14px; border: 1px solid #eef2f6;">
-                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Status Keterlambatan</span>
-                            <p style="margin-top: 0.25rem;">
+                        <div class="submission-status-box">
+                            <span class="status-lbl">Status Keterlambatan</span>
+                            <p class="status-val">
                                 @if($mySubmission->is_late)
                                     <span class="badge" style="background: #fee2e2; color: #b91c1c; font-size: 0.75rem; font-weight: 700; border-radius: 6px; padding: 0.2rem 0.6rem;">Terlambat</span>
                                 @else
@@ -102,9 +102,9 @@
                             </p>
                         </div>
 
-                        <div style="padding: 1rem; background: #f8fafc; border-radius: 14px; border: 1px solid #eef2f6;">
-                            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Nilai Dosen</span>
-                            <p style="font-size: 1.25rem; font-weight: 800; color: #2563eb; margin-top: 0.25rem;">
+                        <div class="submission-status-box">
+                            <span class="status-lbl">Nilai Dosen</span>
+                            <p class="status-val score">
                                 {{ $mySubmission->grade ? number_format($mySubmission->grade->score, 2) . ' / ' . $assignment->max_score : 'Belum Dinilai' }}
                             </p>
                         </div>
@@ -120,19 +120,22 @@
                     @if($mySubmission->note)
                         <div style="margin-bottom: 1.5rem;">
                             <strong style="color: #475569; font-size: 0.875rem;">Catatan Anda:</strong>
-                            <p style="color: #334155; font-size: 0.95rem; margin-top: 0.25rem; background: #f8fafc; padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid #eef2f6;">{{ $mySubmission->note }}</p>
+                            <p style="color: #334155; font-size: 0.95rem; margin-top: 0.25rem; background: #f8fafc; padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid #eef2f6; word-break: break-word;">{{ $mySubmission->note }}</p>
                         </div>
                     @endif
 
-                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; max-width: 100%;">
                         @if($mySubmission->file_path)
-                            <a href="{{ route('submissions.download', $mySubmission) }}" class="btn-open-class" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe;">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <a href="{{ route('submissions.download', $mySubmission) }}" class="btn-open-class" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe; max-width: 100%; box-sizing: border-box;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                     <polyline points="7 10 12 15 17 10"/>
                                     <line x1="12" y1="15" x2="12" y2="3"/>
                                 </svg>
-                                Unduh: {{ $mySubmission->original_name ?? 'Berkas' }} ({{ $mySubmission->formatted_file_size }})
+                                <span class="file-name-truncate" title="{{ $mySubmission->original_name }}">
+                                    Unduh: {{ $mySubmission->original_name ?? 'Berkas' }}
+                                </span>
+                                <span style="font-size: 0.72rem; color: #64748b; flex-shrink: 0;">({{ $mySubmission->formatted_file_size }})</span>
                             </a>
                         @endif
 

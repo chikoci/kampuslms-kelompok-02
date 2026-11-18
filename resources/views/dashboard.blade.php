@@ -100,18 +100,18 @@
                     </h3>
                     <a href="{{ route('users.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @foreach ($recentUsers as $usr)
-                        <div class="course-card-compact" onclick="window.location='{{ route('users.show', $usr) }}'" style="margin-bottom: 0;">
-                            <div style="flex: 1; min-width: 0;">
-                                <div style="display: flex; align-items: center; gap: 0.45rem;">
-                                    <h4 class="course-compact-title" style="margin: 0;">{{ $usr->name }}</h4>
-                                    <span class="badge {{ $usr->role === 'admin' ? 'badge-danger' : ($usr->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem; text-transform: capitalize;">
+                        <div class="course-card-compact" onclick="window.location='{{ route('users.show', $usr) }}'" style="margin-bottom: 0; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; overflow: hidden;">
+                                <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
+                                    <h4 class="course-compact-title" style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $usr->name }}</h4>
+                                    <span class="badge {{ $usr->role === 'admin' ? 'badge-danger' : ($usr->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem; text-transform: capitalize; flex-shrink: 0;">
                                         {{ $usr->role }}
                                     </span>
                                 </div>
-                                <div class="course-compact-meta" style="margin-top: 0.2rem;">
-                                    <span style="font-size: 0.72rem; color: #64748b;">{{ $usr->email }}</span>
+                                <div class="course-compact-meta" style="margin-top: 0.2rem; min-width: 0; overflow: hidden;">
+                                    <span style="font-size: 0.72rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">{{ $usr->email }}</span>
                                 </div>
                             </div>
                         </div>
@@ -132,14 +132,14 @@
                     </h3>
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @foreach ($recentCourses as $c)
-                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $c) }}'" style="margin-bottom: 0;">
-                            <div style="flex: 1; min-width: 0;">
-                                <h4 class="course-compact-title" style="margin: 0 0 0.2rem 0;">{{ $c->name }}</h4>
-                                <div class="course-compact-meta">
-                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $c->code }}</span>
-                                    <span style="font-size: 0.72rem; color: #64748b;">&bull; Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $c) }}'" style="margin-bottom: 0; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; overflow: hidden;">
+                                <h4 class="course-compact-title" style="margin: 0 0 0.2rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $c->name }}</h4>
+                                <div class="course-compact-meta" style="min-width: 0; overflow: hidden;">
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">{{ $c->code }}</span>
+                                    <span style="font-size: 0.72rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">&bull; Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -265,12 +265,12 @@
                     </h3>
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @forelse ($myCourses as $course)
-                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
-                            <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
-                                <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a;">{{ $course->name }}</h4>
-                                <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">[{{ $course->code }}]</span>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; overflow: hidden;">
+                                <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $course->name }}</h4>
+                                <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">[{{ $course->code }}]</span>
                             </div>
                         </div>
                     @empty
@@ -296,20 +296,20 @@
                     $pendingByCourse = $pendingSubmissions->groupBy(fn ($item) => $item->assignment?->course_id);
                 @endphp
 
-                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @forelse ($pendingByCourse as $cId => $courseSubmissions)
                         @php
                             $targetCourse = $courseSubmissions->first()?->assignment?->course;
                             $countPending = $courseSubmissions->count();
                         @endphp
                         @if ($targetCourse)
-                            <div class="course-card-compact" onclick="window.location='{{ route('courses.submissions', $targetCourse) }}'" title="Lihat pengumpulan {{ $targetCourse->name }}" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
-                                <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
-                                    <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a;">{{ $targetCourse->name }}</h4>
-                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">({{ $targetCourse->code }})</span>
+                            <div class="course-card-compact" onclick="window.location='{{ route('courses.submissions', $targetCourse) }}'" title="Lihat pengumpulan {{ $targetCourse->name }}" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                                <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; overflow: hidden;">
+                                    <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $targetCourse->name }}</h4>
+                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">({{ $targetCourse->code }})</span>
                                 </div>
                                 <div style="flex-shrink: 0;">
-                                    <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px;">
+                                    <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 6px; white-space: nowrap;">
                                         {{ $countPending }} Mahasiswa
                                     </span>
                                 </div>
@@ -457,12 +457,12 @@
                     <a href="{{ route('courses.index') }}" class="card-header-link">Lihat Semua &rarr;</a>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                     @forelse ($enrolledCourses as $course)
-                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
-                            <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
-                                <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a;">{{ $course->name }}</h4>
-                                <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">[{{ $course->code }}]</span>
+                        <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                            <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; overflow: hidden;">
+                                <h4 class="course-compact-title" style="margin: 0; font-size: 0.875rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $course->name }}</h4>
+                                <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem; flex-shrink: 0;">[{{ $course->code }}]</span>
                             </div>
                         </div>
                     @empty
@@ -489,19 +489,19 @@
                 </div>
 
                 @if ($upcomingAssignments->isNotEmpty())
-                    <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
                         @foreach ($upcomingAssignments as $assignment)
-                            <div class="course-card-compact" onclick="window.location='{{ route('assignments.show', $assignment) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.55rem 0.75rem;">
-                                <div style="flex: 1; min-width: 0;">
+                            <div class="course-card-compact" onclick="window.location='{{ route('assignments.show', $assignment) }}'" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.55rem 0.75rem; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;">
+                                <div style="flex: 1; min-width: 0; overflow: hidden;">
                                     {{-- Nama Tugas Utama --}}
                                     <div style="font-size: 0.85rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.15rem;">
                                         {{ $assignment->title }}
                                     </div>
                                     {{-- Mata Kuliah & Kode di Bawahnya (Kecil) --}}
-                                    <div style="font-size: 0.72rem; color: #64748b; display: flex; align-items: center; gap: 0.35rem;">
-                                        <span>{{ $assignment->course?->name }}</span>
+                                    <div style="font-size: 0.72rem; color: #64748b; display: flex; align-items: center; gap: 0.35rem; min-width: 0; overflow: hidden;">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">{{ $assignment->course?->name }}</span>
                                         @if ($assignment->course?->code)
-                                            <span class="badge-code-modern" style="font-size: 0.65rem; padding: 0.08rem 0.35rem;">({{ $assignment->course?->code }})</span>
+                                            <span class="badge-code-modern" style="font-size: 0.65rem; padding: 0.08rem 0.35rem; flex-shrink: 0;">({{ $assignment->course?->code }})</span>
                                         @endif
                                     </div>
                                 </div>
