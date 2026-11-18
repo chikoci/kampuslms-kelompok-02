@@ -137,7 +137,14 @@ class SubmissionController extends Controller
     {
         Gate::authorize('view', $submission);
 
-        $submission->load(['assignment.course', 'student', 'grade.grader']);
+        $submission->load([
+            'assignment.course',
+            'assignment.rubric.criteria.levels',
+            'student',
+            'grade.grader',
+            'rubricAssessments.criterion',
+            'rubricAssessments.level',
+        ]);
 
         // Navigasi cepat untuk Dosen/Admin saat memeriksa berkas secara berurutan (looping penilaian)
         $totalSubmissions = 0;
@@ -194,13 +201,84 @@ class SubmissionController extends Controller
 
     /**
      * Memberi nilai pada pengumpulan tugas (Dosen pengampu).
+     * Mendukung penilaian manual atau penilaian otomatis terhitung via Rubrik Bertingkat.
      */
     public function grade(Request $request, Submission $submission)
     {
         Gate::authorize('create', [Grade::class, $submission]);
 
         $maxScore = $submission->assignment->max_score ?? 100;
+        $rubric = $submission->assignment->rubric()->with(['criteria.levels'])->first();
 
+        // 1. Jalur Penilaian Otomatis via Rubrik Bertingkat (jika ada rubrik dan data level dikirim)
+        if ($rubric && $request->has('rubric_levels')) {
+            $validated = $request->validate([
+                'rubric_levels'               => ['required', 'array'],
+                'rubric_levels.*'             => ['required', 'integer'],
+                'rubric_criterion_feedback'   => ['nullable', 'array'],
+                'rubric_criterion_feedback.*' => ['nullable', 'string', 'max:500'],
+                'feedback'                    => ['nullable', 'string', 'max:1000'],
+            ], [
+                'rubric_levels.required' => 'Seluruh kriteria rubrik wajib dinilai.',
+            ]);
+
+            $totalScore = 0.0;
+            $assessmentsToSave = [];
+
+            foreach ($rubric->criteria as $criterion) {
+                $levelId = $validated['rubric_levels'][$criterion->id] ?? null;
+                $level = $criterion->levels->firstWhere('id', $levelId);
+
+                if (! $level) {
+                    return back()
+                        ->withErrors(["rubric_levels.{$criterion->id}" => "Tingkatan untuk kriteria '{$criterion->title}' wajib dipilih."])
+                        ->withInput();
+                }
+
+                // Kalkulasi matematis: (bobot / 100) * (level_percentage / 100) * max_score
+                $criterionScore = ((float) $criterion->weight / 100.0) * ((float) $level->score_percentage / 100.0) * (float) $maxScore;
+                $totalScore += $criterionScore;
+
+                $assessmentsToSave[] = [
+                    'criterion_id' => $criterion->id,
+                    'level_id'     => $level->id,
+                    'score'        => round($criterionScore, 2),
+                    'feedback'     => $validated['rubric_criterion_feedback'][$criterion->id] ?? null,
+                ];
+            }
+
+            $finalScore = min((float) $maxScore, round($totalScore, 2));
+
+            \Illuminate\Support\Facades\DB::transaction(function () use ($submission, $assessmentsToSave, $finalScore, $validated) {
+                foreach ($assessmentsToSave as $item) {
+                    $submission->rubricAssessments()->updateOrCreate(
+                        ['rubric_criterion_id' => $item['criterion_id']],
+                        [
+                            'rubric_level_id' => $item['level_id'],
+                            'score_awarded'   => $item['score'],
+                            'feedback'        => $item['feedback'],
+                        ]
+                    );
+                }
+
+                $submission->grade()->updateOrCreate(
+                    ['submission_id' => $submission->id],
+                    [
+                        'score'     => $finalScore,
+                        'feedback'  => $validated['feedback'] ?? null,
+                        'graded_by' => auth()->id(),
+                        'graded_at' => now(),
+                    ]
+                );
+            });
+
+            event(new \App\Events\SubmissionGraded($submission));
+
+            return redirect()->route('submissions.show', $submission)
+                ->with('success', "Nilai berhasil dihitung otomatis dari rubrik ({$finalScore}/{$maxScore}) dan disimpan.");
+        }
+
+        // 2. Jalur Penilaian Standar (Kompatibilitas Penuh / Tanpa Rubrik)
         $validated = $request->validate([
             'score'    => ['required', 'numeric', 'min:0', 'max:' . $maxScore],
             'feedback' => ['nullable', 'string', 'max:1000'],
@@ -228,7 +306,11 @@ class SubmissionController extends Controller
     {
         if ($submission->grade) {
             Gate::authorize('delete', $submission->grade);
-            $submission->grade->delete();
+
+            \Illuminate\Support\Facades\DB::transaction(function () use ($submission) {
+                $submission->rubricAssessments()->delete();
+                $submission->grade->delete();
+            });
         }
 
         return redirect()->route('submissions.show', $submission)->with('success', 'Nilai pengumpulan tugas berhasil dihapus.');
