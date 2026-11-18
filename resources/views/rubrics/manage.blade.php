@@ -1,27 +1,19 @@
-<x-layout :title="'Kelola Rubrik - ' . $assignment->title . ' - KampusLMS'" :breadcrumbs="[
-    ['label' => 'Dashboard', 'url' => route('dashboard')],
-    ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
-    ['label' => $assignment->course->name, 'url' => route('courses.show', $assignment->course)],
-    ['label' => $assignment->title, 'url' => route('assignments.show', $assignment)],
-    ['label' => 'Kelola Rubrik']
-]">
+<x-layout :title="'Kelola Rubrik - ' . $assignment->title . ' - KampusLMS'"
+    :backUrl="route('assignments.show', $assignment)"
+    :backLabel="'Kembali ke Tugas'"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Mata Kuliah', 'url' => route('courses.index')],
+        ['label' => $assignment->course->name, 'url' => route('courses.show', $assignment->course)],
+        ['label' => $assignment->title, 'url' => route('assignments.show', $assignment)],
+        ['label' => 'Kelola Rubrik']
+    ]">
 
     <div class="card-modern rubric-manage-card">
-        {{-- Tombol Navigasi Kembali --}}
-        <div style="margin-bottom: 1.25rem;">
-            <a href="{{ route('assignments.show', $assignment) }}" class="btn-back-action" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m15 18-6-6 6-6"/>
-                </svg>
-                <span>Kembali ke Tugas</span>
-            </a>
-        </div>
-
         {{-- Header Halaman --}}
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 1rem;">
             <div>
-                <span class="badge-code-modern" style="margin-bottom: 0.4rem; display: inline-block;">FITUR DIFERENSIASI</span>
-                <h1 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; letter-spacing: -0.02em;">
+                <h1 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; letter-spacing: -0.02em;">
                     Rubrik Penilaian Bertingkat
                 </h1>
                 <p style="color: #64748b; font-size: 0.875rem; margin: 0;">
@@ -33,13 +25,12 @@
                 <form action="{{ route('assignments.rubric.destroy', $assignment) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus rubrik ini?');" style="margin: 0;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-secondary btn-sm" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 0.5rem 0.95rem; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <button type="submit" class="btn-icon-action delete" title="Hapus Rubrik" style="width: 36px; height: 36px; border-radius: 10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"/>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
                             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
                         </svg>
-                        <span>Hapus Rubrik</span>
                     </button>
                 </form>
             @endif
@@ -193,8 +184,12 @@
                     </div>
                 </div>
                 <div class="level-action-col" style="text-align: right;">
-                    <button type="button" class="btn-remove-level" title="Hapus Level" style="background: #fef2f2; border: 1px solid #fee2e2; color: #ef4444; border-radius: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.15rem; cursor: pointer; transition: all 0.15s ease;">
-                        &times;
+                    <button type="button" class="btn-icon-action delete btn-remove-level" title="Hapus Tingkat" style="width: 30px; height: 30px; border-radius: 8px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                        </svg>
                     </button>
                 </div>
             `;
@@ -214,23 +209,20 @@
         function createCriterionCard(cIdx, data = {}) {
             const card = document.createElement('div');
             card.className = 'criterion-card-modern';
+            const currentPosition = document.querySelectorAll('.criterion-card-modern').length + 1;
 
             card.innerHTML = `
                 <input type="hidden" name="criteria[${cIdx}][id]" value="${data.id || ''}">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="badge" style="background: #2563eb; color: #ffffff; padding: 0.25rem 0.65rem; border-radius: 6px; font-weight: 800; font-size: 0.75rem;">
-                            Kriteria #${cIdx + 1}
-                        </span>
-                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">Pengaturan Aspek Penilaian</h4>
-                    </div>
-                    <button type="button" class="btn-remove-criterion" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 8px; padding: 0.35rem 0.75rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; gap: 0.5rem;">
+                    <span class="badge criterion-badge-label" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 0.25rem 0.65rem; border-radius: 6px; font-weight: 800; font-size: 0.8rem;">
+                        Kriteria #${currentPosition}
+                    </span>
+                    <button type="button" class="btn-icon-action delete btn-remove-criterion" title="Hapus Kriteria" style="width: 32px; height: 32px; border-radius: 8px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 6h18"/>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
                             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
                         </svg>
-                        <span>Hapus Kriteria</span>
                     </button>
                 </div>
 
@@ -312,6 +304,12 @@
                     return;
                 }
                 card.remove();
+                document.querySelectorAll('.criterion-card-modern').forEach((cCard, idx) => {
+                    const badge = cCard.querySelector('.criterion-badge-label');
+                    if (badge) {
+                        badge.textContent = `Kriteria #${idx + 1}`;
+                    }
+                });
                 updateWeightSummary();
             });
 
