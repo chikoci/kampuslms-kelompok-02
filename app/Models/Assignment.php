@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Assignment extends Model
 {
@@ -90,5 +91,13 @@ class Assignment extends Model
     public function grades(): HasManyThrough
     {
         return $this->hasManyThrough(Grade::class, Submission::class);
+    }
+
+    /**
+     * Relasi: Tugas dapat memiliki satu Rubrik penilaian bertingkat.
+     */
+    public function rubric(): HasOne
+    {
+        return $this->hasOne(Rubric::class);
     }
 }

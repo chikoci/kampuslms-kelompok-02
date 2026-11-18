@@ -8,6 +8,7 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\RubricController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\TentangController;
 use App\Http\Controllers\UserController;
@@ -76,6 +77,11 @@ Route::middleware('auth')->group(function () {
 
         // Tugas Perkuliahan
         Route::resource('courses.assignments', AssignmentController::class)->shallow();
+
+        // Fitur Diferensiasi: Rubrik Penilaian Bertingkat
+        Route::get('/assignments/{assignment}/rubric', [RubricController::class, 'manage'])->name('assignments.rubric.manage');
+        Route::post('/assignments/{assignment}/rubric', [RubricController::class, 'store'])->name('assignments.rubric.store');
+        Route::delete('/assignments/{assignment}/rubric', [RubricController::class, 'destroy'])->name('assignments.rubric.destroy');
 
         // Pengumpulan Tugas (Submissions)
         Route::get('/assignments/{assignment}/submissions', [SubmissionController::class, 'index'])->name('assignments.submissions.index');

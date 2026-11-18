@@ -273,24 +273,29 @@ Berikut panduan jawaban dan langkah peragaan langsung saat interview dosen atau 
   File: `app/Http/Controllers/CourseController.php` pada method `index()` baris 31-42.
 
 - **Langkah Peragaan ke Dosen (Step-by-Step):**
-  1. Buka file `app/Http/Controllers/CourseController.php`, cari baris 31-33:
+  1. Buka file `app/Http/Controllers/CourseController.php`, cari baris 32:
      ```php
      $courses = $query
          ->with('lecturer') // <-- Baris 32
      ```
-  2. Beri tanda komentar `//` pada baris 32 untuk mematikan eager loading:
+  2. Matikan eager loading dengan memberi komentar `//`:
      ```php
      $courses = $query
          // ->with('lecturer')
      ```
-  3. Buka browser pada alamat `http://127.0.0.1:8000/courses` (Daftar Mata Kuliah), lalu refresh.
-  4. Tunjukkan panel Laravel Debugbar di bagian bawah layar:
-     - Badge query berubah warna menjadi **MERAH**.
-     - Jumlah query melonjak naik dari **7 query menjadi 10 query**.
-     - Debugbar menampilkan pesan *"10 statements were executed, 2 of which were duplicates, 8 unique"*.
-     - Buka tab **Queries**, tunjukkan ada query `select * from users where id = ?` yang dipanggil berulang kali untuk tiap kartu mata kuliah.
-  5. Hapus kembali tanda `//` di baris 32, simpan file, dan refresh browser.
-     - Tunjukkan query kembali normal menjadi **7 query bersih tanpa duplikasi (0 duplicate)**.
+  3. Buka halaman `http://127.0.0.1:8000/courses` di browser lalu refresh.
+  4. **Output yang Muncul di Layar:**
+     - **Karena BUILD Poin 2 (`preventLazyLoading`) sudah aktif:**  
+       Laravel langsung memunculkan layar error merah:  
+       `LazyLoadingViolationException: Attempted to lazy load [lecturer] on model [App\Models\Course] but lazy loading is disabled.`  
+       *(Tunjukkan ini ke dosen sebagai bukti sahih bahwa sistem pencegahan lazy loading kita bekerja melindungi aplikasi).*
+     - **Jika ingin memperlihatkan lonjakan 10 query di Debugbar:**  
+       Komentari sementara baris 23 di `app/Providers/AppServiceProvider.php` (`// Model::preventLazyLoading(...)`), lalu refresh `/courses`:  
+       Badge query di Debugbar langsung berubah menjadi **MERAH** dan melonjak dari **7 query menjadi 10 query** (muncul 2 query duplikat `select * from users where id = ?`).
+  5. Kembalikan kode semula:
+     - Aktifkan kembali `->with('lecturer')` di `CourseController.php` baris 32.
+     - Pastikan `Model::preventLazyLoading` di `AppServiceProvider.php` baris 23 tetap aktif.
+     - Refresh browser: halaman kembali normal dengan **7 query bersih tanpa duplikasi (0 duplicate)**.
 
 ---
 
@@ -304,7 +309,7 @@ Berikut panduan jawaban dan langkah peragaan langsung saat interview dosen atau 
   - **Boros RAM:** RAM server dipaksa menampung puluhan sampai ratusan objek mahasiswa lengkap beserta data nama, email, nim, dan password hash-nya, padahal kita cuma butuh tahu berapa jumlah orangnya.
   - **Boros CPU:** Server membuang waktu untuk menginstansiasi objek model satu per satu ke PHP.
 
-- **Lokasi Kode di Aplikasi:**  
+- **Lokasi Kode di Aplikasi & Penjelasan Maksudnya:**  
   Di file `app/Http/Controllers/DashboardController.php` method `dosenDashboard()`:
   - Baris 71-74:
     ```php
@@ -313,10 +318,12 @@ Berikut panduan jawaban dan langkah peragaan langsung saat interview dosen atau 
         ->latest()
         ->get();
     ```
+    - *Maksud Kode:* Perintah `->withCount('students')` menyuruh database MySQL menghitung langsung total mahasiswa di setiap kelas dan menaruh hasilnya sebagai angka di atribut `students_count` (misal angka: `23`). Yang dikirim MySQL ke Laravel cuma satu angka bulat itu saja, bukan seluruh data pribadi mahasiswanya.
   - Baris 88:
     ```php
     'total_students' => $myCourses->sum('students_count'), // Cuma menjumlahkan angka integernya
     ```
+    - *Maksud Kode:* Perintah `sum('students_count')` cuma menjumlahkan angka-angka dari tiap kelas (misal kelas A ada 20 orang + kelas B ada 15 orang = 35). Prosesnya sangat cepat dan hemat RAM karena PHP cuma menjumlahkan angka matematika biasa, tanpa perlu memuat puluhan objek model mahasiswa ke memori.
 
 ---
 
@@ -325,19 +332,21 @@ Berikut panduan jawaban dan langkah peragaan langsung saat interview dosen atau 
 - **Lokasi File Migrasi:**  
   File: `database/migrations/2026_11_04_000001_add_performance_composite_indexes.php`.
 
-- **Isi Kode Index yang Ditambahkan:**
-  - Baris 23-25 (Tabel `assignments`):
-    ```php
-    Schema::table('assignments', function (Blueprint $table) {
-        $table->index(['course_id', 'status', 'due_at'], 'assignments_course_status_due_idx');
-    });
-    ```
-  - Baris 31-33 (Tabel `courses`):
-    ```php
-    Schema::table('courses', function (Blueprint $table) {
-        $table->index(['lecturer_id', 'status'], 'courses_lecturer_status_idx');
-    });
-    ```
+- **Isi Kode Index & Alasan Maksudnya:**
+  1. **Tabel `assignments` (Baris 23-25):**
+     ```php
+     Schema::table('assignments', function (Blueprint $table) {
+         $table->index(['course_id', 'status', 'due_at'], 'assignments_course_status_due_idx');
+     });
+     ```
+     - *Maksud & Alasannya:* Query tugas di dashboard dan detail kelas selalu mencari: `WHERE course_id = ? AND status = 'published' ORDER BY due_at ASC`. Kalau tidak digabung, database harus mencari tugasnya dulu, lalu menyaring statusnya, lalu mengurutkan tanggalnya secara terpisah. Dengan index komposit 3 kolom ini, database langsung dapat tugas aktif yang sudah otomatis urut berdasarkan batas waktu tanpa kerja dobel.
+  2. **Tabel `courses` (Baris 31-33):**
+     ```php
+     Schema::table('courses', function (Blueprint $table) {
+         $table->index(['lecturer_id', 'status'], 'courses_lecturer_status_idx');
+     });
+     ```
+     - *Maksud & Alasannya:* Di dashboard dosen, query selalu memanggil: `WHERE lecturer_id = ? AND status = 'active'`. Index 2 kolom ini membuat database langsung melompat ke kelas aktif milik dosen tersebut tanpa perlu memeriksa kelas milik dosen lain.
 
 - **Langkah Peragaan & Perintah EXPLAIN:**
   1. Buka database console (ekstensi Database Client di VS Code atau phpMyAdmin).
@@ -345,10 +354,10 @@ Berikut panduan jawaban dan langkah peragaan langsung saat interview dosen atau 
      ```sql
      EXPLAIN SELECT * FROM assignments WHERE course_id = 1 AND status = 'published' ORDER BY due_at ASC;
      ```
-  3. Tunjukkan tabel hasil EXPLAIN ke dosen:
-     - Kolom **`key`**: tertulis `assignments_course_status_due_idx` (artinya index buatan kita benar-benar dipakai oleh MySQL, bukan `NULL`).
-     - Kolom **`type`**: tertulis `ref` (artinya MySQL langsung lompat ke catatan index, tidak memindai seluruh isi tabel dari awal sampai akhir atau `ALL`).
-     - Kolom **`Extra`**: bersih dari `Using filesort` karena urutan kolom index sudah sama persis dengan urutan klausa `ORDER BY due_at`.
+  3. **Maksud dari Hasil Kolom EXPLAIN:**
+     - **`key` (Index yang Dipakai):** Tertulis `assignments_course_status_due_idx`. Maksudnya, MySQL benar-benar memakai index buatan kita sebagai petunjuk pencarian, bukan bernilai `NULL` (tanpa index).
+     - **`type` (Cara Mencari Data):** Bernilai `ref`. Maksudnya, MySQL langsung melompat ke posisi baris data yang cocok lewat index (sangat cepat). Jauh lebih baik dibanding `ALL` (Full Table Scan) yang terpaksa membaca seluruh baris tabel dari awal sampai akhir.
+     - **`Extra` (Proses Tambahan):** Bersih dari tulisan `Using filesort`. Maksudnya, data hasil query sudah langsung rapi dan urut dari index, sehingga MySQL tidak perlu membuang beban CPU untuk mengurutkan data secara manual lagi.
 
 ---
 
