@@ -38,7 +38,7 @@ class SendGradeNotification implements ShouldQueue
     /**
      * Menangani kasus ketika job gagal setelah seluruh percobaan habis.
      */
-    public function failed(\Throwable $exception): void
+    public function failed(SubmissionGraded $event, \Throwable $exception): void
     {
         Log::error('SendGradeNotification: Pengiriman notifikasi nilai submission gagal diproses worker.', [
             'submission_id' => $event->submission->id ?? null,
