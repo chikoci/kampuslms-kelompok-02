@@ -19,7 +19,7 @@
             <div style="display: flex; gap: 0.75rem;">
                 <div class="card" style="padding: 0.75rem 1.25rem; text-align: center; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 110px;">
                     <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">TOTAL MAHASISWA</div>
-                    <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">{{ $students->count() }}</div>
+                    <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">{{ $students->total() }}</div>
                 </div>
                 <div class="card" style="padding: 0.75rem 1.25rem; text-align: center; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 110px;">
                     <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">TOTAL TUGAS</div>
@@ -38,6 +38,20 @@
             <p class="text-muted" style="margin: 0;">Belum ada tugas yang dibuat pada mata kuliah ini.</p>
         </div>
     @else
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div style="font-size: 0.85rem; color: #64748b;">
+                Menampilkan <strong>{{ $students->firstItem() }}–{{ $students->lastItem() }}</strong> dari <strong>{{ $students->total() }}</strong> mahasiswa
+            </div>
+            <form method="GET" action="{{ route('courses.grades', $course) }}" style="display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                <label for="per_page" style="font-size: 0.82rem; color: #475569; font-weight: 600; margin: 0;">Tampilkan:</label>
+                <select id="per_page" name="per_page" onchange="this.form.submit()" class="form-control" style="width: auto; padding: 0.3rem 0.65rem; font-size: 0.82rem; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff;">
+                    @foreach ($allowedPerPage as $option)
+                        <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }} / halaman</option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
+
         <div class="card" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <table class="table" style="width: 100%; border-collapse: collapse; min-width: 750px;">
                 <thead>
@@ -55,41 +69,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($students as $index => $student)
-                        @php
-                            $totalScore = 0;
-                            $gradedCount = 0;
-                        @endphp
+                    @foreach ($matrix as $index => $row)
                         <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;">
-                            <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: #64748b; font-weight: 600;">{{ $index + 1 }}</td>
+                            <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: #64748b; font-weight: 600;">{{ $students->firstItem() + $index }}</td>
                             <td style="padding: 0.85rem 1rem; font-size: 0.9rem; font-weight: 600; color: #1e293b;">
-                                {{ $student->name }}
+                                {{ $row->student->name }}
                             </td>
                             <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: #64748b; font-family: monospace;">
-                                {{ $student->nim_nip ?? '-' }}
+                                {{ $row->student->nim_nip ?? '-' }}
                             </td>
 
                             @foreach ($assignments as $assignment)
-                                @php
-                                    $subKey = $student->id . '_' . $assignment->id;
-                                    $sub = $submissions->get($subKey)?->first();
-                                    $grade = $sub?->grade;
-                                @endphp
                                 <td style="padding: 0.85rem 1rem; font-size: 0.85rem; text-align: center;">
-                                    @if ($grade)
-                                        @php
-                                            $totalScore += $grade->score;
-                                            $gradedCount++;
-                                            $isHigh = ($grade->score >= 80);
-                                            $isMed = ($grade->score >= 60 && $grade->score < 80);
-                                        @endphp
-                                        <a href="{{ route('submissions.show', $sub) }}" style="text-decoration: none;">
-                                            <span class="badge" style="background: {{ $isHigh ? '#dcfce7' : ($isMed ? '#fef9c3' : '#fee2e2') }}; color: {{ $isHigh ? '#166534' : ($isMed ? '#854d0e' : '#991b1b') }}; font-weight: 700; padding: 0.25rem 0.55rem;">
-                                                {{ number_format($grade->score, 1) }}
+                                    @if ($row->cells[$assignment->id]->has_grade)
+                                        <a href="{{ route('submissions.show', $row->cells[$assignment->id]->submission) }}" style="text-decoration: none;">
+                                            <span class="badge" style="background: {{ $row->cells[$assignment->id]->badge_bg }}; color: {{ $row->cells[$assignment->id]->badge_color }}; font-weight: 700; padding: 0.25rem 0.55rem;">
+                                                {{ $row->cells[$assignment->id]->formatted_score }}
                                             </span>
                                         </a>
-                                    @elseif ($sub)
-                                        <a href="{{ route('submissions.show', $sub) }}" style="text-decoration: none;">
+                                    @elseif ($row->cells[$assignment->id]->submission)
+                                        <a href="{{ route('submissions.show', $row->cells[$assignment->id]->submission) }}" style="text-decoration: none;">
                                             <span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;">
                                                 Belum Dinilai
                                             </span>
@@ -101,8 +100,8 @@
                             @endforeach
 
                             <td style="padding: 0.85rem 1rem; font-size: 0.9rem; text-align: center; font-weight: 700; color: #047857; background: #f0fdf4;">
-                                @if ($gradedCount > 0)
-                                    {{ number_format($totalScore / $gradedCount, 1) }}
+                                @if ($row->average !== null)
+                                    {{ $row->average }}
                                 @else
                                     <span style="color: #94a3b8; font-weight: normal;">-</span>
                                 @endif
@@ -112,5 +111,11 @@
                 </tbody>
             </table>
         </div>
+
+        @if ($students->hasPages())
+            <div style="margin-top: 1rem;">
+                {{ $students->links() }}
+            </div>
+        @endif
     @endif
 </x-layout>

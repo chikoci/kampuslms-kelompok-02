@@ -310,5 +310,41 @@ class NotificationQueueTest extends TestCase
             ->assertSee('Transkrip & Rekap Nilai Tugas', false)
             ->assertSee('88.0')
             ->assertSee('Sangat memuaskan.');
+
+        // Dosen dan Admin ditolak mengakses portal privat /my-grades (403 Forbidden)
+        $this->actingAs($this->dosen)->get(route('grades.student'))->assertStatus(403);
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin)->get(route('grades.student'))->assertStatus(403);
+    }
+
+    /**
+     * Uji 10: Rekap nilai kelas mendukung paginasi adaptif dan menampilkan nilai 0.0 dengan benar.
+     */
+    public function test_course_grades_supports_pagination_and_zero_score(): void
+    {
+        $assignment = Assignment::factory()->create([
+            'course_id'  => $this->course->id,
+            'created_by' => $this->dosen->id,
+            'status'     => 'published',
+        ]);
+
+        $submission = Submission::factory()->create([
+            'assignment_id' => $assignment->id,
+            'user_id'       => $this->student1->id,
+        ]);
+
+        Grade::factory()->create([
+            'submission_id' => $submission->id,
+            'score'         => 0.0,
+            'graded_by'     => $this->dosen->id,
+        ]);
+
+        $response = $this->actingAs($this->dosen)->get(route('courses.grades', ['course' => $this->course, 'per_page' => 25]));
+        $response->assertStatus(200)
+            ->assertSee($this->student1->name)
+            ->assertSee('0.0')
+            ->assertViewHas('matrix')
+            ->assertViewHas('perPage', 25);
     }
 }

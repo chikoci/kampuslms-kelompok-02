@@ -97,7 +97,9 @@ Route::middleware('auth')->group(function () {
 
     // Rekap Nilai Akademik (Milestone M3)
     Route::get('/courses/{course}/grades', [GradeController::class, 'courseGrades'])->name('courses.grades');
-    Route::get('/my-grades', [GradeController::class, 'studentGrades'])->name('grades.student');
+    Route::get('/my-grades', [GradeController::class, 'studentGrades'])
+        ->middleware('role:mahasiswa')
+        ->name('grades.student');
 
     // Modul Notifikasi Asinkron (Milestone M3)
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
