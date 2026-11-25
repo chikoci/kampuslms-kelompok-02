@@ -154,24 +154,18 @@
                             <div class="header-dropdown-menu" id="userProfileDropdown">
                                 <div class="dropdown-user-info">
                                     <div class="name">{{ auth()->user()->name }}</div>
-                                    <div class="role">
-                                        <span class="badge {{ auth()->user()->role === 'admin' ? 'badge-danger' : (auth()->user()->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem; text-transform: capitalize;">
-                                            {{ auth()->user()->role }}
+                                    <div class="role" style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.2rem;">
+                                        <span class="badge {{ auth()->user()->role === 'admin' ? 'badge-danger' : (auth()->user()->role === 'dosen' ? 'badge-primary' : 'badge-secondary') }}" style="font-size: 0.7rem; padding: 0.12rem 0.48rem; text-transform: capitalize; font-weight: 700;">
+                                            {{ auth()->user()->role === 'admin' ? 'Administrator' : ucfirst(auth()->user()->role) }}
                                         </span>
                                         @if (auth()->user()->nim_nip)
-                                            <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.35rem;">{{ auth()->user()->nim_nip }}</span>
+                                            <span style="font-size: 0.75rem; color: #64748b; font-family: monospace; font-weight: 600;">
+                                                {{ auth()->user()->nim_nip }}
+                                            </span>
                                         @endif
                                     </div>
-                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">{{ auth()->user()->email }}</div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem; word-break: break-all;">{{ auth()->user()->email }}</div>
                                 </div>
-
-                                <a href="{{ route('notifications.index') }}" class="dropdown-item-link">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                                    </svg>
-                                    Pemberitahuan
-                                </a>
 
                                 <a href="{{ route('tentang') }}" class="dropdown-item-link">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

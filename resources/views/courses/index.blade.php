@@ -24,71 +24,81 @@
         </div>
     </div>
 
-    {{-- B. SEARCH & FILTER CONTAINER --}}
-    <div class="filter-container-card">
-        <form action="{{ route('courses.index') }}" method="GET" class="filter-flex-form">
-            {{-- Search Bar --}}
-            <div class="filter-search-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);">
-                    <circle cx="11" cy="11" r="8"/>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau kode mata kuliah..." class="filter-search-input">
-            </div>
-
-            {{-- Status Filter & Filter Button (Berdampingan Kanan Kiri di Mobile) --}}
-            <div class="filter-controls-group">
-                <select name="status" class="filter-select-modern">
-                    <option value="">Semua Status</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
-                    <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
-                </select>
-
-                <button type="submit" class="filter-btn-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    {{-- B. SEARCH & FILTER CONTAINER (HANYA DITAMPILKAN UNTUK DOSEN / ADMIN, MAHASISWA TIDAK MEMERLUKAN FILTER) --}}
+    @if (auth()->user()->role !== 'mahasiswa')
+        <div class="filter-container-card">
+            <form action="{{ route('courses.index') }}" method="GET" class="filter-flex-form">
+                {{-- Search Bar --}}
+                <div class="filter-search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                     </svg>
-                    <span>Filter</span>
-                </button>
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau kode mata kuliah..." class="filter-search-input">
+                </div>
 
-                @if(request()->hasAny(['q', 'status']))
-                    <a href="{{ route('courses.index') }}" class="btn-open-class filter-btn-reset">
-                        Reset
-                    </a>
-                @endif
-            </div>
-        </form>
-    </div>
+                {{-- Status Filter & Filter Button (Berdampingan Kanan Kiri di Mobile) --}}
+                <div class="filter-controls-group">
+                    <select name="status" class="filter-select-modern">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
+                    </select>
 
-    {{-- C. DAFTAR MATA KULIAH (COMPACT & 1-KLIK LANGSUNG MENUJU DETAIL) --}}
-    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button type="submit" class="filter-btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                        </svg>
+                        <span>Filter</span>
+                    </button>
+
+                    @if(request()->hasAny(['q', 'status']))
+                        <a href="{{ route('courses.index') }}" class="btn-open-class filter-btn-reset">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+    @endif
+
+    {{-- C. DAFTAR MATA KULIAH (COMPACT & JARAK RAPAT 1-KLIK MENUJU DETAIL) --}}
+    <div style="display: flex; flex-direction: column; gap: 0.35rem;">
         @forelse ($courses as $course)
-            <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'">
+            <div class="course-card-compact" onclick="window.location='{{ route('courses.show', $course) }}'" style="margin-bottom: 0;">
                 <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
-                    {{-- Nama Mata Kuliah --}}
-                    <h2 class="course-compact-title">
-                        {{ $course->name }}
-                    </h2>
+                    @if (auth()->user()->role === 'mahasiswa')
+                        {{-- Baris 1: Nama Mata Kuliah + [Kode Mata Kuliah] Sejajar --}}
+                        <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.2rem;">
+                            <h2 class="course-compact-title" style="margin: 0; font-size: 0.925rem; font-weight: 700; color: #0f172a;">
+                                {{ $course->name }}
+                            </h2>
+                            <span class="badge-code-modern" style="font-size: 0.72rem; padding: 0.12rem 0.45rem;">[{{ $course->code }}]</span>
+                        </div>
 
-                    {{-- Baris Metadata Ringkas & Rapi --}}
-                    <div class="course-compact-meta">
-                        <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $course->code }}</span>
-                        <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 6px;">
-                            {{ $course->sks }} SKS
-                        </span>
-                        <span class="badge-status-dot {{ $course->status }}" style="font-size: 0.68rem; padding: 0.12rem 0.45rem;">
-                            <span class="dot"></span>
-                            {{ ucfirst($course->status) }}
-                        </span>
-                        <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                            {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}
-                        </span>
-                    </div>
+                        {{-- Baris 2: Nama Dosen Pengampu Saja (SKS dihilangkan) --}}
+                        <div style="font-size: 0.78rem; color: #64748b; display: flex; align-items: center; gap: 0.3rem;">
+                            <span>Dosen Pengampu: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
+                        </div>
+                    @else
+                        {{-- Tampilan Dosen & Admin --}}
+                        <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.2rem;">
+                            <h2 class="course-compact-title" style="margin: 0; font-size: 0.925rem; font-weight: 700; color: #0f172a;">
+                                {{ $course->name }}
+                            </h2>
+                            <span class="badge-code-modern" style="font-size: 0.72rem; padding: 0.12rem 0.45rem;">{{ $course->code }}</span>
+                            <span class="badge-status-dot {{ $course->status }}" style="font-size: 0.68rem; padding: 0.12rem 0.45rem;">
+                                <span class="dot"></span>
+                                {{ ucfirst($course->status) }}
+                            </span>
+                        </div>
+                        <div class="course-compact-meta">
+                            <span style="font-size: 0.75rem; color: #64748b;">
+                                Dosen: {{ $course->lecturer?->name ?? 'Belum Ditugaskan' }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Sisi Kanan: Aksi Cepat (Edit/Hapus bagi Admin/Dosen) & Indikator Chevron --}}
@@ -117,13 +127,6 @@
                             </button>
                         </form>
                     @endcan
-
-                    {{-- Chevron 1-Klik Buka Kelas --}}
-                    <div class="course-chevron">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </div>
                 </div>
             </div>
         @empty

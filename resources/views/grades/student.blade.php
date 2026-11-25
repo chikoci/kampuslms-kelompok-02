@@ -24,8 +24,8 @@
         </div>
     @else
 
-        {{-- B. DAFTAR MATA KULIAH BERJEJER KE BAWAH (RINGKAS & TIDAK BERJARAK BERLEBIHAN - SESUAI GAMBAR 5) --}}
-        <div class="grade-cards-list" style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.5rem;">
+        {{-- B. DAFTAR MATA KULIAH BERJEJER KE BAWAH (RINGKAS & TIDAK BERJARAK BERLEBIHAN) --}}
+        <div class="grade-cards-list" style="display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem;">
             @foreach ($courses as $c)
                 @php
                     $totalAssignments = $c->assignments->count();
@@ -60,9 +60,6 @@
                         elseif ($finalScore >= 40) $gradeLetter = 'D';
                         else $gradeLetter = 'E';
                     }
-
-                    $attendanceRate = $totalAssignments > 0 ? round(($submittedCount / $totalAssignments) * 100, 1) : 100;
-                    $equalWeight = $totalAssignments > 0 ? round(100 / $totalAssignments, 1) : 0;
                 @endphp
 
                 <div class="grade-accordion-card clean-course-card" 
@@ -87,211 +84,65 @@
                         </div>
                     </div>
 
-                    {{-- 2. DETAIL NILAI TERSEMBUNYI (MUNCUL SAAT DIKLIK) --}}
-                    <div id="grade-body-{{ $c->id }}" class="grade-accordion-content clean-course-body" style="display: none; border-top: 1px solid #f1f5f9; background: #fafbfc; padding: 0.75rem 1rem;">
+                    {{-- 2. DETAIL NILAI TERSEMBUNYI (FOKUS HANYA NAMA TUGAS & NILAI) --}}
+                    <div id="grade-body-{{ $c->id }}" class="grade-accordion-content clean-course-body" style="display: none; border-top: 1px solid #f1f5f9; background: #fafbfc; padding: 0.6rem 0.85rem;">
                         
-                        {{-- Ringkasan Informasi Mata Kuliah & Nilai Akhir (Muncul setelah di-klik) --}}
-                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.65rem 0.85rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                            <div>
-                                <div style="display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
-                                    <span class="badge-code-modern" style="font-size: 0.7rem; padding: 0.12rem 0.45rem;">{{ $c->code }}</span>
-                                    <span class="badge" style="background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-size: 0.65rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 6px;">
-                                        {{ $c->sks }} SKS
-                                    </span>
-                                    <span class="badge" style="background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; font-size: 0.65rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 6px;">
-                                        {{ number_format($attendanceRate, 0) }}% Kumpul
-                                    </span>
-                                </div>
-                                <div style="color: #64748b; font-size: 0.78rem; display: flex; align-items: center; gap: 0.3rem;">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="12" cy="7" r="4"/>
-                                    </svg>
-                                    <span>Dosen: {{ $c->lecturer?->name ?? 'Belum Ditugaskan' }}</span>
+                        {{-- Ringkasan Nilai Akhir Kumulatif Tepat di Atas (Tidak Perlu Scroll ke Bawah) --}}
+                        @if ($finalScore !== null)
+                            <div style="margin-bottom: 0.5rem; padding: 0.45rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.825rem; color: #334155;">
+                                <span style="font-weight: 600; color: #475569;">Nilai Akhir:</span>
+                                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                    <strong style="color: #0f172a; font-size: 0.95rem;">{{ number_format($finalScore, 1) }}</strong>
+                                    <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 800; padding: 0.1rem 0.4rem; border-radius: 5px;">{{ $gradeLetter }}</span>
                                 </div>
                             </div>
+                        @endif
 
-                            <div style="text-align: right; display: flex; align-items: center; gap: 0.45rem;">
-                                <div>
-                                    <div style="font-size: 0.62rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Nilai Akhir</div>
-                                    <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a; line-height: 1.1;">
-                                        {{ $finalScore !== null ? number_format($finalScore, 1) : '-' }}
-                                    </div>
-                                </div>
-                                <span class="badge" style="background: {{ $finalScore !== null ? '#dcfce7' : '#f1f5f9' }}; color: {{ $finalScore !== null ? '#15803d' : '#64748b' }}; font-size: 0.8rem; font-weight: 800; padding: 0.25rem 0.5rem; border-radius: 7px;">
-                                    {{ $gradeLetter }}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        {{-- A. Mobile List View (Khusus Layar Smartphone <= 767px) --}}
-                        <div class="grade-mobile-view" style="padding: 0.75rem 0.85rem;">
-                            <div style="font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em;">
-                                Rincian Evaluasi & Tugas ({{ $c->assignments->count() }})
-                            </div>
-
-                            @if ($c->assignments->isEmpty())
-                                <p class="text-muted" style="font-size: 0.825rem; font-style: italic; padding: 0.75rem 0; margin: 0; text-align: center;">
-                                    Belum ada tugas atau komponen evaluasi pada mata kuliah ini.
-                                </p>
-                            @else
-                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                    @foreach ($c->assignments as $assignment)
-                                        @php
-                                            $sub = $assignment->submissions->first();
-                                            $grade = $sub?->grade;
-                                            $scoreVal = $grade ? (float) $grade->score : 0;
-                                            $weightedVal = ($grade && $assignment->max_score > 0) ? round(($scoreVal / $assignment->max_score) * $equalWeight, 2) : 0;
-                                        @endphp
-                                        <div class="grade-assignment-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.65rem 0.75rem;">
-                                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem;">
-                                                <div style="min-width: 0; flex: 1;">
-                                                    <a href="{{ route('assignments.show', $assignment) }}" style="font-weight: 700; color: #0f172a; text-decoration: none; font-size: 0.875rem; line-height: 1.25; display: block;">
-                                                        {{ $assignment->title }}
-                                                    </a>
-                                                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.15rem;">
-                                                        Tenggat: {{ $assignment->due_at->translatedFormat('d M Y, H:i') }}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    @if ($grade)
-                                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.78rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 6px;">
-                                                            {{ number_format($grade->score, 1) }}
-                                                        </span>
-                                                    @elseif ($sub)
-                                                        <span class="badge" style="background: #fef3c7; color: #b45309; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 6px;">
-                                                            Menunggu Nilai
-                                                        </span>
-                                                    @else
-                                                        <span class="badge" style="background: #fee2e2; color: #b91c1c; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 6px;">
-                                                            Belum Kumpul
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            </div>
-
-                                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #64748b; padding-top: 0.35rem; border-top: 1px dashed #f1f5f9;">
-                                                <span>Bobot: <strong>{{ $equalWeight }}%</strong> &bull; Maks: {{ $assignment->max_score }}</span>
-                                                <span style="font-weight: 700; color: #2563eb;">Skor: {{ $grade ? number_format($weightedVal, 2) : '-' }}</span>
-                                            </div>
-
+                        @if ($c->assignments->isEmpty())
+                            <p class="text-muted" style="font-size: 0.825rem; font-style: italic; padding: 0.75rem 0; margin: 0; text-align: center;">
+                                Belum ada tugas pada mata kuliah ini.
+                            </p>
+                        @else
+                            {{-- Daftar Tugas & Nilai (Nama Tugas di Kiri, Nilai di Kanan) --}}
+                            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                                @foreach ($c->assignments as $assignment)
+                                    @php
+                                        $sub = $assignment->submissions->first();
+                                        $grade = $sub?->grade;
+                                    @endphp
+                                    <div class="grade-assignment-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.55rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                                        {{-- Nama Tugas & Catatan Feedback --}}
+                                        <div style="flex: 1; min-width: 0;">
+                                            <a href="{{ route('assignments.show', $assignment) }}" style="font-weight: 600; color: #0f172a; text-decoration: none; font-size: 0.875rem; line-height: 1.3; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ $assignment->title }}
+                                            </a>
                                             @if ($grade && !empty($grade->feedback))
-                                                <div style="margin-top: 0.35rem; padding: 0.35rem 0.5rem; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0; font-size: 0.72rem; color: #166534; font-style: italic;">
-                                                    Feedback: "{{ $grade->feedback }}"
+                                                <div style="font-size: 0.72rem; color: #166534; font-style: italic; margin-top: 0.15rem;">
+                                                    {{ $grade->feedback }}
                                                 </div>
                                             @endif
                                         </div>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
 
-                        {{-- B. Desktop Table View (Layar Desktop / Tablet Lebar > 767px) --}}
-                        <div class="grade-desktop-view" style="padding: 1.25rem 1.5rem;">
-                            <h3 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                    <line x1="16" y1="13" x2="8" y2="13"/>
-                                    <line x1="16" y1="17" x2="8" y2="17"/>
-                                </svg>
-                                Detail Komponen Penilaian
-                            </h3>
-
-                            @if ($c->assignments->isEmpty())
-                                <p class="text-muted" style="font-size: 0.875rem; font-style: italic; padding: 0.75rem 0; margin: 0;">
-                                    Belum ada tugas atau komponen evaluasi pada mata kuliah ini.
-                                </p>
-                            @else
-                                <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 14px; background: #ffffff;">
-                                    <table class="grade-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Komponen Penilaian</th>
-                                                <th style="text-align: center;">Nilai</th>
-                                                <th style="text-align: center;">Bobot</th>
-                                                <th style="text-align: center;">Skor</th>
-                                                <th>Catatan / Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($c->assignments as $assignment)
-                                                @php
-                                                    $sub = $assignment->submissions->first();
-                                                    $grade = $sub?->grade;
-                                                    $scoreVal = $grade ? (float) $grade->score : 0;
-                                                    $weightedVal = ($grade && $assignment->max_score > 0) ? round(($scoreVal / $assignment->max_score) * $equalWeight, 2) : 0;
-                                                @endphp
-                                                <tr>
-                                                    <td style="font-weight: 600;">
-                                                        <a href="{{ route('assignments.show', $assignment) }}" style="color: #0f172a; text-decoration: none;">
-                                                            {{ $assignment->title }}
-                                                        </a>
-                                                        <div style="font-size: 0.75rem; color: #64748b; font-weight: normal; margin-top: 0.15rem;">
-                                                            Tenggat: {{ $assignment->due_at->translatedFormat('d M Y, H:i') }}
-                                                        </div>
-                                                    </td>
-
-                                                    <td style="text-align: center; font-weight: 700;">
-                                                        @if ($grade)
-                                                            <span style="color: #0f172a; font-size: 0.95rem;">{{ number_format($grade->score, 2) }}</span>
-                                                        @elseif ($sub)
-                                                            <span class="badge badge-warning" style="font-size: 0.7rem;">Menunggu Nilai</span>
-                                                        @else
-                                                            <span style="color: #94a3b8;">-</span>
-                                                        @endif
-                                                    </td>
-
-                                                    <td style="text-align: center; color: #64748b; font-weight: 500;">
-                                                        {{ $equalWeight }}%
-                                                    </td>
-
-                                                    <td style="text-align: center; font-weight: 700; color: #2563eb;">
-                                                        {{ $grade ? number_format($weightedVal, 2) : '-' }}
-                                                    </td>
-
-                                                    <td>
-                                                        @if ($grade && !empty($grade->feedback))
-                                                            <span style="font-size: 0.825rem; color: #166534; font-style: italic;">"{{ $grade->feedback }}"</span>
-                                                        @elseif ($grade)
-                                                            <span class="badge-status-dot active" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">Selesai Dinilai</span>
-                                                        @elseif ($sub)
-                                                            <span class="badge" style="background: #eff6ff; color: #2563eb; font-size: 0.7rem;">Sudah Dikumpulkan</span>
-                                                        @else
-                                                            <span class="badge-status-dot draft" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">Belum Mengumpulkan</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endif
-                        </div>
-
-                        {{-- BOTTOM BAR REKAP NILAI AKHIR RINGKAS --}}
-                        <div class="grade-final-bar" style="padding: 0.75rem 1rem; background: #ffffff; border-top: 1px solid #eef2f6; display: flex; align-items: center; justify-content: space-between; border-radius: 0 0 16px 16px;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: #0f172a; font-size: 0.875rem;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect width="16" height="20" x="4" y="2" rx="2"/>
-                                    <line x1="8" y1="6" x2="16" y2="6"/>
-                                    <line x1="16" y1="14" x2="16" y2="18"/>
-                                    <path d="M16 10h.01"/>
-                                    <path d="M12 10h.01"/>
-                                    <path d="M8 10h.01"/>
-                                </svg>
-                                <span>Nilai Akhir Kumulatif</span>
+                                        {{-- Nilai yang Diperoleh di Sisi Kanan --}}
+                                        <div style="flex-shrink: 0; display: flex; align-items: center;">
+                                            @if ($grade)
+                                                <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.85rem; font-weight: 800; padding: 0.18rem 0.55rem; border-radius: 6px;">
+                                                    {{ number_format($grade->score, 1) }}
+                                                </span>
+                                            @elseif ($sub)
+                                                <span class="badge" style="background: #fef3c7; color: #b45309; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 6px;">
+                                                    Menunggu
+                                                </span>
+                                            @else
+                                                <span class="badge" style="background: #f1f5f9; color: #94a3b8; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 6px;">
+                                                    -
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
-
-                            <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                <span style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">
-                                    {{ $finalScore !== null ? number_format($finalScore, 2) : '-' }} <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">/ 100</span>
-                                </span>
-                                <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.95rem; font-weight: 800; padding: 0.15rem 0.65rem; border-radius: 8px;">
-                                    {{ $gradeLetter }}
-                                </span>
-                            </div>
-                        </div>
+                        @endif
                     </div>
 
                 </div>
