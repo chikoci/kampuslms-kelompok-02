@@ -16,7 +16,7 @@ class SubmissionController extends Controller
      * Dosen/Admin: melihat seluruh mahasiswa terdaftar (siapa sudah/belum mengumpulkan, ditandai terlambat).
      * Mahasiswa: disaring di query level agar hanya melihat miliknya sendiri.
      */
-    public function index(Assignment $assignment)
+    public function index(Request $request, Assignment $assignment)
     {
         Gate::authorize('view', $assignment);
 
@@ -33,16 +33,46 @@ class SubmissionController extends Controller
         }
 
         // Khusus Dosen dan Admin:
-        // Ambil pemetaan submission yang sudah masuk
-        $submissions = $assignment->submissions()->with(['student', 'grade'])->get()->keyBy('user_id');
-        // Urutkan mahasiswa: yang sudah mengumpulkan tampil paling atas
-        $enrolledStudents = $assignment->course->students()
-            ->orderBy('name')
-            ->get()
-            ->sortByDesc(fn($student) => $submissions->has($student->id))
-            ->values();
+        $allowedPerPage = [15, 25, 50];
+        $perPage = $request->integer('per_page', 15);
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 15;
+        }
 
-        return view('submissions.index', compact('assignment', 'enrolledStudents', 'submissions'));
+        // Urutkan di level SQL: mahasiswa yang sudah mengumpulkan tampil paling atas, lalu urut nama
+        $enrolledStudents = $assignment->course->students()
+            ->orderByDesc(
+                Submission::selectRaw('1')
+                    ->whereColumn('submissions.user_id', 'users.id')
+                    ->where('submissions.assignment_id', $assignment->id)
+                    ->limit(1)
+            )
+            ->orderBy('name')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        // Ambil pemetaan submission HANYA untuk mahasiswa di halaman aktif
+        $submissions = $assignment->submissions()
+            ->whereIn('user_id', $enrolledStudents->pluck('id'))
+            ->with(['student', 'grade'])
+            ->get()
+            ->keyBy('user_id');
+
+        // Agregasi metrik ringkasan kelas dihitung di Controller (MVC)
+        $totalEnrolled = $enrolledStudents->total();
+        $submittedCount = $assignment->submissions()->count();
+        $pendingGrading = $assignment->submissions()->doesntHave('grade')->count();
+
+        return view('submissions.index', compact(
+            'assignment',
+            'enrolledStudents',
+            'submissions',
+            'totalEnrolled',
+            'submittedCount',
+            'pendingGrading',
+            'perPage',
+            'allowedPerPage'
+        ));
     }
 
     /**
@@ -304,6 +334,11 @@ class SubmissionController extends Controller
      */
     public function destroyGrade(Submission $submission)
     {
+        $submission->loadMissing(['assignment.course', 'grade']);
+
+        // Pengecekan izin wajib dijalankan di baris awal sebelum memeriksa ada/tidaknya nilai
+        Gate::authorize('update', $submission->assignment->course);
+
         if ($submission->grade) {
             Gate::authorize('delete', $submission->grade);
 

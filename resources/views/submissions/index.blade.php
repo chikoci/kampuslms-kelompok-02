@@ -28,11 +28,6 @@
             </div>
 
             @if(auth()->user()->role !== 'mahasiswa')
-                @php
-                    $totalEnrolled = $enrolledStudents->count();
-                    $submittedCount = $submissions->count();
-                    $pendingGrading = $submissions->filter(fn($s) => !$s->grade)->count();
-                @endphp
                 <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
                     <span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.65rem; border-radius: 8px;">
                         {{ $totalEnrolled }} Mahasiswa
@@ -152,6 +147,22 @@
         </div>
     @else
         {{-- TAMPILAN KHUSUS DOSEN / ADMIN --}}
+
+        @if ($enrolledStudents->isNotEmpty())
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.65rem;">
+                <div style="font-size: 0.82rem; color: #64748b;">
+                    Menampilkan <strong>{{ $enrolledStudents->firstItem() }}–{{ $enrolledStudents->lastItem() }}</strong> dari <strong>{{ $enrolledStudents->total() }}</strong> mahasiswa
+                </div>
+                <form method="GET" action="{{ route('assignments.submissions.index', $assignment) }}" style="display: flex; align-items: center; gap: 0.45rem; margin: 0;">
+                    <label for="per_page" style="font-size: 0.8rem; color: #475569; font-weight: 600; margin: 0;">Tampilkan:</label>
+                    <select id="per_page" name="per_page" onchange="this.form.submit()" class="form-control" style="width: auto; padding: 0.25rem 0.6rem; font-size: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff;">
+                        @foreach ($allowedPerPage as $option)
+                            <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }} / halaman</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+        @endif
 
         {{-- Mobile Cards Dosen (<= 767px): Sangat Ringkas Mirip Gambar 6 --}}
         <div class="submission-mobile-cards" style="display: none; flex-direction: column; gap: 0.5rem;">
@@ -279,6 +290,12 @@
                 </table>
             </div>
         </div>
+
+        @if ($enrolledStudents->hasPages())
+            <div style="margin-top: 0.85rem;">
+                {{ $enrolledStudents->links() }}
+            </div>
+        @endif
     @endif
 
 </x-layout>
