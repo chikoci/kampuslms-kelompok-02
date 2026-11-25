@@ -223,6 +223,34 @@ class NotificationQueueTest extends TestCase
     }
 
     /**
+     * Uji 4b: Method failed() pada SendGradeNotification mencatat submission_id dan pesan error ke log.
+     */
+    public function test_send_grade_notification_failed_handler_logs_submission_id(): void
+    {
+        \Illuminate\Support\Facades\Log::shouldReceive('error')
+            ->once()
+            ->withArgs(function (string $message, array $context) {
+                return str_contains($message, 'SendGradeNotification')
+                    && isset($context['submission_id'])
+                    && $context['submission_id'] !== null
+                    && ($context['error'] ?? '') === 'Simulasi kegagalan worker';
+            });
+
+        $assignment = Assignment::factory()->create([
+            'course_id'  => $this->course->id,
+            'created_by' => $this->dosen->id,
+        ]);
+
+        $submission = Submission::factory()->create([
+            'assignment_id' => $assignment->id,
+            'user_id'       => $this->student1->id,
+        ]);
+
+        $listener = new SendGradeNotification();
+        $listener->failed(new SubmissionGraded($submission), new \RuntimeException('Simulasi kegagalan worker'));
+    }
+
+    /**
      * Uji 5: Endpoint polling unread-count mengembalikan JSON jumlah notifikasi belum dibaca.
      */
     public function test_unread_count_json_endpoint_for_navbar_polling(): void
