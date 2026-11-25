@@ -118,6 +118,37 @@ class NotificationQueueTest extends TestCase
     }
 
     /**
+     * Uji 2b: Listener membatalkan pengiriman notifikasi jika status tugas sudah bukan published saat antrean diproses.
+     */
+    public function test_listener_skips_notification_when_assignment_is_reverted_to_draft_or_deleted(): void
+    {
+        Notification::fake();
+
+        $assignment = Assignment::factory()->create([
+            'course_id'  => $this->course->id,
+            'created_by' => $this->dosen->id,
+            'title'      => 'Tugas Dibatalkan',
+            'status'     => 'published',
+        ]);
+
+        $event = new AssignmentPublished($assignment);
+
+        // Simulasikan dosen mengubah status tugas kembali menjadi draft sebelum worker memproses antrean
+        $assignment->update(['status' => 'draft']);
+
+        (new SendAssignmentNotification())->handle($event);
+
+        Notification::assertNothingSent();
+
+        // Simulasikan tugas dihapus sebelum worker memproses antrean
+        $assignment->delete();
+
+        (new SendAssignmentNotification())->handle($event);
+
+        Notification::assertNothingSent();
+    }
+
+    /**
      * Uji 3: Payload NewAssignmentNotification bebas dari data sensitif.
      */
     public function test_new_assignment_notification_payload_is_safe(): void

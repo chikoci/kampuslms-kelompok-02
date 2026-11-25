@@ -79,30 +79,36 @@ class CourseController extends Controller
 
         $course->load([
             'lecturer',
-            'students' => fn ($q) => $q->orderBy('name'),
             'materials.course',
             'assignments' => function ($query) use ($user) {
                 if ($user?->role === 'mahasiswa') {
-                    $query->where('status', 'published');
+                    $query->where('status', 'published')
+                        ->with(['submissions' => fn ($subQ) => $subQ->where('user_id', $user->id)]);
                 }
                 $query->withCount('submissions')->latest();
             },
             'assignments.course',
-            'assignments.submissions',
-        ]);
+        ])->loadCount('students');
 
         $availableStudents = collect();
         if ($user && $user->can('enroll', $course)) {
-            $enrolledIds = $course->students->pluck('id');
+            $enrolledIds = $course->students()->pluck('users.id');
             $availableStudents = User::where('role', 'mahasiswa')
+                ->select(['id', 'name', 'nim_nip'])
                 ->whereNotIn('id', $enrolledIds)
                 ->orderBy('name')
+                ->limit(100)
                 ->get();
         }
 
+        $pesertaStudents = $course->students()
+            ->select(['users.id', 'users.name', 'users.nim_nip'])
+            ->orderBy('name')
+            ->get();
+
         $enrolledStudents = $course->students()->orderBy('name')->paginate(10, ['*'], 'students_page')->withQueryString();
 
-        return view('courses.show', compact('course', 'availableStudents', 'enrolledStudents'));
+        return view('courses.show', compact('course', 'availableStudents', 'enrolledStudents', 'pesertaStudents'));
     }
 
     /**
@@ -182,53 +188,5 @@ class CourseController extends Controller
         $course->students()->detach($student->id);
 
         return back()->with('success', "Mahasiswa {$student->name} ({$student->nim_nip}) berhasil dikeluarkan dari kelas ini.");
-    }
-
-    /**
-     * Menampilkan daftar semua pengumpulan tugas pada mata kuliah (Dosen / Admin).
-     * Mendukung filter per tugas dan status penilaian.
-     */
-    public function submissions(Request $request, Course $course)
-    {
-        Gate::authorize('view', $course);
-
-        if (auth()->user()?->role === 'mahasiswa') {
-            abort(403, 'Akses terbatas untuk staf pengajar.');
-        }
-
-        $assignments = $course->assignments()->orderBy('title')->get();
-        $assignmentIds = $assignments->pluck('id');
-
-        $query = \App\Models\Submission::whereIn('assignment_id', $assignmentIds)
-            ->with(['student', 'assignment', 'grade.grader']);
-
-        // Filter berdasarkan tugas tertentu
-        if ($request->filled('assignment_id')) {
-            $query->where('assignment_id', $request->assignment_id);
-        }
-
-        // Filter status penilaian (sudah dinilai / belum dinilai)
-        if ($request->filled('status')) {
-            if ($request->status === 'graded') {
-                $query->has('grade');
-            } elseif ($request->status === 'ungraded') {
-                $query->doesntHave('grade');
-            }
-        }
-
-        $submissions = $query->latest('submitted_at')->paginate(15)->withQueryString();
-
-        $totalSubmissions = \App\Models\Submission::whereIn('assignment_id', $assignmentIds)->count();
-        $ungradedCount = \App\Models\Submission::whereIn('assignment_id', $assignmentIds)->doesntHave('grade')->count();
-        $gradedCount = $totalSubmissions - $ungradedCount;
-
-        return view('courses.submissions', compact(
-            'course',
-            'assignments',
-            'submissions',
-            'totalSubmissions',
-            'ungradedCount',
-            'gradedCount'
-        ));
     }
 }

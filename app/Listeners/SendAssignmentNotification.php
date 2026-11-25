@@ -25,15 +25,21 @@ class SendAssignmentNotification implements ShouldQueue
 
     /**
      * Menangani event publikasi tugas baru.
-     * Mengambil mahasiswa terdaftar sekaligus (eager loading) untuk menghindari N+1.
+     * Memastikan status tugas masih published di database sebelum mengirim notifikasi ke mahasiswa terdaftar.
      */
     public function handle(AssignmentPublished $event): void
     {
+        $assignment = $event->assignment->fresh(['course']);
+
+        if (! $assignment || $assignment->status !== 'published' || ! $assignment->course) {
+            return;
+        }
+
         // Ambil mahasiswa terdaftar dari course terkait secara efisien
-        $students = $event->assignment->course->students()->get();
+        $students = $assignment->course->students()->get();
 
         if ($students->isNotEmpty()) {
-            Notification::send($students, new NewAssignmentNotification($event->assignment));
+            Notification::send($students, new NewAssignmentNotification($assignment));
         }
     }
 

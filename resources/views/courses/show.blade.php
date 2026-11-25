@@ -91,7 +91,7 @@
                         <svg id="badgeLihatPesertaIcon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;"><polyline points="6 9 12 15 18 9"/></svg>
                     </span>
                 </div>
-                <div class="val">{{ $course->students()->count() }} <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Orang</span></div>
+                <div class="val">{{ $course->students_count ?? $course->students()->count() }} <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Orang</span></div>
                 <div class="sub">Peserta Kelas Aktif</div>
             </div>
         </div>
@@ -111,7 +111,7 @@
                     Daftar Mahasiswa Terdaftar
                 </h3>
                 <span style="font-size: 0.72rem; font-weight: 700; background: #eff6ff; color: #2563eb; padding: 0.15rem 0.5rem; border-radius: 9999px;">
-                    {{ $course->students()->count() }} Mahasiswa
+                    {{ $course->students_count ?? $course->students()->count() }} Mahasiswa
                 </span>
             </div>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -124,7 +124,7 @@
         </div>
 
         @php
-            $allCourseStudents = $course->students()->orderBy('name')->get();
+            $allCourseStudents = $pesertaStudents ?? $course->students()->orderBy('name')->get();
         @endphp
 
         @if ($allCourseStudents->isEmpty())
@@ -317,7 +317,7 @@
                             @endif
                         @else
                             <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.72rem; font-weight: 700;">
-                                {{ $assignment->submissions()->count() }} Kumpul
+                                {{ $assignment->submissions_count ?? $assignment->submissions()->count() }} Kumpul
                             </span>
                         @endif
                     </div>
@@ -343,7 +343,7 @@
                     </svg>
                     Peserta Mahasiswa Terdaftar
                     <span style="font-size: 0.75rem; font-weight: 600; background: #eff6ff; color: #2563eb; padding: 0.2rem 0.55rem; border-radius: 9999px;">
-                        {{ $course->students()->count() }} Orang
+                        {{ $course->students_count ?? $course->students()->count() }} Orang
                     </span>
                 </h3>
 
