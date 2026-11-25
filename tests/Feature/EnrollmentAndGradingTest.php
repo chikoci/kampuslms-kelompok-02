@@ -133,4 +133,53 @@ class EnrollmentAndGradingTest extends TestCase
             'submission_id' => $sub1->id,
         ]);
     }
+
+    public function test_course_submissions_recap_authorization_and_metrics(): void
+    {
+        $this->course1->students()->attach([$this->mhs1->id, $this->mhs2->id], ['enrolled_at' => now()]);
+
+        $assignment = Assignment::factory()->create([
+            'course_id'  => $this->course1->id,
+            'created_by' => $this->dosen1->id,
+            'status'     => 'published',
+        ]);
+
+        $sub1 = Submission::factory()->create([
+            'assignment_id' => $assignment->id,
+            'user_id'       => $this->mhs1->id,
+        ]);
+        Submission::factory()->create([
+            'assignment_id' => $assignment->id,
+            'user_id'       => $this->mhs2->id,
+        ]);
+
+        Grade::factory()->create([
+            'submission_id' => $sub1->id,
+            'graded_by'     => $this->dosen1->id,
+            'score'         => 90,
+        ]);
+
+        // 1. Mahasiswa terdaftar tetap ditolak (403)
+        $this->actingAs($this->mhs1)
+            ->get(route('courses.submissions', $this->course1))
+            ->assertStatus(403);
+
+        // 2. Dosen lain yang bukan pengampu ditolak (403)
+        $this->actingAs($this->dosen2)
+            ->get(route('courses.submissions', $this->course1))
+            ->assertStatus(403);
+
+        // 3. Dosen pengampu dapat melihat rekap pengumpulan beserta metrik agregat
+        $this->actingAs($this->dosen1)
+            ->get(route('courses.submissions', $this->course1))
+            ->assertStatus(200)
+            ->assertViewHas('totalSubmissions', 2)
+            ->assertViewHas('gradedCount', 1)
+            ->assertViewHas('ungradedCount', 1);
+
+        // 4. Admin juga berhak mengakses rekap pengumpulan kelas
+        $this->actingAs($this->admin)
+            ->get(route('courses.submissions', $this->course1))
+            ->assertStatus(200);
+    }
 }
