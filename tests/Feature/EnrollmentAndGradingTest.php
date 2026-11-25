@@ -134,6 +134,70 @@ class EnrollmentAndGradingTest extends TestCase
         ]);
     }
 
+    /**
+     * Uji 4: Otorisasi destroyGrade tetap menolak (403) pengguna tidak berhak meskipun nilai masih null.
+     */
+    public function test_unauthorized_user_cannot_destroy_grade_even_when_grade_is_null(): void
+    {
+        $this->course1->students()->attach($this->mhs1->id, ['enrolled_at' => now()]);
+
+        $assignment = Assignment::factory()->create([
+            'course_id'  => $this->course1->id,
+            'created_by' => $this->dosen1->id,
+        ]);
+
+        // Submission belum dinilai (grade === null)
+        $sub = Submission::factory()->create([
+            'assignment_id' => $assignment->id,
+            'user_id'       => $this->mhs1->id,
+        ]);
+
+        // Mahasiswa harus ditolak 403
+        $this->actingAs($this->mhs1)
+            ->delete(route('submissions.grades.destroy', $sub))
+            ->assertStatus(403);
+
+        // Dosen pengampu mata kuliah lain juga harus ditolak 403
+        $this->actingAs($this->dosen2)
+            ->delete(route('submissions.grades.destroy', $sub))
+            ->assertStatus(403);
+    }
+
+    /**
+     * Uji 5: Halaman daftar pengumpulan dosen memakai paginasi dan agregasi dari Controller.
+     */
+    public function test_lecturer_submission_index_uses_pagination_and_controller_aggregates(): void
+    {
+        $this->course1->students()->attach([
+            $this->mhs1->id => ['enrolled_at' => now()],
+            $this->mhs2->id => ['enrolled_at' => now()],
+        ]);
+
+        $assignment = Assignment::factory()->create([
+            'course_id'  => $this->course1->id,
+            'created_by' => $this->dosen1->id,
+        ]);
+
+        Submission::factory()->create([
+            'assignment_id' => $assignment->id,
+            'user_id'       => $this->mhs1->id,
+        ]);
+
+        $response = $this->actingAs($this->dosen1)
+            ->get(route('assignments.submissions.index', ['assignment' => $assignment, 'per_page' => 25]));
+
+        $response->assertStatus(200)
+            ->assertSee($this->mhs1->name)
+            ->assertSee($this->mhs2->name)
+            ->assertViewHas('totalEnrolled', 2)
+            ->assertViewHas('submittedCount', 1)
+            ->assertViewHas('pendingGrading', 1)
+            ->assertViewHas('perPage', 25);
+    }
+
+    /**
+     * Uji 6: Otorisasi dan metrik agregat halaman rekap pengumpulan mata kuliah.
+     */
     public function test_course_submissions_recap_authorization_and_metrics(): void
     {
         $this->course1->students()->attach([$this->mhs1->id, $this->mhs2->id], ['enrolled_at' => now()]);
