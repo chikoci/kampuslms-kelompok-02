@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assignment;
+use App\Models\Course;
 use App\Models\Grade;
 use App\Models\Submission;
 use Illuminate\Http\Request;
@@ -43,6 +44,56 @@ class SubmissionController extends Controller
             ->values();
 
         return view('submissions.index', compact('assignment', 'enrolledStudents', 'submissions'));
+    }
+
+    /**
+     * Menampilkan daftar semua pengumpulan tugas pada satu mata kuliah (Dosen pengampu / Admin).
+     * Mendukung filter per tugas, filter status penilaian, dan agregasi metrik satu kueri SQL.
+     */
+    public function courseIndex(Request $request, Course $course)
+    {
+        Gate::authorize('viewSubmissions', $course);
+
+        $assignments = $course->assignments()->select(['id', 'course_id', 'title'])->orderBy('title')->get();
+        $assignmentIds = $assignments->pluck('id');
+
+        $query = Submission::whereIn('assignment_id', $assignmentIds)
+            ->with(['student', 'assignment', 'grade.grader']);
+
+        // Filter berdasarkan tugas tertentu (pastikan tetap dalam ruang lingkup kelas)
+        if ($request->filled('assignment_id')) {
+            $query->where('assignment_id', $request->assignment_id);
+        }
+
+        // Filter status penilaian (sudah dinilai / belum dinilai)
+        if ($request->filled('status')) {
+            if ($request->status === 'graded') {
+                $query->has('grade');
+            } elseif ($request->status === 'ungraded') {
+                $query->doesntHave('grade');
+            }
+        }
+
+        $submissions = $query->latest('submitted_at')->paginate(15)->withQueryString();
+
+        // Hitung total, sudah dinilai, dan belum dinilai sekaligus dalam 1 kueri SQL agregat
+        $metrics = Submission::whereIn('submissions.assignment_id', $assignmentIds)
+            ->leftJoin('grades', 'grades.submission_id', '=', 'submissions.id')
+            ->selectRaw('COUNT(DISTINCT submissions.id) as total_count, COUNT(DISTINCT grades.submission_id) as graded_count')
+            ->first();
+
+        $totalSubmissions = (int) ($metrics->total_count ?? 0);
+        $gradedCount = (int) ($metrics->graded_count ?? 0);
+        $ungradedCount = $totalSubmissions - $gradedCount;
+
+        return view('courses.submissions', compact(
+            'course',
+            'assignments',
+            'submissions',
+            'totalSubmissions',
+            'ungradedCount',
+            'gradedCount'
+        ));
     }
 
     /**

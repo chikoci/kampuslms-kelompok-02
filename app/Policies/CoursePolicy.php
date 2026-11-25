@@ -103,4 +103,13 @@ class CoursePolicy
     {
         return $this->enroll($user, $course);
     }
+
+    /**
+     * Menentukan apakah pengguna dapat melihat rekap pengumpulan tugas kelas.
+     * Aturan: Hanya Administrator dan Dosen pengampu kelas terkait.
+     */
+    public function viewSubmissions(User $user, Course $course): bool
+    {
+        return $this->update($user, $course);
+    }
 }
