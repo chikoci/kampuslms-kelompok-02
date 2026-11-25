@@ -25,13 +25,10 @@ class RubricController extends Controller
         $rubric = $assignment->rubric()->with(['criteria.levels'])->first();
 
         // Cek apakah rubrik sudah pernah digunakan untuk menilai submission
-        $isAssessed = false;
+        $isAssessed = $rubric ? $rubric->isAssessed() : false;
         $initialCriteria = null;
 
         if ($rubric) {
-            $criterionIds = $rubric->criteria->pluck('id');
-            $isAssessed = RubricAssessment::whereIn('rubric_criterion_id', $criterionIds)->exists();
-
             $initialCriteria = $rubric->criteria->map(function ($c) {
                 return [
                     'id'          => $c->id,
@@ -86,6 +83,12 @@ class RubricController extends Controller
     public function store(Request $request, Assignment $assignment): RedirectResponse
     {
         Gate::authorize('manage', [Rubric::class, $assignment]);
+
+        $existingRubric = $assignment->rubric;
+        if ($existingRubric && $existingRubric->isAssessed()) {
+            return redirect()->route('assignments.rubric.manage', $assignment)
+                ->with('error', 'Rubrik penilaian tidak dapat diubah karena sudah digunakan untuk menilai pengumpulan tugas mahasiswa.');
+        }
 
         $validated = $request->validate([
             'title'                               => ['required', 'string', 'max:255'],
@@ -190,12 +193,19 @@ class RubricController extends Controller
      */
     public function destroy(Assignment $assignment): RedirectResponse
     {
-        Gate::authorize('manage', [Rubric::class, $assignment]);
-
         $rubric = $assignment->rubric;
-        if ($rubric) {
-            $rubric->delete();
+        if (! $rubric) {
+            return redirect()->route('assignments.show', $assignment);
         }
+
+        Gate::authorize('delete', $rubric);
+
+        if ($rubric->isAssessed()) {
+            return redirect()->route('assignments.rubric.manage', $assignment)
+                ->with('error', 'Rubrik penilaian tidak dapat dihapus karena sudah memiliki riwayat penilaian mahasiswa.');
+        }
+
+        $rubric->delete();
 
         return redirect()->route('assignments.show', $assignment)
             ->with('success', 'Rubrik penilaian berhasil dihapus.');

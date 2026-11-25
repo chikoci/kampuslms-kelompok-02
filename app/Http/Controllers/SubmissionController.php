@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assignment;
 use App\Models\Grade;
+use App\Models\RubricAssessment;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -265,14 +266,14 @@ class SubmissionController extends Controller
                         ->withInput();
                 }
 
-                // Kalkulasi matematis: (bobot / 100) * (level_percentage / 100) * max_score
-                $criterionScore = ((float) $criterion->weight / 100.0) * ((float) $level->score_percentage / 100.0) * (float) $maxScore;
+                // Kalkulasi matematis terenkapsulasi via RubricCriterion model
+                $criterionScore = $criterion->calculateScore($level, (float) $maxScore);
                 $totalScore += $criterionScore;
 
                 $assessmentsToSave[] = [
                     'criterion_id' => $criterion->id,
                     'level_id'     => $level->id,
-                    'score'        => round($criterionScore, 2),
+                    'score'        => $criterionScore,
                     'feedback'     => $validated['rubric_criterion_feedback'][$criterion->id] ?? null,
                 ];
             }
@@ -280,16 +281,24 @@ class SubmissionController extends Controller
             $finalScore = min((float) $maxScore, round($totalScore, 2));
 
             \Illuminate\Support\Facades\DB::transaction(function () use ($submission, $assessmentsToSave, $finalScore, $validated) {
-                foreach ($assessmentsToSave as $item) {
-                    $submission->rubricAssessments()->updateOrCreate(
-                        ['rubric_criterion_id' => $item['criterion_id']],
-                        [
-                            'rubric_level_id' => $item['level_id'],
-                            'score_awarded'   => $item['score'],
-                            'feedback'        => $item['feedback'],
-                        ]
-                    );
-                }
+                $now = now();
+                $upsertData = array_map(function ($item) use ($submission, $now) {
+                    return [
+                        'submission_id'       => $submission->id,
+                        'rubric_criterion_id' => $item['criterion_id'],
+                        'rubric_level_id'     => $item['level_id'],
+                        'score_awarded'       => $item['score'],
+                        'feedback'            => $item['feedback'],
+                        'created_at'          => $now,
+                        'updated_at'          => $now,
+                    ];
+                }, $assessmentsToSave);
+
+                RubricAssessment::upsert(
+                    $upsertData,
+                    ['submission_id', 'rubric_criterion_id'],
+                    ['rubric_level_id', 'score_awarded', 'feedback', 'updated_at']
+                );
 
                 $submission->grade()->updateOrCreate(
                     ['submission_id' => $submission->id],

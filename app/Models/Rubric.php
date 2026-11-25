@@ -49,5 +49,18 @@ class Rubric extends Model
         $sum = (float) $this->criteria->sum('weight');
         return abs($sum - 100.0) < 0.01;
     }
+
+    /**
+     * Memeriksa apakah rubrik sudah pernah digunakan untuk menilai submission mahasiswa.
+     */
+    public function isAssessed(): bool
+    {
+        $criterionIds = $this->criteria()->pluck('id');
+        if ($criterionIds->isEmpty()) {
+            return false;
+        }
+
+        return RubricAssessment::whereIn('rubric_criterion_id', $criterionIds)->exists();
+    }
 }
 

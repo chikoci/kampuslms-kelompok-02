@@ -195,7 +195,40 @@ class AuthzTest extends TestCase
     public function test_admin_can_create_course(): void
     {
         $response = $this->actingAs($this->admin)->get('/courses/create');
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('Tambah Mata Kuliah Baru');
+
+        // Verifikasi CRUD lengkap Admin (Create -> Update -> Delete) berefek ke database
+        $storeResponse = $this->actingAs($this->admin)->post('/courses', [
+            'code' => 'ADMIN202',
+            'name' => 'Arsitektur Enterprise Test',
+            'description' => 'Uji CRUD Admin lengkap.',
+            'sks' => 3,
+            'lecturer_id' => $this->dosen1->id,
+            'status' => 'active',
+        ]);
+        $storeResponse->assertRedirect('/courses');
+        $this->assertDatabaseHas('courses', ['code' => 'ADMIN202', 'lecturer_id' => $this->dosen1->id]);
+
+        $createdCourse = Course::where('code', 'ADMIN202')->firstOrFail();
+
+        $updateResponse = $this->actingAs($this->admin)->put("/courses/{$createdCourse->id}", [
+            'code' => 'ADMIN202',
+            'name' => 'Arsitektur Enterprise Diperbarui',
+            'sks' => 4,
+            'lecturer_id' => $this->dosen2->id,
+            'status' => 'active',
+        ]);
+        $updateResponse->assertRedirect('/courses');
+        $this->assertDatabaseHas('courses', [
+            'id' => $createdCourse->id,
+            'name' => 'Arsitektur Enterprise Diperbarui',
+            'lecturer_id' => $this->dosen2->id,
+        ]);
+
+        $deleteResponse = $this->actingAs($this->admin)->delete("/courses/{$createdCourse->id}");
+        $deleteResponse->assertRedirect('/courses');
+        $this->assertDatabaseMissing('courses', ['id' => $createdCourse->id]);
     }
 
     public function test_dosen_cannot_create_course(): void
@@ -213,7 +246,8 @@ class AuthzTest extends TestCase
     public function test_dosen_can_edit_own_course(): void
     {
         $response = $this->actingAs($this->dosen1)->get("/courses/{$this->course1->id}/edit");
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('Edit Mata Kuliah: ' . $this->course1->name);
     }
 
     public function test_dosen_cannot_edit_other_dosen_course(): void
@@ -250,7 +284,9 @@ class AuthzTest extends TestCase
     public function test_dosen_can_create_material_in_own_course(): void
     {
         $response = $this->actingAs($this->dosen1)->get("/courses/{$this->course1->id}/materials/create");
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('Tambah Materi Perkuliahan')
+            ->assertSee($this->course1->name);
     }
 
     public function test_dosen_cannot_create_material_in_other_course(): void
@@ -268,7 +304,9 @@ class AuthzTest extends TestCase
     public function test_dosen_can_create_assignment_in_own_course(): void
     {
         $response = $this->actingAs($this->dosen1)->get("/courses/{$this->course1->id}/assignments/create");
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('Buat Tugas Perkuliahan Baru')
+            ->assertSee($this->course1->name);
     }
 
     public function test_dosen_cannot_create_assignment_in_other_course(): void
@@ -340,11 +378,13 @@ class AuthzTest extends TestCase
 
         // Dosen pengampu dapat melihat tugas draft
         $responseDosen = $this->actingAs($this->dosen1)->get("/assignments/{$draftAssignment->id}");
-        $responseDosen->assertStatus(200);
+        $responseDosen->assertStatus(200)
+            ->assertSee($draftAssignment->title);
 
         // Admin dapat melihat tugas draft
         $responseAdmin = $this->actingAs($this->admin)->get("/assignments/{$draftAssignment->id}");
-        $responseAdmin->assertStatus(200);
+        $responseAdmin->assertStatus(200)
+            ->assertSee($draftAssignment->title);
     }
 
     public function test_student_cannot_see_draft_assignment_in_assignments_index(): void
@@ -435,7 +475,9 @@ class AuthzTest extends TestCase
     public function test_student_can_view_own_submission(): void
     {
         $response = $this->actingAs($this->mhs1)->get("/submissions/{$this->submission1->id}");
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee($this->assignment1->title)
+            ->assertSee($this->mhs1->name);
     }
 
     public function test_student_cannot_view_other_student_submission_idor_protection(): void
@@ -447,7 +489,9 @@ class AuthzTest extends TestCase
     public function test_course_lecturer_can_view_submission(): void
     {
         $response = $this->actingAs($this->dosen1)->get("/submissions/{$this->submission1->id}");
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee($this->assignment1->title)
+            ->assertSee($this->mhs1->name);
     }
 
     public function test_other_lecturer_cannot_view_submission(): void
@@ -502,7 +546,10 @@ class AuthzTest extends TestCase
 
     public function test_admin_can_access_user_index(): void
     {
-        $this->actingAs($this->admin)->get('/users')->assertStatus(200);
+        $this->actingAs($this->admin)->get('/users')
+            ->assertStatus(200)
+            ->assertSee('Manajemen Pengguna')
+            ->assertSee($this->mhs1->email);
     }
 
     public function test_non_admin_cannot_escalate_role_via_update(): void
@@ -518,16 +565,33 @@ class AuthzTest extends TestCase
         $this->assertEquals('Mahasiswa Diedit', $this->mhs1->fresh()->name);
     }
 
+    public function test_student_cannot_view_edit_or_delete_other_user(): void
+    {
+        $this->actingAs($this->mhs1)->get("/users/{$this->mhs2->id}")->assertForbidden();
+
+        $this->actingAs($this->mhs1)->put("/users/{$this->mhs2->id}", [
+            'name' => 'Diubah Orang Lain',
+            'email' => $this->mhs2->email,
+        ])->assertForbidden();
+
+        $this->actingAs($this->mhs1)->delete("/users/{$this->mhs2->id}")->assertForbidden();
+
+        $this->assertEquals('Mahasiswa Dua Test', $this->mhs2->fresh()->name);
+        $this->assertDatabaseHas('users', ['id' => $this->mhs2->id, 'deleted_at' => null]);
+    }
+
     public function test_guest_can_access_forgot_password_page(): void
     {
         $response = $this->get('/forgot-password');
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('Lupa Kata Sandi?');
     }
 
     public function test_admin_can_access_register_page(): void
     {
         $response = $this->actingAs($this->admin)->get('/register');
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('Registrasi Pengguna Baru');
     }
 
     public function test_non_admin_cannot_access_register_page(): void
