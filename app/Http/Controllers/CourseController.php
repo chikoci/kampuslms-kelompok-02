@@ -79,30 +79,36 @@ class CourseController extends Controller
 
         $course->load([
             'lecturer',
-            'students' => fn ($q) => $q->orderBy('name'),
             'materials.course',
             'assignments' => function ($query) use ($user) {
                 if ($user?->role === 'mahasiswa') {
-                    $query->where('status', 'published');
+                    $query->where('status', 'published')
+                        ->with(['submissions' => fn ($subQ) => $subQ->where('user_id', $user->id)]);
                 }
                 $query->withCount('submissions')->latest();
             },
             'assignments.course',
-            'assignments.submissions',
-        ]);
+        ])->loadCount('students');
 
         $availableStudents = collect();
         if ($user && $user->can('enroll', $course)) {
-            $enrolledIds = $course->students->pluck('id');
+            $enrolledIds = $course->students()->pluck('users.id');
             $availableStudents = User::where('role', 'mahasiswa')
+                ->select(['id', 'name', 'nim_nip'])
                 ->whereNotIn('id', $enrolledIds)
                 ->orderBy('name')
+                ->limit(100)
                 ->get();
         }
 
+        $pesertaStudents = $course->students()
+            ->select(['users.id', 'users.name', 'users.nim_nip'])
+            ->orderBy('name')
+            ->get();
+
         $enrolledStudents = $course->students()->orderBy('name')->paginate(10, ['*'], 'students_page')->withQueryString();
 
-        return view('courses.show', compact('course', 'availableStudents', 'enrolledStudents'));
+        return view('courses.show', compact('course', 'availableStudents', 'enrolledStudents', 'pesertaStudents'));
     }
 
     /**
