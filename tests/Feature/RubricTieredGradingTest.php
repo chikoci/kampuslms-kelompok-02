@@ -338,5 +338,86 @@ class RubricTieredGradingTest extends TestCase
         $this->assertDatabaseMissing('grades', ['id' => $grade->id]);
         $this->assertDatabaseCount('rubric_assessments', 0);
     }
+
+    public function test_rubric_cannot_be_updated_once_assessed(): void
+    {
+        $rubric = Rubric::create(['assignment_id' => $this->assignment->id, 'title' => 'Rubrik']);
+        $criterion = RubricCriterion::create(['rubric_id' => $rubric->id, 'title' => 'C1', 'weight' => 100.00]);
+        $level = RubricLevel::create(['rubric_criterion_id' => $criterion->id, 'title' => 'L1', 'score_percentage' => 100.00]);
+
+        $submission = Submission::factory()->create([
+            'assignment_id' => $this->assignment->id,
+            'user_id'       => $this->student->id,
+        ]);
+
+        RubricAssessment::create([
+            'submission_id'       => $submission->id,
+            'rubric_criterion_id' => $criterion->id,
+            'rubric_level_id'     => $level->id,
+            'score_awarded'       => 100.00,
+        ]);
+
+        $payload = [
+            'title'       => 'Judul Baru',
+            'description' => 'Deskripsi baru',
+            'criteria'    => [
+                [
+                    'title'    => 'Kriteria Baru',
+                    'weight'   => 100.00,
+                    'levels'   => [
+                        ['title' => 'Baru', 'score_percentage' => 100.00],
+                    ],
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($this->dosen)
+            ->post(route('assignments.rubric.store', $this->assignment), $payload);
+
+        $response->assertRedirect(route('assignments.rubric.manage', $this->assignment));
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('rubrics', ['id' => $rubric->id, 'title' => 'Rubrik']);
+    }
+
+    public function test_rubric_cannot_be_deleted_once_assessed(): void
+    {
+        $rubric = Rubric::create(['assignment_id' => $this->assignment->id, 'title' => 'Rubrik']);
+        $criterion = RubricCriterion::create(['rubric_id' => $rubric->id, 'title' => 'C1', 'weight' => 100.00]);
+        $level = RubricLevel::create(['rubric_criterion_id' => $criterion->id, 'title' => 'L1', 'score_percentage' => 100.00]);
+
+        $submission = Submission::factory()->create([
+            'assignment_id' => $this->assignment->id,
+            'user_id'       => $this->student->id,
+        ]);
+
+        RubricAssessment::create([
+            'submission_id'       => $submission->id,
+            'rubric_criterion_id' => $criterion->id,
+            'rubric_level_id'     => $level->id,
+            'score_awarded'       => 100.00,
+        ]);
+
+        $response = $this->actingAs($this->dosen)
+            ->delete(route('assignments.rubric.destroy', $this->assignment));
+
+        $response->assertRedirect(route('assignments.rubric.manage', $this->assignment));
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('rubrics', ['id' => $rubric->id]);
+        $this->assertDatabaseCount('rubric_assessments', 1);
+    }
+
+    public function test_rubric_criterion_calculate_score_method(): void
+    {
+        $criterion = new RubricCriterion(['weight' => 40.00]);
+        $level = new RubricLevel(['score_percentage' => 80.00]);
+
+        // (40 / 100) * (80 / 100) * 100 = 32.00
+        $score = $criterion->calculateScore($level, 100);
+        $this->assertEquals(32.00, $score);
+
+        // Uji dengan max score 50: (40 / 100) * (80 / 100) * 50 = 16.00
+        $score50 = $criterion->calculateScore($level, 50);
+        $this->assertEquals(16.00, $score50);
+    }
 }
 
