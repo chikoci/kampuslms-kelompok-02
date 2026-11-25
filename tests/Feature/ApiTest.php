@@ -147,24 +147,33 @@ class ApiTest extends TestCase
         $assignment = Assignment::whereHas('course', fn ($q) => $q->where('lecturer_id', $dosen->id))->first();
         $submission = Submission::where('assignment_id', $assignment->id)->first();
 
-        if ($submission) {
-            // Hapus nilai lama jika ada agar bisa menguji status 201
-            $submission->grade()?->delete();
+        $this->assertNotNull($submission, 'Seeder wajib menyediakan minimal 1 submission untuk diuji.');
 
-            // Panggilan pertama -> 201 Created
-            $response1 = $this->actingAs($dosen, 'sanctum')->putJson("/api/v1/submissions/{$submission->id}/grade", [
-                'score' => 95,
-                'feedback' => 'Sangat rapi dan mematuhi spesifikasi.',
-            ]);
-            $response1->assertStatus(201);
+        // Hapus nilai lama jika ada agar bisa menguji status 201
+        $submission->grade()?->delete();
 
-            // Panggilan kedua (update penilaian) -> 200 OK
-            $response2 = $this->actingAs($dosen, 'sanctum')->putJson("/api/v1/submissions/{$submission->id}/grade", [
-                'score' => 98,
-                'feedback' => 'Nilai diperbarui setelah evaluasi tambahan.',
-            ]);
-            $response2->assertStatus(200);
-        }
+        // Panggilan pertama -> 201 Created
+        $response1 = $this->actingAs($dosen, 'sanctum')->putJson("/api/v1/submissions/{$submission->id}/grade", [
+            'score' => 95,
+            'feedback' => 'Sangat rapi dan mematuhi spesifikasi.',
+        ]);
+        $response1->assertStatus(201);
+        $this->assertDatabaseHas('grades', [
+            'submission_id' => $submission->id,
+            'score' => 95,
+        ]);
+
+        // Panggilan kedua (update penilaian) -> 200 OK
+        $response2 = $this->actingAs($dosen, 'sanctum')->putJson("/api/v1/submissions/{$submission->id}/grade", [
+            'score' => 98,
+            'feedback' => 'Nilai diperbarui setelah evaluasi tambahan.',
+        ]);
+        $response2->assertStatus(200);
+        $this->assertDatabaseHas('grades', [
+            'submission_id' => $submission->id,
+            'score' => 98,
+            'feedback' => 'Nilai diperbarui setelah evaluasi tambahan.',
+        ]);
     }
 
     /**
