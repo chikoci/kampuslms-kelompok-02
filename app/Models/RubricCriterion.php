@@ -52,5 +52,17 @@ class RubricCriterion extends Model
     {
         return $this->hasMany(RubricAssessment::class);
     }
+
+    /**
+     * Menghitung kontribusi nilai pada kriteria ini berdasarkan level yang dipilih dan skor maksimum tugas.
+     */
+    public function calculateScore(RubricLevel|float $levelOrPercentage, float $maxScore = 100.0): float
+    {
+        $percentage = $levelOrPercentage instanceof RubricLevel
+            ? (float) $levelOrPercentage->score_percentage
+            : (float) $levelOrPercentage;
+
+        return round(((float) $this->weight / 100.0) * ($percentage / 100.0) * $maxScore, 2);
+    }
 }
 
